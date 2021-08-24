@@ -19,7 +19,6 @@ import me.xanium.gemseconomy.data.YamlStorage;
 import me.xanium.gemseconomy.file.Configuration;
 import me.xanium.gemseconomy.listeners.EconomyListener;
 import me.xanium.gemseconomy.logging.EconomyLogger;
-import me.xanium.gemseconomy.nbt.NMSVersion;
 import me.xanium.gemseconomy.utils.Metrics;
 import me.xanium.gemseconomy.utils.SchedulerUtils;
 import me.xanium.gemseconomy.utils.Updater;
@@ -39,7 +38,6 @@ public class GemsEconomy extends JavaPlugin {
     private ChequeManager chequeManager;
     private CurrencyManager currencyManager;
     private VaultHandler vaultHandler;
-    private NMSVersion nmsVersion;
     private Metrics metrics;
     private EconomyLogger economyLogger;
     private UpdateForwarder updateForwarder;
@@ -92,8 +90,6 @@ public class GemsEconomy extends JavaPlugin {
     @Override
     public void onEnable() {
         instance = this;
-
-        nmsVersion = new NMSVersion();
         accountManager = new AccountManager(this);
         currencyManager = new CurrencyManager(this);
         economyLogger = new EconomyLogger(this);
@@ -217,10 +213,6 @@ public class GemsEconomy extends JavaPlugin {
 
     public EconomyLogger getEconomyLogger() {
         return economyLogger;
-    }
-
-    public NMSVersion getNmsVersion() {
-        return nmsVersion;
     }
 
     public Metrics getMetrics() {

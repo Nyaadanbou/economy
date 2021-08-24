@@ -12,13 +12,13 @@ import me.xanium.gemseconomy.GemsEconomy;
 import me.xanium.gemseconomy.account.Account;
 import me.xanium.gemseconomy.currency.Currency;
 import me.xanium.gemseconomy.file.F;
-import me.xanium.gemseconomy.nbt.NBTItem;
 import me.xanium.gemseconomy.utils.UtilString;
 import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 
 public class ChequeCommand implements CommandExecutor {
 
@@ -48,37 +48,19 @@ public class ChequeCommand implements CommandExecutor {
 
                 if (player.getInventory().getItemInMainHand().getType().equals(Material.valueOf(plugin.getConfig().getString("cheque.material")))) {
 
-                    NBTItem item = new NBTItem(player.getInventory().getItemInMainHand());
-                    if (item.getItem().getItemMeta().hasDisplayName() && item.getItem().getItemMeta().hasLore() && item.hasKey("value") && item.hasKey("currency")) {
-
-                        if (plugin.getChequeManager().isValid(item)) {
-
-                            if (item.getString("value") != null) {
-                                double value = Double.parseDouble(item.getString("value"));
-
-                                if (item.getItem().getAmount() > 1) {
-                                    player.getInventory().getItemInMainHand().setAmount(player.getInventory().getItemInMainHand().getAmount() - 1);
-
-                                    Account user = plugin.getAccountManager().getAccount(player);
-                                    Currency currency = plugin.getChequeManager().getCurrency(item);
-                                    user.deposit(currency, value);
-                                    player.sendMessage(F.getChequeRedeemed());
-                                    return true;
-                                } else {
-
-                                    player.getInventory().remove(item.getItem());
-                                    Account user = plugin.getAccountManager().getAccount(player);
-                                    Currency currency = plugin.getChequeManager().getCurrency(item);
-                                    user.deposit(currency, value);
-                                    player.sendMessage(F.getChequeRedeemed());
-                                    return true;
-                                }
-                            } else {
-                                player.sendMessage(F.getChequeInvalid());
-                            }
+                   ItemStack item = player.getInventory().getItemInMainHand();
+                    if (plugin.getChequeManager().isValid(item)) {
+                        double value = plugin.getChequeManager().getValue(item);
+                        if (item.getAmount() > 1) {
+                            player.getInventory().getItemInMainHand().setAmount(player.getInventory().getItemInMainHand().getAmount() - 1);
                         } else {
-                            player.sendMessage(F.getChequeInvalid());
+                            player.getInventory().remove(item);
                         }
+                        Account user = plugin.getAccountManager().getAccount(player);
+                        Currency currency = plugin.getChequeManager().getCurrency(item);
+                        user.deposit(currency, value);
+                        player.sendMessage(F.getChequeRedeemed());
+                        return true;
                     } else {
                         player.sendMessage(F.getChequeInvalid());
                     }
@@ -104,7 +86,6 @@ public class ChequeCommand implements CommandExecutor {
                             Account user = plugin.getAccountManager().getAccount(player);
                             if (currency != null) {
                                 if(user.hasEnough(currency, amount)) {
-
                                     user.withdraw(currency, amount);
                                     player.getInventory().addItem(plugin.getChequeManager().write(player.getName(), currency, amount));
                                     player.sendMessage(F.getChequeSucess());

@@ -5,10 +5,10 @@ author: Xanium
 description: A multi-currency economy plugin for spigot servers!
 website: https://www.spigotmc.org/resources/gemseconomy.19655/
 load: STARTUP
-api-version: 1.16
+api-version: 1.15
 loadbefore:
   - ItemFrameShops
-softdepend: [Vault]
+softdepend: [Vault, NBTAPI]
 commands:
   balance:
     description: Shows your balances
