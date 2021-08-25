@@ -13,7 +13,7 @@ commands:
   balance:
     description: Shows your balances
     usage: /balance (account)
-    aliases: [gbal, gmoney, bal]
+    aliases: [gbal, gmoney, bal, money]
   baltop:
     description: Shows the top balances of the server
     usage: /baltop (currency) (page)
