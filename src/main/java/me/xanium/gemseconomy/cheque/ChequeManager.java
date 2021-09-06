@@ -11,6 +11,7 @@ package me.xanium.gemseconomy.cheque;
 import me.xanium.gemseconomy.GemsEconomy;
 import me.xanium.gemseconomy.currency.Currency;
 import me.xanium.gemseconomy.utils.UtilString;
+import org.apache.commons.lang.StringUtils;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -59,18 +60,7 @@ public class ChequeManager {
     public boolean isValid(ItemStack itemstack) {
         if(itemstack.getType() != chequeBaseItem.getType()) return false;
         ChequeStorage storage = ChequeStorage.read(itemstack);
-
-        if (storage != null) {
-            String display = chequeBaseItem.getItemMeta().getDisplayName();
-            ItemMeta meta = itemstack.getItemMeta();
-
-            if(meta == null) return false;
-
-            if(meta.hasDisplayName() && meta.getDisplayName().equals(display)){
-                return meta.hasLore() && meta.getLore().size() == chequeBaseItem.getItemMeta().getLore().size();
-            }
-        }
-        return false;
+        return storage != null && StringUtils.isNotBlank(storage.getCurrency())&& StringUtils.isNotBlank(storage.getIssuer());
     }
 
     public double getValue(ItemStack itemstack) {
