@@ -212,12 +212,13 @@ public class GEVaultHook extends AbstractEconomy {
 
     @Override
     public boolean createPlayerAccount(String playerName) {
-        return false;
+        GemsEconomy.getInstance().getAccountManager().createAccount(playerName);
+        return true;
     }
 
     @Override
     public boolean createPlayerAccount(String playerName, String worldName) {
-        return false;
+        return createPlayerAccount(playerName);
     }
 
     @Override
