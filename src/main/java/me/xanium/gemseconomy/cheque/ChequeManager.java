@@ -50,15 +50,14 @@ public class ChequeManager {
         ItemStack ret = chequeBaseItem.clone();
         ItemMeta meta = ret.getItemMeta();
         meta.setLore(formatLore);
-        ret.setItemMeta(meta);
         ChequeStorage storage = new ChequeStorage(creatorName,currency.getPlural(), amount);
         meta.getPersistentDataContainer().set(ChequeStorage.key, ChequeStorageType.INSTANCE,storage);
         ChequeUpdater.tryApplyFallback(ret, storage); //Backward compatibility
+        ret.setItemMeta(meta);
         return ret;
     }
 
     public boolean isValid(ItemStack itemstack) {
-        if(itemstack.getType() != chequeBaseItem.getType()) return false;
         ChequeStorage storage = ChequeStorage.read(itemstack);
         return storage != null && StringUtils.isNotBlank(storage.getCurrency())&& StringUtils.isNotBlank(storage.getIssuer());
     }

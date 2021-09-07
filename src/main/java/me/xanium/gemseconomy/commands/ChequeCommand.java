@@ -45,10 +45,8 @@ public class ChequeCommand implements CommandExecutor {
         }
         if (args.length == 1) {
             if (args[0].equalsIgnoreCase("redeem")) {
-
-                if (player.getInventory().getItemInMainHand().getType().equals(Material.valueOf(plugin.getConfig().getString("cheque.material")))) {
-
-                   ItemStack item = player.getInventory().getItemInMainHand();
+                ItemStack item = player.getInventory().getItemInMainHand();
+                if (item.getType().equals(Material.valueOf(plugin.getConfig().getString("cheque.material")))) {
                     if (plugin.getChequeManager().isValid(item)) {
                         double value = plugin.getChequeManager().getValue(item);
                         if (item.getAmount() > 1) {
