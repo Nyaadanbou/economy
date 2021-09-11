@@ -23,6 +23,17 @@
         <maven.compiler.source>1.8</maven.compiler.source>
     </properties>
 
+    <distributionManagement>
+        <repository>
+            <id>codemc-releases</id>
+            <url>https://repo.codemc.io/repository/maven-releases/</url>
+        </repository>
+        <snapshotRepository>
+            <id>codemc-snapshots</id>
+            <url>https://repo.codemc.io/repository/maven-snapshots/</url>
+        </snapshotRepository>
+    </distributionManagement>
+
     <build>
         <defaultGoal>clean package</defaultGoal>
         <plugins>
