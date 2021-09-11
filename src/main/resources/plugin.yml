@@ -4,12 +4,11 @@ version: 4.9.2
 author: Xanium
 description: A multi-currency economy plugin for spigot servers!
 website: https://www.spigotmc.org/resources/gemseconomy.19655/
+load: STARTUP
 api-version: 1.15
 loadbefore:
   - ItemFrameShops
-  - Towny
-depend: [NBTAPI]
-softdepend: [Vault]
+softdepend: [Vault, NBTAPI]
 commands:
   balance:
     description: Shows your balances
