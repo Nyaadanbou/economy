@@ -12,6 +12,7 @@ import me.xanium.gemseconomy.currency.CachedTopListEntry;
 import me.xanium.gemseconomy.currency.Currency;
 import me.xanium.gemseconomy.utils.SchedulerUtils;
 import me.xanium.gemseconomy.utils.UtilServer;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.InvalidConfigurationException;
@@ -168,7 +169,11 @@ public class YamlStorage extends DataStorage {
                 }
             }
         }
-        return null;
+        UUID uuid = Bukkit.getOfflinePlayer(name).getUniqueId();
+        Account account = new Account(uuid, name);
+        createAccount(account);
+        saveAccount(account);
+        return account;
     }
 
     @Override
@@ -181,7 +186,10 @@ public class YamlStorage extends DataStorage {
             loadBalances(account);
             return account;
         }
-        return null;
+            Account account =  new Account(uuid, Bukkit.getOfflinePlayer(uuid).getName());
+            createAccount(account);
+            saveAccount(account);
+            return account;
     }
 
     @Override

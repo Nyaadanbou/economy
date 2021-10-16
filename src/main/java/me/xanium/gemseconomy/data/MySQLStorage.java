@@ -17,6 +17,7 @@ import me.xanium.gemseconomy.currency.CachedTopListEntry;
 import me.xanium.gemseconomy.currency.Currency;
 import me.xanium.gemseconomy.utils.SchedulerUtils;
 import me.xanium.gemseconomy.utils.UtilServer;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -416,6 +417,11 @@ public class MySQLStorage extends DataStorage {
             set.close();
         } catch (SQLException | ParseException e) {
             e.printStackTrace();
+        }
+        if(account == null){
+            account = new Account(uuid, Bukkit.getOfflinePlayer(uuid).getName());
+            createAccount(account);
+            saveAccount(account);
         }
         return account;
     }
