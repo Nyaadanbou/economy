@@ -14,7 +14,6 @@ import me.xanium.gemseconomy.currency.Currency;
 import me.xanium.gemseconomy.utils.UtilServer;
 import net.milkbowl.vault.economy.AbstractEconomy;
 import net.milkbowl.vault.economy.EconomyResponse;
-import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 
 import java.util.ArrayList;
@@ -213,28 +212,13 @@ public class GEVaultHook extends AbstractEconomy {
 
     @Override
     public boolean createPlayerAccount(String playerName) {
-        return createPlayerAccount(Bukkit.getOfflinePlayer(playerName));
+        GemsEconomy.getInstance().getAccountManager().createAccount(playerName);
+        return true;
     }
 
     @Override
     public boolean createPlayerAccount(String playerName, String worldName) {
-       return createPlayerAccount(playerName);
-    }
-
-    @Override
-    public boolean createPlayerAccount(OfflinePlayer player) {
-        GemsEconomy.getInstance().getAccountManager().createAccountIfNotExists(player.getUniqueId());
-        return GemsEconomy.getInstance().getAccountManager().getAccount(player.getUniqueId()) != null;
-    }
-
-    @Override
-    public boolean createPlayerAccount(OfflinePlayer player, String worldName) {
-        return createPlayerAccount(player);
-    }
-
-    @Override
-    public EconomyResponse createBank(String name, OfflinePlayer player) {
-        return super.createBank(name, player);
+        return createPlayerAccount(playerName);
     }
 
     @Override
