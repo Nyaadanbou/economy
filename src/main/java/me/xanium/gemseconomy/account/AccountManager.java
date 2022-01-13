@@ -12,6 +12,7 @@ import me.xanium.gemseconomy.GemsEconomy;
 import me.xanium.gemseconomy.utils.SchedulerUtils;
 import me.xanium.gemseconomy.utils.UtilServer;
 
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
@@ -27,27 +28,34 @@ public class AccountManager {
         this.plugin = plugin;
         this.accounts = new ArrayList<>();
     }
-    
+
     public void createAccount(String nickname) {
-        SchedulerUtils.runAsync(() -> {
-            Account account = getAccount(nickname);
+        createAccount(Bukkit.getOfflinePlayer(nickname).getUniqueId(), nickname);
+    }
 
-            if (account == null) {
-                account = new Account(UUID.randomUUID(), nickname);
-                add(account);
-                account.setCanReceiveCurrency(true);
+    public synchronized void createAccount(UUID uuid, String name) {
+        Account account = getAccount(uuid);
+        String playerName = name;
 
-                if (!plugin.getDataStore().getName().equalsIgnoreCase("yaml")) {
-                    // MYSQL
-                    plugin.getDataStore().createAccount(account);
-                } else {
-                    // YAML
-                    plugin.getDataStore().saveAccount(account);
-                }
+        if (playerName == null || playerName.isEmpty())
+            playerName = Bukkit.getOfflinePlayer(uuid).getName();
+        if (playerName == null || playerName.isEmpty())
+            playerName = "Unknown";
+        if (account == null) {
+            account = new Account(uuid, playerName);
+            add(account);
+            account.setCanReceiveCurrency(true);
+            account.setNickname(playerName);
 
-                UtilServer.consoleLog("New Account created for: " + account.getDisplayName());
+            if (!plugin.getDataStore().getName().equalsIgnoreCase("yaml")) {
+                // MYSQL
+                plugin.getDataStore().createAccount(account);
+            } else {
+                // YAML
+                plugin.getDataStore().saveAccount(account);
             }
-        });
+            UtilServer.consoleLog("New Account created for: " + account.getDisplayName());
+        }
     }
 
     public Account getAccount(Player player) {
@@ -70,10 +78,10 @@ public class AccountManager {
         return plugin.getDataStore().loadAccount(uuid);
     }
 
-    public void removeAccount(UUID uuid){
-        for(int i = 0; i < this.accounts.size(); i++){
+    public void removeAccount(UUID uuid) {
+        for (int i = 0; i < this.accounts.size(); i++) {
             Account a = getAccounts().get(i);
-            if(a.getUuid().equals(uuid)){
+            if (a.getUuid().equals(uuid)) {
                 accounts.remove(i);
                 break;
             }
@@ -81,7 +89,7 @@ public class AccountManager {
     }
 
     public void add(Account account) {
-        if(this.accounts.contains(account))return;
+        if (this.accounts.contains(account)) return;
 
         this.accounts.add(account);
     }

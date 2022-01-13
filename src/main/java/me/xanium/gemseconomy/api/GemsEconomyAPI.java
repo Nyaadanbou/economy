@@ -34,7 +34,8 @@ public class GemsEconomyAPI {
     public Account pullAccount(UUID uuid){
         Account acc = plugin.getAccountManager().getAccount(uuid);
         if(acc == null)
-            acc = plugin.getAccountManager().createAccountIfNotExists(uuid);
+            plugin.getAccountManager().createAccount(uuid,null);
+        acc = plugin.getAccountManager().getAccount(uuid);
         return acc;
     }
 
