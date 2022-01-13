@@ -31,13 +31,20 @@ public class GemsEconomyAPI {
         }
     }
 
+    public Account pullAccount(UUID uuid){
+        Account acc = plugin.getAccountManager().getAccount(uuid);
+        if(acc == null)
+            acc = plugin.getAccountManager().createAccountIfNotExists(uuid);
+        return acc;
+    }
+
     /**
      *
      * @param uuid - The users unique ID.
      * @param amount - An amount of the default currency.
      */
     public void deposit(UUID uuid, double amount){
-        Account acc = plugin.getAccountManager().getAccount(uuid);
+        Account acc = pullAccount(uuid);
         acc.deposit(plugin.getCurrencyManager().getDefaultCurrency(), amount);
     }
 
@@ -48,7 +55,7 @@ public class GemsEconomyAPI {
      * @param currency - A specified currency.
      */
     public void deposit(UUID uuid, double amount, Currency currency){
-        Account acc = plugin.getAccountManager().getAccount(uuid);
+        Account acc = pullAccount(uuid);
         if(currency != null) {
             acc.deposit(currency, amount);
         }else{
@@ -62,7 +69,7 @@ public class GemsEconomyAPI {
      * @param amount - An amount of the default currency.
      */
     public void withdraw(UUID uuid, double amount){
-        Account acc = plugin.getAccountManager().getAccount(uuid);
+        Account acc = pullAccount(uuid);
         acc.withdraw(plugin.getCurrencyManager().getDefaultCurrency(), amount);
     }
 
@@ -73,7 +80,7 @@ public class GemsEconomyAPI {
      * @param currency - The currency you withdraw from.
      */
     public void withdraw(UUID uuid, double amount, Currency currency){
-        Account acc = plugin.getAccountManager().getAccount(uuid);
+        Account acc = pullAccount(uuid);
         if(currency != null) {
             acc.withdraw(currency, amount);
         }else{
@@ -87,7 +94,7 @@ public class GemsEconomyAPI {
      * @return - The default currency balance of the user.
      */
     public double getBalance(UUID uuid){
-        Account acc = plugin.getAccountManager().getAccount(uuid);
+        Account acc = pullAccount(uuid);
         return acc.getBalance(plugin.getCurrencyManager().getDefaultCurrency());
     }
 
@@ -98,7 +105,7 @@ public class GemsEconomyAPI {
      * @return - The balance of the specified currency.
      */
     public double getBalance(UUID uuid, Currency currency) {
-        Account acc = plugin.getAccountManager().getAccount(uuid);
+        Account acc = pullAccount(uuid);
         if (currency != null) {
             return acc.getBalance(currency);
         }else{

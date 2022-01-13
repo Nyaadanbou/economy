@@ -30,28 +30,7 @@ public class EconomyListener implements Listener {
         Player player = event.getPlayer();
         if (event.getResult() != PlayerLoginEvent.Result.ALLOWED) return;
 
-        SchedulerUtils.runAsync(() -> {
-            Account account = plugin.getAccountManager().getAccount(player.getUniqueId());
-
-            if (account == null) {
-                account = new Account(player.getUniqueId(), player.getName());
-
-                if (!plugin.getDataStore().getName().equalsIgnoreCase("yaml")) {
-                    // MYSQL
-                    plugin.getDataStore().createAccount(account);
-                } else {
-                    // YAML
-                    plugin.getDataStore().saveAccount(account);
-                }
-
-                UtilServer.consoleLog("New Account created for: " + account.getDisplayName());
-            } else if (account.getNickname() == null || !account.getNickname().equals(player.getName())) {
-                account.setNickname(player.getName());
-                plugin.getDataStore().saveAccount(account);
-                UtilServer.consoleLog("Name change found! Updating account " + account.getDisplayName() + "...");
-            }
-
-        });
+        plugin.getAccountManager().createAccountIfNotExists(player.getUniqueId());
     }
 
     @EventHandler
