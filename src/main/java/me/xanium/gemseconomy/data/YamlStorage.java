@@ -148,7 +148,7 @@ public class YamlStorage extends DataStorage {
 
     @Override
     public void createAccount(Account account) {
-        throw new UnsupportedOperationException("YAML does not utilize #createAccount()!");
+        saveAccount(account);
     }
 
     @Override
