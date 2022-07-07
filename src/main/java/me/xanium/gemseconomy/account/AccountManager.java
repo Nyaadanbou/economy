@@ -46,12 +46,12 @@ public class AccountManager {
             account.setCanReceiveCurrency(true);
             account.setNickname(playerName);
 
-            if (!plugin.getDataStore().getName().equalsIgnoreCase("yaml")) {
-                // MYSQL
-                plugin.getDataStore().createAccount(account);
-            } else {
+            if (plugin.getDataStore().getName().equalsIgnoreCase("yaml")) {
                 // YAML
                 plugin.getDataStore().saveAccount(account);
+            } else {
+                // MYSQL
+                plugin.getDataStore().createAccount(account);
             }
             UtilServer.consoleLog("New Account created for: " + account.getDisplayName());
         }
