@@ -10,10 +10,10 @@ import org.bukkit.event.HandlerList;
 public class GemsTransactionEvent extends Event implements Cancellable {
 
     private static final HandlerList handlerList = new HandlerList();
-    private Currency currency;
-    private Account account;
-    private double amount;
-    private TranactionType type;
+    private final Currency currency;
+    private final Account account;
+    private final double amount;
+    private final TranactionType type;
     private boolean cancel;
 
     public GemsTransactionEvent(Currency currency, Account account, double amount, TranactionType type) {

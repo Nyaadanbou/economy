@@ -9,7 +9,6 @@
 package me.xanium.gemseconomy.account;
 
 import me.xanium.gemseconomy.GemsEconomy;
-import me.xanium.gemseconomy.utils.SchedulerUtils;
 import me.xanium.gemseconomy.utils.UtilServer;
 
 import org.bukkit.Bukkit;
@@ -21,8 +20,8 @@ import java.util.UUID;
 
 public class AccountManager {
 
-    private GemsEconomy plugin;
-    private List<Account> accounts;
+    private final GemsEconomy plugin;
+    private final List<Account> accounts;
 
     public AccountManager(GemsEconomy plugin) {
         this.plugin = plugin;

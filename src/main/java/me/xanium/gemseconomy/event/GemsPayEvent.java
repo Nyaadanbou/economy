@@ -10,10 +10,10 @@ public class GemsPayEvent extends Event implements Cancellable {
 
     private static final HandlerList handlerList = new HandlerList();
     private boolean cancel;
-    private Currency currency;
-    private Account payer;
-    private Account received;
-    private double amount;
+    private final Currency currency;
+    private final Account payer;
+    private final Account received;
+    private final double amount;
 
     public GemsPayEvent(Currency currency, Account payer, Account received, double amount) {
         this.currency = currency;

@@ -19,18 +19,18 @@ import java.net.URLConnection;
 
 public class Updater {
 
-    private int project = 19655;
+    private final int project = 19655;
     private URL checkURL;
     private String newVersion;
-    private String currentVersion;
-    private JavaPlugin plugin;
+    private final String currentVersion;
+    private final JavaPlugin plugin;
 
     public Updater(JavaPlugin plugin) {
         this.plugin = plugin;
         this.currentVersion = plugin.getDescription().getVersion();
         try {
             this.checkURL = new URL("https://api.spigotmc.org/legacy/update.php?resource=" + project);
-        } catch (MalformedURLException ex) {}
+        } catch (MalformedURLException ignored) {}
     }
 
     public int getProjectID() {

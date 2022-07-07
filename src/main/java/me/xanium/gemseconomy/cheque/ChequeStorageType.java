@@ -7,7 +7,6 @@ import org.bukkit.persistence.PersistentDataType;
 public class ChequeStorageType implements PersistentDataType<String, ChequeStorage> {
     private static final Gson gson = new Gson();
 
-
     public static final ChequeStorageType INSTANCE = new ChequeStorageType();
 
     @Override

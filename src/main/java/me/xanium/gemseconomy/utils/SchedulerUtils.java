@@ -127,7 +127,7 @@ public class SchedulerUtils {
 
     public static class TaskBuilder
     {
-        private Queue<Task> taskList;
+        private final Queue<Task> taskList;
 
         public TaskBuilder()
         {

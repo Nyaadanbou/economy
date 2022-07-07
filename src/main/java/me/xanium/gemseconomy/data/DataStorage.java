@@ -21,15 +21,15 @@ public abstract class DataStorage {
 
     public final GemsEconomy plugin = GemsEconomy.getInstance();
 
-    private String name;
-    private boolean topSupported;
+    private final String name;
+    private final boolean topSupported;
 
     public DataStorage(String name, boolean topSupported) {
         this.name = name;
         this.topSupported = topSupported;
     }
 
-    private static ArrayList<DataStorage> methods = new ArrayList<>();
+    private static final ArrayList<DataStorage> methods = new ArrayList<>();
 
     public static DataStorage getMethod(String name) {
         for (DataStorage store : getMethods()) {

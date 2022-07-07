@@ -18,8 +18,8 @@ import java.util.List;
 
 public class F {
 
-    private static GemsEconomy plugin = GemsEconomy.getInstance();
-    private static FileConfiguration cfg = plugin.getConfig();
+    private static final GemsEconomy plugin = GemsEconomy.getInstance();
+    private static final FileConfiguration cfg = plugin.getConfig();
 
     private static String get(String path){
         return colorize(cfg.getString(path));

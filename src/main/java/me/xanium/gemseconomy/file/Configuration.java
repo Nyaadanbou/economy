@@ -16,7 +16,7 @@ import java.util.Arrays;
 
 public class Configuration {
 
-    private GemsEconomy plugin;
+    private final GemsEconomy plugin;
 
     public Configuration(GemsEconomy plugin) {
         this.plugin = plugin;

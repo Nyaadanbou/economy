@@ -28,7 +28,7 @@ import java.util.UUID;
 public class YamlStorage extends DataStorage {
 
     private YamlConfiguration configuration;
-    private File file;
+    private final File file;
 
     public YamlStorage(File file) {
         super("YAML", false);

@@ -29,13 +29,13 @@ import java.util.stream.Collectors;
 
 public class MySQLStorage extends DataStorage {
 
-    private String currencyTable = getTablePrefix() + "_currencies";
-    private String accountsTable = getTablePrefix() + "_accounts";
+    private final String currencyTable = getTablePrefix() + "_currencies";
+    private final String accountsTable = getTablePrefix() + "_accounts";
 
     private final String SAVE_ACCOUNT = "INSERT INTO `" + getTablePrefix() + "_accounts` (`nickname`, `uuid`, `payable`, `balance_data`) VALUES(?, ?, ?, ?) ON DUPLICATE KEY UPDATE `nickname` = VALUES(`nickname`), `uuid` = VALUES(`uuid`), `payable` = VALUES(`payable`), `balance_data` = VALUES(`balance_data`)";
     private final String SAVE_CURRENCY = "INSERT INTO `" + getTablePrefix() + "_currencies` (`uuid`, `name_singular`, `name_plural`, `default_balance`, `symbol`, `decimals_supported`, `is_default`, `payable`, `color`, `exchange_rate`) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?) ON DUPLICATE KEY UPDATE `uuid` = VALUES(`uuid`), `name_singular` = VALUES(`name_singular`), `name_plural` = VALUES(`name_plural`), `default_balance` = VALUES(`default_balance`), `symbol` = VALUES(`symbol`), `decimals_supported` = VALUES(`decimals_supported`), `is_default` = VALUES(`is_default`), `payable` = VALUES(`payable`), `color` = VALUES(`color`), `exchange_rate` = VALUES(`exchange_rate`)";
 
-    private HikariConfig hikariConfig;
+    private final HikariConfig hikariConfig;
     private HikariDataSource hikari;
     private final LinkedHashMap<UUID, CachedTopList> topList = new LinkedHashMap<>();
 

@@ -27,7 +27,7 @@ public class UpdateForwarder implements PluginMessageListener {
      * and currencies on all of the servers.
      */
 
-    private GemsEconomy plugin;
+    private final GemsEconomy plugin;
     private final String channelName = "GemsEconomy Data Channel";
 
     public UpdateForwarder(GemsEconomy plugin) {

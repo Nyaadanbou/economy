@@ -10,11 +10,11 @@ public class GemsConversionEvent extends Event implements Cancellable {
 
     private static final HandlerList handlerList = new HandlerList();
     private boolean cancel;
-    private Currency exchanged;
-    private Currency received;
-    private Account account;
-    private double amountExchanged;
-    private double amountReceived;
+    private final Currency exchanged;
+    private final Currency received;
+    private final Account account;
+    private final double amountExchanged;
+    private final double amountReceived;
 
     public GemsConversionEvent(Currency exchanged, Currency received, Account account, double amountExchanged, double amountReceived) {
         this.exchanged = exchanged;

@@ -5,11 +5,10 @@ import me.xanium.gemseconomy.GemsEconomy;
 import me.xanium.gemseconomy.utils.UtilString;
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.Bukkit;
-import org.bukkit.entity.Item;
 import org.bukkit.inventory.ItemStack;
 
 public class ChequeUpdater {
-    private static boolean nbtApiInstalled;
+    private static final boolean nbtApiInstalled;
 
     static {
         nbtApiInstalled = Bukkit.getPluginManager().getPlugin("NBTAPI") != null;

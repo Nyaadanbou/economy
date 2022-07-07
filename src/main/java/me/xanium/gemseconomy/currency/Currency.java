@@ -16,7 +16,7 @@ import java.util.UUID;
 
 public class Currency {
 
-    private UUID uuid;
+    private final UUID uuid;
     private String singular;
     private String plural;
     private String symbol = null;

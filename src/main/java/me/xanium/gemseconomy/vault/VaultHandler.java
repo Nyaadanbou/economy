@@ -18,7 +18,7 @@ import org.bukkit.plugin.ServicesManager;
 public class VaultHandler {
 
     private GEVaultHook economy = null;
-    private GemsEconomy plugin;
+    private final GemsEconomy plugin;
 
     public VaultHandler(GemsEconomy plugin){
         this.plugin = plugin;

@@ -11,5 +11,4 @@ public class EconomyLogger extends AbstractLogger {
         this.plugin = plugin;
     }
 
-
 }
