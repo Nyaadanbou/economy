@@ -35,12 +35,6 @@ public class MySQLStorage extends DataStorage {
     private final String SAVE_ACCOUNT = "INSERT INTO `" + getTablePrefix() + "_accounts` (`nickname`, `uuid`, `payable`, `balance_data`) VALUES(?, ?, ?, ?) ON DUPLICATE KEY UPDATE `nickname` = VALUES(`nickname`), `uuid` = VALUES(`uuid`), `payable` = VALUES(`payable`), `balance_data` = VALUES(`balance_data`)";
     private final String SAVE_CURRENCY = "INSERT INTO `" + getTablePrefix() + "_currencies` (`uuid`, `name_singular`, `name_plural`, `default_balance`, `symbol`, `decimals_supported`, `is_default`, `payable`, `color`, `exchange_rate`) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?) ON DUPLICATE KEY UPDATE `uuid` = VALUES(`uuid`), `name_singular` = VALUES(`name_singular`), `name_plural` = VALUES(`name_plural`), `default_balance` = VALUES(`default_balance`), `symbol` = VALUES(`symbol`), `decimals_supported` = VALUES(`decimals_supported`), `is_default` = VALUES(`is_default`), `payable` = VALUES(`payable`), `color` = VALUES(`color`), `exchange_rate` = VALUES(`exchange_rate`)";
 
-    /**
-     * Do not use.
-     */
-    @Deprecated
-    private String balancesTable = getTablePrefix() + "_balances";
-
     private HikariConfig hikariConfig;
     private HikariDataSource hikari;
     private final LinkedHashMap<UUID, CachedTopList> topList = new LinkedHashMap<>();
@@ -67,9 +61,6 @@ public class MySQLStorage extends DataStorage {
             ps.execute();
         }
         try (PreparedStatement ps = connection.prepareStatement("CREATE TABLE IF NOT EXISTS " + this.accountsTable + " (nickname VARCHAR(255), uuid VARCHAR(255) NOT NULL PRIMARY KEY, payable INT, balance_data LONGTEXT NULL);")) {
-            ps.execute();
-        }
-        try (PreparedStatement ps = connection.prepareStatement("CREATE TABLE IF NOT EXISTS " + this.balancesTable + " (account_id VARCHAR(255), currency_id VARCHAR(255), balance DECIMAL);")) {
             ps.execute();
         }
     }
@@ -246,11 +237,6 @@ public class MySQLStorage extends DataStorage {
             PreparedStatement stmt = connection.prepareStatement("DELETE FROM " + this.currencyTable + " WHERE uuid = ?");
             stmt.setString(1, currency.getUuid().toString());
             stmt.execute();
-
-            //TODO Scheduled for removal
-            stmt = connection.prepareStatement("DELETE FROM " + this.balancesTable + " WHERE currency_id = ?");
-            stmt.setString(1, currency.getUuid().toString());
-            stmt.execute();
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -314,34 +300,6 @@ public class MySQLStorage extends DataStorage {
         });
     }
 
-    // This method converts the data to the new format
-    private Account returnAccountWithBalances(Account account) {
-        if (account == null) {
-            return null;
-        }
-
-        try (Connection connection = getHikari().getConnection()) {
-            PreparedStatement stmt = connection.prepareStatement("SELECT * FROM " + this.balancesTable + " WHERE account_id = ?");
-            stmt.setString(1, account.getUuid().toString());
-            ResultSet set = stmt.executeQuery();
-            while (set.next()) {
-                Currency currency = plugin.getCurrencyManager().getCurrency(UUID.fromString(set.getString("currency_id")));
-                if (currency == null) {
-                    continue;
-                }
-                account.modifyBalance(currency, set.getDouble("balance"), false);
-
-                if(set.isLast()){
-                    saveAccount(account);
-                    deleteOldBalances(account);
-                }
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return account;
-    }
-
     @Override
     public Account loadAccount(String name) {
         Account account = null;
@@ -355,11 +313,6 @@ public class MySQLStorage extends DataStorage {
                 account.setCanReceiveCurrency(set.getInt("payable") == 1);
 
                 String json = set.getString("balance_data");
-
-                // This is temporary support for older versions to allow converting to new storage
-                if(json == null){
-                    return this.returnAccountWithBalances(account);
-                }
 
                 JSONParser parser = new JSONParser();
                 Object obj = parser.parse(json);
@@ -395,11 +348,6 @@ public class MySQLStorage extends DataStorage {
                 account.setCanReceiveCurrency(set.getInt("payable") == 1);
 
                 String json = set.getString("balance_data");
-
-                // This is temporary support for older versions to allow converting to new storage
-                if(json == null){
-                    return this.returnAccountWithBalances(account);
-                }
 
                 JSONParser parser = new JSONParser();
                 Object obj = parser.parse(json);
@@ -450,7 +398,7 @@ public class MySQLStorage extends DataStorage {
             PreparedStatement stmt = connection.prepareStatement("SELECT * FROM " + this.accountsTable);
             ResultSet rs = stmt.executeQuery();
             while (rs.next()) {
-                accounts.add(returnAccountWithBalances(loadAccount(UUID.fromString(rs.getString("uuid")))));
+                accounts.add(loadAccount(UUID.fromString(rs.getString("uuid"))));
             }
         } catch (SQLException ex) {
             ex.printStackTrace();
@@ -509,23 +457,8 @@ public class MySQLStorage extends DataStorage {
             PreparedStatement stmt = connection.prepareStatement("DELETE FROM " + this.accountsTable + " WHERE uuid = ? LIMIT 1");
             stmt.setString(1, account.getUuid().toString());
             stmt.execute();
-
-            //TODO Scheduled for removal
-            stmt = connection.prepareStatement("DELETE FROM " + this.balancesTable + " WHERE account_id = ?");
-            stmt.setString(1, account.getUuid().toString());
-            stmt.execute();
         } catch (SQLException e) {
             e.printStackTrace();
-        }
-    }
-
-    public void deleteOldBalances(Account account) {
-        try (Connection connection = getHikari().getConnection()) {
-            PreparedStatement stmt = connection.prepareStatement("DELETE FROM " + this.balancesTable + " WHERE account_id = ?");
-            stmt.setString(1, account.getUuid().toString());
-            stmt.execute();
-        }catch (SQLException ex){
-            ex.printStackTrace();
         }
     }
 
