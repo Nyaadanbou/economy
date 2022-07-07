@@ -80,14 +80,14 @@ public class MySQLStorage extends DataStorage {
                     String tableName = tableResultSet.getString("TABLE_NAME");
                     UtilServer.consoleLog("Table: " + tableName);
 
-                    if(tableName.startsWith(getTablePrefix())) {
+                    if (tableName.startsWith(getTablePrefix())) {
                         structure.put(tableName, new ArrayList<>());
                         UtilServer.consoleLog("Added table");
                     }
                 }
             }
 
-            for(String table : structure.keySet()){
+            for (String table : structure.keySet()) {
                 try (ResultSet columnResultSet = metaData.getColumns(null, "public", table, null)) {
                     while (columnResultSet.next()) {
                         String columnName = columnResultSet.getString("COLUMN_NAME");
@@ -98,7 +98,7 @@ public class MySQLStorage extends DataStorage {
             }
 
             List<String> currencyTableColumns = structure.get(this.currencyTable);
-            if(currencyTableColumns != null && !currencyTableColumns.isEmpty()){
+            if (currencyTableColumns != null && !currencyTableColumns.isEmpty()) {
                 if (!currencyTableColumns.contains("exchange_rate")) {
                     stmt = connection.prepareStatement("ALTER TABLE " + this.currencyTable + " ADD exchange_rate DECIMAL NULL DEFAULT NULL AFTER `color`;");
                     stmt.execute();
@@ -108,8 +108,8 @@ public class MySQLStorage extends DataStorage {
             }
 
             List<String> accountTableColumns = structure.get(this.accountsTable);
-            if(accountTableColumns != null && !accountTableColumns.isEmpty()){
-                if(!accountTableColumns.contains("balance_data")){
+            if (accountTableColumns != null && !accountTableColumns.isEmpty()) {
+                if (!accountTableColumns.contains("balance_data")) {
                     stmt = connection.prepareStatement("ALTER TABLE " + this.accountsTable + " ADD balance_data LONGTEXT NULL DEFAULT NULL AFTER `payable`;");
                     stmt.execute();
 
@@ -249,8 +249,8 @@ public class MySQLStorage extends DataStorage {
             if (!cache.isExpired()) {
                 LinkedList<CachedTopListEntry> searchResults = new LinkedList<>();
                 int collected = 0;
-                for(int i = offset; i < cache.getResults().size(); i++){
-                    if(collected == amount)break;
+                for (int i = offset; i < cache.getResults().size(); i++) {
+                    if (collected == amount) break;
                     searchResults.add(cache.getResults().get(i));
                     collected++;
                 }
@@ -271,7 +271,7 @@ public class MySQLStorage extends DataStorage {
                     Object obj = parser.parse(json);
                     JSONObject data = (JSONObject) obj;
                     Number bal = (Number) data.get(currency.getUuid().toString());
-                    if(bal == null || bal.doubleValue() < 1)continue;
+                    if (bal == null || bal.doubleValue() < 1) continue;
 
                     cache.put(rs.getString("nickname"), bal.doubleValue());
                 }
@@ -279,7 +279,7 @@ public class MySQLStorage extends DataStorage {
                 LinkedHashMap<String, Double> sorted = cache.entrySet().stream().sorted(Map.Entry.comparingByValue(Comparator.reverseOrder())).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (e1, e2) -> e1, LinkedHashMap::new));
                 CachedTopList topList = new CachedTopList(currency, amount, offset, System.currentTimeMillis());
                 LinkedList<CachedTopListEntry> list = new LinkedList<>();
-                for(String name : sorted.keySet()){
+                for (String name : sorted.keySet()) {
                     list.add(new CachedTopListEntry(name, sorted.get(name)));
                     UtilServer.consoleLog(name + ": " + sorted.get(name));
                 }
@@ -288,13 +288,13 @@ public class MySQLStorage extends DataStorage {
 
                 LinkedList<CachedTopListEntry> searchResults = new LinkedList<>();
                 int collected = 0;
-                for(int i = offset; i < sorted.size(); i++){
-                    if(collected == amount)break;
+                for (int i = offset; i < sorted.size(); i++) {
+                    if (collected == amount) break;
                     searchResults.add(list.get(i));
                     collected++;
                 }
                 SchedulerUtils.run(() -> callback.call(searchResults));
-            }catch(SQLException | ParseException ex){
+            } catch (SQLException | ParseException ex) {
                 ex.printStackTrace();
             }
         });
@@ -318,11 +318,11 @@ public class MySQLStorage extends DataStorage {
                 Object obj = parser.parse(json);
                 JSONObject data = (JSONObject) obj;
 
-                for(Currency currency : plugin.getCurrencyManager().getCurrencies()){
+                for (Currency currency : plugin.getCurrencyManager().getCurrencies()) {
                     Number amount = (Number) data.get(currency.getUuid().toString());
-                    if(amount != null) {
+                    if (amount != null) {
                         account.getBalances().put(currency, amount.doubleValue());
-                    }else{
+                    } else {
                         account.getBalances().put(currency, currency.getDefaultBalance());
                     }
                 }
@@ -331,7 +331,6 @@ public class MySQLStorage extends DataStorage {
         } catch (SQLException | ParseException e) {
             e.printStackTrace();
         }
-
         return account;
     }
 
@@ -353,11 +352,11 @@ public class MySQLStorage extends DataStorage {
                 Object obj = parser.parse(json);
                 JSONObject data = (JSONObject) obj;
 
-                for(Currency currency : plugin.getCurrencyManager().getCurrencies()){
+                for (Currency currency : plugin.getCurrencyManager().getCurrencies()) {
                     Number amount = (Number) data.get(currency.getUuid().toString());
-                    if(amount != null) {
+                    if (amount != null) {
                         account.getBalances().put(currency, amount.doubleValue());
-                    }else{
+                    } else {
                         account.getBalances().put(currency, currency.getDefaultBalance());
                     }
                 }
@@ -366,11 +365,12 @@ public class MySQLStorage extends DataStorage {
         } catch (SQLException | ParseException e) {
             e.printStackTrace();
         }
-        if(account == null){
+        if (account == null) {
             account = new Account(uuid, Bukkit.getOfflinePlayer(uuid).getName());
             createAccount(account);
             saveAccount(account);
         }
+
         return account;
     }
 
@@ -411,44 +411,54 @@ public class MySQLStorage extends DataStorage {
     public void createAccount(Account account) {
         try (Connection connection = getHikari().getConnection()) {
             PreparedStatement stmt = connection.prepareStatement(SAVE_ACCOUNT);
+
+            // write nickname, uuid and payable
             stmt.setString(1, account.getDisplayName());
             stmt.setString(2, account.getUuid().toString());
             stmt.setInt(3, account.canReceiveCurrency() ? 1 : 0);
 
+            // write balance data
             JSONObject obj = new JSONObject();
-            for(Currency currency : plugin.getCurrencyManager().getCurrencies()){
+            for (Currency currency : plugin.getCurrencyManager().getCurrencies()) {
                 obj.put(currency.getUuid().toString(), currency.getDefaultBalance());
             }
             String json = obj.toJSONString();
             stmt.setString(4, json);
+
             stmt.execute();
         } catch (SQLException e) {
             e.printStackTrace();
         }
 
         plugin.getUpdateForwarder().sendUpdateMessage("account", account.getUuid().toString());
+        UtilServer.consoleLog("Account created: " + account.getNickname() + " [" + account.getUuid() + "]");
     }
 
     @Override
     public void saveAccount(Account account) {
         try (Connection connection = getHikari().getConnection()) {
             PreparedStatement stmt = connection.prepareStatement(SAVE_ACCOUNT);
+
+            // write nickname, uuid and payable
             stmt.setString(1, account.getDisplayName());
             stmt.setString(2, account.getUuid().toString());
             stmt.setInt(3, account.canReceiveCurrency() ? 1 : 0);
 
+            // write balance data
             JSONObject obj = new JSONObject();
-            for(Currency currency : plugin.getCurrencyManager().getCurrencies()){
+            for (Currency currency : plugin.getCurrencyManager().getCurrencies()) {
                 obj.put(currency.getUuid().toString(), account.getBalance(currency.getSingular()));
             }
             String json = obj.toJSONString();
             stmt.setString(4, json);
+
             stmt.execute();
         } catch (SQLException e) {
             e.printStackTrace();
         }
 
         plugin.getUpdateForwarder().sendUpdateMessage("account", account.getUuid().toString());
+        UtilServer.consoleLog("Account saved: " + account.getNickname() + " [" + account.getUuid() + "]");
     }
 
     @Override
@@ -457,6 +467,7 @@ public class MySQLStorage extends DataStorage {
             PreparedStatement stmt = connection.prepareStatement("DELETE FROM " + this.accountsTable + " WHERE uuid = ? LIMIT 1");
             stmt.setString(1, account.getUuid().toString());
             stmt.execute();
+            UtilServer.consoleLog("Account deleted: " + account.getNickname() + " [" + account.getUuid() + "]");
         } catch (SQLException e) {
             e.printStackTrace();
         }
