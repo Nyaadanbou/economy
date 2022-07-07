@@ -30,14 +30,18 @@ public class EconomyListener implements Listener {
         Player player = event.getPlayer();
         if (event.getResult() != PlayerLoginEvent.Result.ALLOWED) return;
         SchedulerUtils.runAsync(() -> {
-            Account acc = plugin.getAccountManager().getAccount(player.getUniqueId());
-            if (acc == null)
-                plugin.getAccountManager().createAccount(player.getName());
-            acc = plugin.getAccountManager().getAccount(player.getUniqueId());
-            if (!acc.getNickname().equals(player.getName()))
-                acc.setNickname(player.getName());
-            UtilServer.consoleLog("Account name changes detected, updating: " + player.getName());
-            plugin.getDataStore().saveAccount(acc);
+            Account account = plugin.getAccountManager().getAccount(player.getUniqueId());
+            if (account == null) {
+                plugin.getAccountManager().createAccount(player.getUniqueId());
+            } else {
+                plugin.getAccountManager().add(account);
+                String name = player.getName();
+                if (account.getNickname() == null || !account.getNickname().equals(name)) {
+                    account.setNickname(name);
+                    UtilServer.consoleLog("Account name changes detected, updating: " + name);
+                    plugin.getDataStore().saveAccount(account);
+                }
+            }
         });
     }
 
@@ -50,14 +54,6 @@ public class EconomyListener implements Listener {
     @EventHandler(priority = EventPriority.LOW)
     public void onJoin(PlayerJoinEvent event) {
         Player player = event.getPlayer();
-
-        // Caching
-        SchedulerUtils.run(() -> {
-            Account account = plugin.getAccountManager().getAccount(player.getUniqueId());
-            if (account != null) {
-                plugin.getAccountManager().add(account);
-            }
-        });
 
         SchedulerUtils.runLater(40L, () -> {
             if (plugin.getCurrencyManager().getDefaultCurrency() == null && (player.isOp() || player.hasPermission("gemseconomy.command.currency"))) {

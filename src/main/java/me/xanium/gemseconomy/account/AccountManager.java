@@ -9,6 +9,7 @@
 package me.xanium.gemseconomy.account;
 
 import me.xanium.gemseconomy.GemsEconomy;
+import me.xanium.gemseconomy.utils.SchedulerUtils;
 import me.xanium.gemseconomy.utils.UtilServer;
 
 import org.bukkit.Bukkit;
@@ -29,22 +30,37 @@ public class AccountManager {
     }
 
     public void createAccount(String nickname) {
-        createAccount(Bukkit.getOfflinePlayer(nickname).getUniqueId(), nickname);
+        SchedulerUtils.runAsync(() -> {
+            Account account = getAccount(nickname);
+
+            if (account == null) {
+                account = new Account(UUID.randomUUID(), nickname);
+                account.setCanReceiveCurrency(true);
+                add(account);
+
+                if (plugin.getDataStore().getName().equalsIgnoreCase("yaml")) {
+                    // YAML
+                    plugin.getDataStore().saveAccount(account);
+                } else {
+                    // MYSQL
+                    plugin.getDataStore().createAccount(account);
+                }
+
+                UtilServer.consoleLog("New account created for: " + account.getDisplayName());
+            }
+        });
     }
 
-    public synchronized void createAccount(UUID uuid, String name) {
+    public synchronized void createAccount(UUID uuid) {
         Account account = getAccount(uuid);
-        String playerName = name;
+        String playerName = Bukkit.getOfflinePlayer(uuid).getName();
 
-        if (playerName == null || playerName.isEmpty())
-            playerName = Bukkit.getOfflinePlayer(uuid).getName();
         if (playerName == null || playerName.isEmpty())
             playerName = "Unknown";
         if (account == null) {
             account = new Account(uuid, playerName);
-            add(account);
             account.setCanReceiveCurrency(true);
-            account.setNickname(playerName);
+            add(account);
 
             if (plugin.getDataStore().getName().equalsIgnoreCase("yaml")) {
                 // YAML
@@ -53,7 +69,8 @@ public class AccountManager {
                 // MYSQL
                 plugin.getDataStore().createAccount(account);
             }
-            UtilServer.consoleLog("New Account created for: " + account.getDisplayName());
+
+            UtilServer.consoleLog("New account created for: " + account.getDisplayName());
         }
     }
 
@@ -89,7 +106,6 @@ public class AccountManager {
 
     public void add(Account account) {
         if (this.accounts.contains(account)) return;
-
         this.accounts.add(account);
     }
 
