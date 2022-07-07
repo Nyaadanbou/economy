@@ -34,17 +34,17 @@ public class GEVaultHook extends AbstractEconomy {
     @Override
     public String format(double amount) {
         Currency currency = GemsEconomy.getInstance().getCurrencyManager().getDefaultCurrency();
-        if(currency == null) return String.valueOf(amount);
+        if (currency == null) return String.valueOf(amount);
         return currency.format(amount);
     }
 
     @Override
     public String currencyNamePlural() {
         Currency currency = GemsEconomy.getInstance().getCurrencyManager().getDefaultCurrency();
-        if(currency == null) return "";
-        if(currency.getPlural() != null) {
+        if (currency == null) return "";
+        if (currency.getPlural() != null) {
             return currency.getPlural();
-        }else{
+        } else {
             return "";
         }
     }
@@ -52,10 +52,10 @@ public class GEVaultHook extends AbstractEconomy {
     @Override
     public String currencyNameSingular() {
         Currency currency = GemsEconomy.getInstance().getCurrencyManager().getDefaultCurrency();
-        if(currency == null) return "";
-        if(currency.getSingular() != null) {
+        if (currency == null) return "";
+        if (currency.getSingular() != null) {
             return currency.getSingular();
-        }else{
+        } else {
             return "";
         }
     }
@@ -63,7 +63,7 @@ public class GEVaultHook extends AbstractEconomy {
     @Override
     public boolean has(String playerName, double amount) {
         Account user = GemsEconomy.getInstance().getAccountManager().getAccount(playerName);
-        if(user != null){
+        if (user != null) {
             return user.hasEnough(amount);
         }
         return false;
@@ -86,7 +86,8 @@ public class GEVaultHook extends AbstractEconomy {
 
     @Override
     public double getBalance(String playerName) {
-        if(GemsEconomy.getInstance().isDebug())UtilServer.consoleLog("Lookup name: " + playerName);
+        if (GemsEconomy.getInstance().isDebug())
+            UtilServer.consoleLog("Lookup name: " + playerName);
         Account user = GemsEconomy.getInstance().getAccountManager().getAccount(playerName);
         Currency currency = GemsEconomy.getInstance().getCurrencyManager().getDefaultCurrency();
         return user.getBalance(currency);
@@ -94,7 +95,8 @@ public class GEVaultHook extends AbstractEconomy {
 
     @Override
     public double getBalance(OfflinePlayer player) {
-        if(GemsEconomy.getInstance().isDebug())UtilServer.consoleLog("Lookup name: " + player.getName() + "(" + player.getUniqueId() + ")");
+        if (GemsEconomy.getInstance().isDebug())
+            UtilServer.consoleLog("Lookup name: " + player.getName() + "(" + player.getUniqueId() + ")");
         Account user = GemsEconomy.getInstance().getAccountManager().getAccount(player.getUniqueId());
         Currency currency = GemsEconomy.getInstance().getCurrencyManager().getDefaultCurrency();
         return user.getBalance(currency);
@@ -102,7 +104,8 @@ public class GEVaultHook extends AbstractEconomy {
 
     @Override
     public EconomyResponse withdrawPlayer(OfflinePlayer player, double amount) {
-        if(GemsEconomy.getInstance().isDebug())UtilServer.consoleLog("Lookup name: " + player.getName() + "(" + player.getUniqueId() + ")");
+        if (GemsEconomy.getInstance().isDebug())
+            UtilServer.consoleLog("Lookup name: " + player.getName() + "(" + player.getUniqueId() + ")");
 
         if (amount < 0) {
             return new EconomyResponse(0, 0, EconomyResponse.ResponseType.FAILURE, "Cannot deposit negative funds");
@@ -115,10 +118,10 @@ public class GEVaultHook extends AbstractEconomy {
         Account user = GemsEconomy.getInstance().getAccountManager().getAccount(player.getUniqueId());
         Currency currency = GemsEconomy.getInstance().getCurrencyManager().getDefaultCurrency();
 
-        if(user.withdraw(currency, amount)){
+        if (user.withdraw(currency, amount)) {
             balance = user.getBalance(currency);
             type = EconomyResponse.ResponseType.SUCCESS;
-        }else{
+        } else {
             balance = user.getBalance(currency);
             error = "Could not withdraw " + amount + " from " + player.getName() + " because they don't have enough funds";
         }
@@ -127,7 +130,8 @@ public class GEVaultHook extends AbstractEconomy {
 
     @Override
     public EconomyResponse depositPlayer(OfflinePlayer player, double amount) {
-        if(GemsEconomy.getInstance().isDebug())UtilServer.consoleLog("Lookup name: " + player.getName() + "(" + player.getUniqueId()+ ")");
+        if (GemsEconomy.getInstance().isDebug())
+            UtilServer.consoleLog("Lookup name: " + player.getName() + "(" + player.getUniqueId() + ")");
 
         if (amount < 0) {
             return new EconomyResponse(0, 0, EconomyResponse.ResponseType.FAILURE, "Cannot deposit negative funds");
@@ -141,10 +145,10 @@ public class GEVaultHook extends AbstractEconomy {
 
         Currency currency = GemsEconomy.getInstance().getCurrencyManager().getDefaultCurrency();
 
-        if(user.deposit(currency, amount)){
+        if (user.deposit(currency, amount)) {
             balance = user.getBalance(currency);
             type = EconomyResponse.ResponseType.SUCCESS;
-        }else{
+        } else {
             balance = user.getBalance(currency);
             error = "Could not deposit " + amount + " to " + player.getName() + " because they are not allowed to receive currency.";
         }
@@ -153,7 +157,8 @@ public class GEVaultHook extends AbstractEconomy {
 
     @Override
     public EconomyResponse withdrawPlayer(String player, double amount) {
-        if(GemsEconomy.getInstance().isDebug())UtilServer.consoleLog("Lookup name: " + player);
+        if (GemsEconomy.getInstance().isDebug())
+            UtilServer.consoleLog("Lookup name: " + player);
 
         if (amount < 0) {
             return new EconomyResponse(0, 0, EconomyResponse.ResponseType.FAILURE, "Cannot deposit negative funds");
@@ -166,10 +171,10 @@ public class GEVaultHook extends AbstractEconomy {
         Account user = GemsEconomy.getInstance().getAccountManager().getAccount(player);
         Currency currency = GemsEconomy.getInstance().getCurrencyManager().getDefaultCurrency();
 
-        if(user.withdraw(currency, amount)){
+        if (user.withdraw(currency, amount)) {
             balance = user.getBalance(currency);
             type = EconomyResponse.ResponseType.SUCCESS;
-        }else{
+        } else {
             balance = user.getBalance(currency);
             error = "Could not withdraw " + amount + " from " + player + " because they don't have enough funds";
         }
@@ -178,7 +183,8 @@ public class GEVaultHook extends AbstractEconomy {
 
     @Override
     public EconomyResponse depositPlayer(String player, double amount) {
-        if(GemsEconomy.getInstance().isDebug())UtilServer.consoleLog("Lookup name: " + player);
+        if (GemsEconomy.getInstance().isDebug())
+            UtilServer.consoleLog("Lookup name: " + player);
         if (amount < 0) {
             return new EconomyResponse(0, 0, EconomyResponse.ResponseType.FAILURE, "Cannot deposit negative funds");
         }
@@ -190,10 +196,10 @@ public class GEVaultHook extends AbstractEconomy {
         Account user = GemsEconomy.getInstance().getAccountManager().getAccount(player);
         Currency currency = GemsEconomy.getInstance().getCurrencyManager().getDefaultCurrency();
 
-        if(user.deposit(currency, amount)){
+        if (user.deposit(currency, amount)) {
             balance = user.getBalance(currency);
             type = EconomyResponse.ResponseType.SUCCESS;
-        }else{
+        } else {
             balance = user.getBalance(currency);
             error = "Could not deposit " + amount + " to " + player + " because they are not allowed to receive currency.";
         }
