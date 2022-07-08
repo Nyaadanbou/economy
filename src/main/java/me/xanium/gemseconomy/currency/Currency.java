@@ -67,7 +67,7 @@ public class Currency {
     }
 
     public double getMaxBalance() {
-        return this.maxBalance == 0D ? Double.MAX_VALUE : this.maxBalance;
+        return this.maxBalance == 0D ? Integer.MAX_VALUE : this.maxBalance;
     }
 
     public String format(double amount) {
