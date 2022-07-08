@@ -11,7 +11,8 @@ package me.xanium.gemseconomy.account;
 import me.xanium.gemseconomy.GemsEconomy;
 import me.xanium.gemseconomy.currency.Currency;
 import me.xanium.gemseconomy.event.GemsConversionEvent;
-import me.xanium.gemseconomy.event.GemsTransactionEvent;
+import me.xanium.gemseconomy.event.GemsPostTransactionEvent;
+import me.xanium.gemseconomy.event.GemsPreTransactionEvent;
 import me.xanium.gemseconomy.utils.SchedulerUtils;
 import me.xanium.gemseconomy.utils.TranactionType;
 import me.xanium.gemseconomy.utils.UtilServer;
@@ -36,12 +37,16 @@ public class Account {
 
     public boolean withdraw(Currency currency, double amount) {
         if (hasEnough(currency, amount)) {
-            GemsTransactionEvent event = new GemsTransactionEvent(currency, this, amount, TranactionType.WITHDRAW);
-            SchedulerUtils.run(() -> Bukkit.getPluginManager().callEvent(event));
-            if (event.isCancelled()) return false;
+            GemsPreTransactionEvent pre = new GemsPreTransactionEvent(currency, this, amount, TranactionType.WITHDRAW);
+            SchedulerUtils.run(() -> Bukkit.getPluginManager().callEvent(pre));
+            if (pre.isCancelled()) return false;
 
             double finalAmount = getBalance(currency) - amount;
             this.modifyBalance(currency, finalAmount, true);
+
+            GemsPostTransactionEvent post = new GemsPostTransactionEvent(currency, this, amount, TranactionType.WITHDRAW);
+            SchedulerUtils.run(() -> Bukkit.getPluginManager().callEvent(post));
+
             GemsEconomy.getInstance().getEconomyLogger().log("[WITHDRAW] Account: " + getDisplayName() + " were withdrawn: " + currency.format(amount) + " and now has " + currency.format(finalAmount));
             return true;
         }
@@ -51,12 +56,16 @@ public class Account {
     public boolean deposit(Currency currency, double amount) {
         if (canReceiveCurrency()) {
 
-            GemsTransactionEvent event = new GemsTransactionEvent(currency, this, amount, TranactionType.DEPOSIT);
-            SchedulerUtils.run(() -> Bukkit.getPluginManager().callEvent(event));
-            if (event.isCancelled()) return false;
+            GemsPreTransactionEvent pre = new GemsPreTransactionEvent(currency, this, amount, TranactionType.DEPOSIT);
+            SchedulerUtils.run(() -> Bukkit.getPluginManager().callEvent(pre));
+            if (pre.isCancelled()) return false;
 
             double finalAmount = getBalance(currency) + amount;
             this.modifyBalance(currency, finalAmount, true);
+
+            GemsPostTransactionEvent post = new GemsPostTransactionEvent(currency, this, amount, TranactionType.DEPOSIT);
+            SchedulerUtils.run(() -> Bukkit.getPluginManager().callEvent(post));
+
             GemsEconomy.getInstance().getEconomyLogger().log("[DEPOSIT] Account: " + getDisplayName() + " were deposited: " + currency.format(amount) + " and now has " + currency.format(finalAmount));
             return true;
         }
@@ -133,11 +142,15 @@ public class Account {
     }
 
     public void setBalance(Currency currency, double amount) {
-        GemsTransactionEvent event = new GemsTransactionEvent(currency, this, amount, TranactionType.SET);
-        SchedulerUtils.run(() -> Bukkit.getPluginManager().callEvent(event));
-        if (event.isCancelled()) return;
+        GemsPreTransactionEvent pre = new GemsPreTransactionEvent(currency, this, amount, TranactionType.SET);
+        SchedulerUtils.run(() -> Bukkit.getPluginManager().callEvent(pre));
+        if (pre.isCancelled()) return;
 
         getBalances().put(currency, amount);
+
+        GemsPostTransactionEvent post = new GemsPostTransactionEvent(currency, this, amount, TranactionType.SET);
+        SchedulerUtils.run(() -> Bukkit.getPluginManager().callEvent(post));
+
         GemsEconomy.getInstance().getEconomyLogger().log("[BALANCE SET] Account: " + getDisplayName() + " were set to: " + currency.format(amount));
         GemsEconomy.getInstance().getDataStore().saveAccount(this);
     }
