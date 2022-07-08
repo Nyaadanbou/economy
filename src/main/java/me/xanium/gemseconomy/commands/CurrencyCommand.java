@@ -139,7 +139,7 @@ public class CurrencyCommand implements CommandExecutor {
                                 if (currency.isDecimalSupported()) {
                                     try {
                                         amount = Double.parseDouble(args[2]);
-                                        if (amount <= 0.0) {
+                                        if (amount < 0.0) {
                                             throw new NumberFormatException();
                                         }
                                         break block77;
@@ -150,7 +150,7 @@ public class CurrencyCommand implements CommandExecutor {
                                 }
                                 try {
                                     amount = Integer.parseInt(args[2]);
-                                    if (amount <= 0.0) {
+                                    if (amount < 0.0) {
                                         throw new NumberFormatException();
                                     }
                                 } catch (NumberFormatException ex) {
