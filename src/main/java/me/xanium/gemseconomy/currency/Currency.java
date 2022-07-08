@@ -24,8 +24,9 @@ public class Currency {
     private boolean decimalSupported = true;
     private boolean payable = true;
     private boolean defaultCurrency = false;
-    private double defaultBalance = 0.0;
-    private double exchangeRate = 0.0;
+    private double defaultBalance = 0D;
+    private double maxBalance = 0D; // zero means unlimited
+    private double exchangeRate = 0D;
 
     public Currency(UUID uuid, String singular, String plural) {
         this.uuid = uuid;
@@ -45,6 +46,10 @@ public class Currency {
         this.defaultBalance = defaultBalance;
     }
 
+    public void setMaxBalance(double maxBalance) {
+        this.maxBalance = maxBalance;
+    }
+
     public UUID getUuid() {
         return this.uuid;
     }
@@ -61,6 +66,10 @@ public class Currency {
         return this.defaultBalance;
     }
 
+    public double getMaxBalance() {
+        return this.maxBalance == 0D ? Double.MAX_VALUE : this.maxBalance;
+    }
+
     public String format(double amount) {
         StringBuilder amt = new StringBuilder();
         if (this.getSymbol() != null) {
@@ -70,7 +79,7 @@ public class Currency {
             amt.append(UtilString.format(amount));
         } else {
             String s = String.valueOf(amount);
-            String[] ss = s.split(".");
+            String[] ss = s.split("\\.");
             if (ss.length > 0) {
                 s = ss[0];
             }

@@ -72,6 +72,7 @@ public class YamlStorage extends DataStorage {
                 currency.setColor(ChatColor.valueOf(getConfig().getString(path + ".color").toUpperCase()));
                 currency.setDecimalSupported(getConfig().getBoolean(path + ".decimalsupported"));
                 currency.setDefaultBalance(getConfig().getDouble(path + ".defaultbalance"));
+                currency.setMaxBalance(getConfig().getDouble(path + ".maxbalance"));
                 currency.setDefaultCurrency(getConfig().getBoolean(path + ".defaultcurrency"));
                 currency.setPayable(getConfig().getBoolean(path + ".payable"));
                 currency.setSymbol(getConfig().getString(path + ".symbol"));
@@ -88,6 +89,7 @@ public class YamlStorage extends DataStorage {
         getConfig().set(path + ".singular", currency.getSingular());
         getConfig().set(path + ".plural", currency.getPlural());
         getConfig().set(path + ".defaultbalance", currency.getDefaultBalance());
+        getConfig().set(path + ".maxbalance", currency.getMaxBalance());
         getConfig().set(path + ".symbol", currency.getSymbol());
         getConfig().set(path + ".decimalsupported", currency.isDecimalSupported());
         getConfig().set(path + ".defaultcurrency", currency.isDefaultCurrency());
@@ -122,12 +124,15 @@ public class YamlStorage extends DataStorage {
         ConfigurationSection bsection = getConfig().getConfigurationSection(path + ".balances");
         if (bsection != null) {
             Set<String> balances = bsection.getKeys(false);
-            if (balances != null && !balances.isEmpty()) {
+            if (!balances.isEmpty()) {
                 for (String currency : balances) {
                     String path2 = path + ".balances." + currency;
                     double balance = getConfig().getDouble(path2);
+
                     Currency c = plugin.getCurrencyManager().getCurrency(UUID.fromString(currency));
                     if (c != null) {
+                        // cap the amount
+                        balance = Math.min(balance, c.getMaxBalance());
                         account.modifyBalance(c, balance, false);
                     }
                 }
@@ -139,7 +144,7 @@ public class YamlStorage extends DataStorage {
     public ArrayList<Account> getOfflineAccounts() {
         String path = "accounts";
         ArrayList<Account> accounts = new ArrayList<>();
-        for(String uuid : getConfig().getConfigurationSection(path).getKeys(false)){
+        for (String uuid : getConfig().getConfigurationSection(path).getKeys(false)) {
             Account acc = loadAccount(UUID.fromString(uuid));
             accounts.add(acc);
         }
@@ -156,7 +161,7 @@ public class YamlStorage extends DataStorage {
         ConfigurationSection section = getConfig().getConfigurationSection("accounts");
         if (section != null) {
             Set<String> accounts = section.getKeys(false);
-            if (accounts != null && !accounts.isEmpty()) {
+            if (!accounts.isEmpty()) {
                 for (String uuid : accounts) {
                     String path = "accounts." + uuid;
                     String nick = getConfig().getString(path + ".nickname");
@@ -186,10 +191,10 @@ public class YamlStorage extends DataStorage {
             loadBalances(account);
             return account;
         }
-            Account account =  new Account(uuid, Bukkit.getOfflinePlayer(uuid).getName());
-            createAccount(account);
-            saveAccount(account);
-            return account;
+        Account account = new Account(uuid, Bukkit.getOfflinePlayer(uuid).getName());
+        createAccount(account);
+        saveAccount(account);
+        return account;
     }
 
     @Override

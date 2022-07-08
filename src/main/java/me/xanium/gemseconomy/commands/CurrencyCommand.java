@@ -79,6 +79,7 @@ public class CurrencyCommand implements CommandExecutor {
                             sender.sendMessage(F.getPrefix() + "§7ID: §c" + currency.getUuid().toString());
                             sender.sendMessage(F.getPrefix() + "§7Singular: §a" + currency.getSingular() + "§7, Plural: §a" + currency.getPlural());
                             sender.sendMessage(F.getPrefix() + "§7Start Balance: " + currency.getColor() + currency.format(currency.getDefaultBalance()) + "§7.");
+                            sender.sendMessage(F.getPrefix() + "§7Max Balance: " + currency.getColor() + currency.format(currency.getMaxBalance()) + "§7.");
                             sender.sendMessage(F.getPrefix() + "§7Decimals: " + (currency.isDecimalSupported() ? "§aYes" : "§cNo"));
                             sender.sendMessage(F.getPrefix() + "§7Default: " + (currency.isDefaultCurrency() ? "§aYes" : "§cNo"));
                             sender.sendMessage(F.getPrefix() + "§7Payable: " + (currency.isPayable() ? "§aYes" : "§cNo"));
@@ -127,6 +128,44 @@ public class CurrencyCommand implements CommandExecutor {
                         }
                     } else {
                         sender.sendMessage(F.getCurrencyUsage_Startbal());
+                    }
+                } else if (cmd.equalsIgnoreCase("maxbal")) {
+                    if (args.length == 3) {
+                        Currency currency = plugin.getCurrencyManager().getCurrency(args[1]);
+                        if (currency != null) {
+                            double amount;
+                            block77:
+                            {
+                                if (currency.isDecimalSupported()) {
+                                    try {
+                                        amount = Double.parseDouble(args[2]);
+                                        if (amount <= 0.0) {
+                                            throw new NumberFormatException();
+                                        }
+                                        break block77;
+                                    } catch (NumberFormatException ex) {
+                                        sender.sendMessage(F.getUnvalidAmount());
+                                        return;
+                                    }
+                                }
+                                try {
+                                    amount = Integer.parseInt(args[2]);
+                                    if (amount <= 0.0) {
+                                        throw new NumberFormatException();
+                                    }
+                                } catch (NumberFormatException ex) {
+                                    sender.sendMessage(F.getUnvalidAmount());
+                                    return;
+                                }
+                            }
+                            currency.setMaxBalance(amount);
+                            sender.sendMessage(F.getPrefix() + "§7Maximum balance for §f" + currency.getPlural() + " §7set: §a" + UtilString.format(currency.getMaxBalance()));
+                            plugin.getDataStore().saveCurrency(currency);
+                        } else {
+                            sender.sendMessage(F.getUnknownCurrency());
+                        }
+                    } else {
+                        sender.sendMessage(F.getCurrencyUsage_Maxbal());
                     }
                 } else if (cmd.equalsIgnoreCase("color")) {
                     if (args.length == 3) {

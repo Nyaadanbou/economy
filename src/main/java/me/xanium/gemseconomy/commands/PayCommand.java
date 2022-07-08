@@ -93,9 +93,14 @@ public class PayCommand implements CommandExecutor {
 
                                     double accBal = account.getBalance(currency) - amount;
                                     double tarBal = target.getBalance(currency) + amount;
-                                    account.modifyBalance(currency, accBal, true);
-                                    target.modifyBalance(currency, tarBal, true);
-                                    GemsEconomy.getInstance().getEconomyLogger().log("[PAYMENT] " + account.getDisplayName() + " (New bal: " + currency.format(accBal) + ") -> paid " + target.getDisplayName() + " (New bal: " + currency.format(tarBal) + ") - An amount of " + currency.format(amount));
+
+                                    // cap the amount
+                                    double cappedAccBal = Math.min(accBal, currency.getMaxBalance());
+                                    double cappedTarBal = Math.min(tarBal, currency.getMaxBalance());
+
+                                    account.modifyBalance(currency, cappedAccBal, true);
+                                    target.modifyBalance(currency, cappedTarBal, true);
+                                    GemsEconomy.getInstance().getEconomyLogger().log("[PAYMENT] " + account.getDisplayName() + " (New bal: " + currency.format(cappedAccBal) + ") -> paid " + target.getDisplayName() + " (New bal: " + currency.format(cappedTarBal) + ") - An amount of " + currency.format(amount));
 
                                     if (Bukkit.getPlayer(target.getUuid()) != null) {
                                         Bukkit.getPlayer(target.getUuid()).sendMessage(F.getPaidMessage().replace("{currencycolor}", currency.getColor() + "").replace("{amount}", currency.format(amount)).replace("{player}", sender.getName()));

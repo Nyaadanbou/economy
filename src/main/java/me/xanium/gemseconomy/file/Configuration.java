@@ -33,11 +33,11 @@ public class Configuration {
                 + "\n"
                 + "Developer(s): " + plugin.getDescription().getAuthors()
                 + "\n\n"
-                + "You have three valid storage methods, yaml, mysql or sqlite. If you choose mysql you would have to enter the database credentials down below."
+                + "You have two valid storage methods, yaml, mysql. If you choose mysql you would have to enter the database credentials down below."
                 + "\n"
                 + "All messages below are configurable, I hope you use them because it took 1 hour to make all of them into the plugin and configurable.");
 
-        String path = "Messages.";
+        String path = "messages.";
 
         config.addDefault("storage", "yaml");
         config.addDefault("debug", false);
@@ -50,8 +50,6 @@ public class Configuration {
         config.addDefault("mysql.port", 3306);
         config.addDefault("mysql.username", "root");
         config.addDefault("mysql.password", "password");
-
-      //  config.addDefault("sqlite.file", "database.sqlite");
 
         config.addDefault("cheque.material", Material.PAPER.toString());
         config.addDefault("cheque.name", "&aBank Note");
@@ -139,6 +137,7 @@ public class Configuration {
                 "&2&l>> &a/currency payable <plural> &8- &7Set a currency payable or not.",
                 "&2&l>> &a/currency default <plural> &8- &7Set a currency as default.",
                 "&2&l>> &a/currency startbal <plural> <amount> &8- &7Set the starting balance for a currency.",
+                "&2&l>> &a/currency maxbal <plural> <amount> &8- &7Set the maximum balance for a currency.",
                 "&2&l>> &a/currency setrate <plural> <amount> &8- &7Sets the currency's exchange rate."));
 
         config.addDefault(path + "usage.currency_create", "&2&l>> &a/currency create <singular> <plural> &8- &7Create a currency.");
@@ -154,6 +153,7 @@ public class Configuration {
         config.addDefault(path + "usage.currency_default", "&2&l>> &a/currency default <plural> &8- &7Set a currency as default.");
         config.addDefault(path + "usage.currency_decimals", "&2&l>> &a/currency decimals <plural> &8- &7Enable decimals for a currency.");
         config.addDefault(path + "usage.currency_startbal", "&2&l>> &a/currency startbal <plural> <amount> &8- &7Set the starting balance for a currency.");
+        config.addDefault(path + "usage.currency_maxbal", "&2&l>> &a/currency maxbal <plural> <amount> &8- &7Set the maximum balance for a currency.");
         config.addDefault(path + "usage.currency_setrate", "&2&l>> &a/currency setrate <plural> <amount> &8- &7Sets the currency's exchange rate.");
 
         config.options().copyDefaults(true);
