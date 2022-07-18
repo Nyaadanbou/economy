@@ -105,6 +105,7 @@ public class MySQLStorage extends DataStorage {
 
                     UtilServer.consoleLog("Altered Table " + this.currencyTable + " to support the new exchange_rate variable.");
                 }
+                // TODO fix bug 如果整个数据库中存在该列，则会判断成该列存在于GE实际使用的表中（但实际使用的表并不存在该列）
                 if (!currencyTableColumns.contains("max_balance")) {
                     stmt = connection.prepareStatement("ALTER TABLE " + this.currencyTable + " ADD max_balance DECIMAL NULL DEFAULT NULL AFTER `default_balance`;");
                     stmt.execute();
@@ -431,6 +432,7 @@ public class MySQLStorage extends DataStorage {
             // write balance data
             JSONObject obj = new JSONObject();
             for (Currency currency : plugin.getCurrencyManager().getCurrencies()) {
+                // put default balance in the account
                 obj.put(currency.getUuid().toString(), currency.getDefaultBalance());
             }
             String json = obj.toJSONString();
@@ -458,6 +460,7 @@ public class MySQLStorage extends DataStorage {
             // write balance data
             JSONObject obj = new JSONObject();
             for (Currency currency : plugin.getCurrencyManager().getCurrencies()) {
+                // put current balance in the account
                 obj.put(currency.getUuid().toString(), account.getBalance(currency.getSingular()));
             }
             String json = obj.toJSONString();
