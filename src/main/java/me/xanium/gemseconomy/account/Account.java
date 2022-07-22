@@ -185,8 +185,8 @@ public class Account {
      * @param save     - Save the account or not. Should be done async!
      */
     public void modifyBalance(Currency currency, double amount, boolean save) {
-        // we don't cap amount this method to keep this method as it is
-        // amount capping should be done in other methods
+        // we don't do cap amount in this method
+        // cap should be done by other methods
         getBalances().put(currency, amount);
 
         if (save) GemsEconomy.getInstance().getDataStore().saveAccount(this);
@@ -201,7 +201,7 @@ public class Account {
 
     public double getBalance(String identifier) {
         for (Currency currency : getBalances().keySet()) {
-            if (currency.getPlural().equalsIgnoreCase(identifier) || currency.getSingular().equalsIgnoreCase(identifier)) {
+            if (currency.getSingular().equalsIgnoreCase(identifier) || currency.getPlural().equalsIgnoreCase(identifier)) {
                 return getBalances().get(currency);
             }
         }
@@ -242,6 +242,21 @@ public class Account {
 
     public Map<Currency, Double> getBalances() {
         return balances;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Account account = (Account) o;
+
+        return uuid.equals(account.uuid);
+    }
+
+    @Override
+    public int hashCode() {
+        return uuid.hashCode();
     }
 }
 

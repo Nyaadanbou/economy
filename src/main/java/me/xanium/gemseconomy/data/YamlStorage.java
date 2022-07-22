@@ -10,6 +10,7 @@ package me.xanium.gemseconomy.data;
 import me.xanium.gemseconomy.account.Account;
 import me.xanium.gemseconomy.currency.CachedTopListEntry;
 import me.xanium.gemseconomy.currency.Currency;
+import me.xanium.gemseconomy.utils.OfflineModeProfiles;
 import me.xanium.gemseconomy.utils.SchedulerUtils;
 import me.xanium.gemseconomy.utils.UtilServer;
 import org.bukkit.Bukkit;
@@ -78,7 +79,10 @@ public class YamlStorage extends DataStorage {
                 currency.setSymbol(getConfig().getString(path + ".symbol"));
                 currency.setExchangeRate(getConfig().getDouble(path + ".exchange_rate"));
                 plugin.getCurrencyManager().add(currency);
-                UtilServer.consoleLog("Loaded currency: " + currency.getSingular());
+
+                UtilServer.consoleLog("Loaded currency: %s (default_balance: %s, max_balance: %s, default_currency: %s, payable: %s, color: %s)"
+                        .formatted(currency.getSingular(), currency.getDefaultBalance(), currency.getMaxBalance(),
+                                currency.isDefaultCurrency(), currency.isPayable(), currency.getColor()));
             }
         }
     }
@@ -119,27 +123,6 @@ public class YamlStorage extends DataStorage {
         throw new UnsupportedOperationException("YAML does not support Top Lists!");
     }
 
-    private void loadBalances(Account account) {
-        String path = "accounts." + account.getUuid().toString();
-        ConfigurationSection bsection = getConfig().getConfigurationSection(path + ".balances");
-        if (bsection != null) {
-            Set<String> balances = bsection.getKeys(false);
-            if (!balances.isEmpty()) {
-                for (String currency : balances) {
-                    String path2 = path + ".balances." + currency;
-                    double balance = getConfig().getDouble(path2);
-
-                    Currency c = plugin.getCurrencyManager().getCurrency(UUID.fromString(currency));
-                    if (c != null) {
-                        // cap the amount
-                        balance = Math.min(balance, c.getMaxBalance());
-                        account.modifyBalance(c, balance, false);
-                    }
-                }
-            }
-        }
-    }
-
     @Override
     public ArrayList<Account> getOfflineAccounts() {
         String path = "accounts";
@@ -152,17 +135,17 @@ public class YamlStorage extends DataStorage {
     }
 
     @Override
-    public void createAccount(Account account) {
-        saveAccount(account);
+    public Account createAccount(Account account) {
+        return saveAccount(account);
     }
 
     @Override
     public Account loadAccount(String name) {
         ConfigurationSection section = getConfig().getConfigurationSection("accounts");
         if (section != null) {
-            Set<String> accounts = section.getKeys(false);
-            if (!accounts.isEmpty()) {
-                for (String uuid : accounts) {
+            Set<String> uuidSet = section.getKeys(false);
+            if (!uuidSet.isEmpty()) {
+                for (String uuid : uuidSet) {
                     String path = "accounts." + uuid;
                     String nick = getConfig().getString(path + ".nickname");
                     if (nick != null && nick.equalsIgnoreCase(name)) {
@@ -174,11 +157,9 @@ public class YamlStorage extends DataStorage {
                 }
             }
         }
-        UUID uuid = Bukkit.getOfflinePlayer(name).getUniqueId();
+        UUID uuid = OfflineModeProfiles.getUniqueId(name);
         Account account = new Account(uuid, name);
-        createAccount(account);
-        saveAccount(account);
-        return account;
+        return createAccount(account);
     }
 
     @Override
@@ -192,29 +173,23 @@ public class YamlStorage extends DataStorage {
             return account;
         }
         Account account = new Account(uuid, Bukkit.getOfflinePlayer(uuid).getName());
-        createAccount(account);
-        saveAccount(account);
-        return account;
+        return createAccount(account);
     }
 
     @Override
     public void loadAccount(UUID uuid, Callback<Account> callback) {
-        SchedulerUtils.runAsync(() -> {
-            Account account = this.loadAccount(uuid);
-            SchedulerUtils.run(() -> callback.call(account));
-        });
+        Account account = this.loadAccount(uuid);
+        SchedulerUtils.run(() -> callback.call(account));
     }
 
     @Override
     public void loadAccount(String name, Callback<Account> callback) {
-        SchedulerUtils.runAsync(() -> {
-            Account account = this.loadAccount(name);
-            SchedulerUtils.run(() -> callback.call(account));
-        });
+        Account account = this.loadAccount(name);
+        SchedulerUtils.run(() -> callback.call(account));
     }
 
     @Override
-    public void saveAccount(Account account) {
+    public Account saveAccount(Account account) {
         String path = "accounts." + account.getUuid().toString();
         getConfig().set(path + ".nickname", account.getNickname());
         getConfig().set(path + ".uuid", account.getUuid().toString());
@@ -228,6 +203,7 @@ public class YamlStorage extends DataStorage {
         } catch (IOException e) {
             e.printStackTrace();
         }
+        return account;
     }
 
     @Override
@@ -244,6 +220,27 @@ public class YamlStorage extends DataStorage {
     @Override
     public void updateCurrencyLocally(Currency currency) {
         throw new UnsupportedOperationException("YAML does not support updates. Only READ/WRITE");
+    }
+
+    private void loadBalances(Account account) {
+        String path1 = "accounts." + account.getUuid().toString();
+        ConfigurationSection section = getConfig().getConfigurationSection(path1 + ".balances");
+        if (section != null) {
+            Set<String> balances = section.getKeys(false);
+            if (!balances.isEmpty()) {
+                for (String currency1 : balances) {
+                    String path2 = path1 + ".balances." + currency1;
+                    double balance = getConfig().getDouble(path2);
+
+                    Currency currency2 = plugin.getCurrencyManager().getCurrency(UUID.fromString(currency1));
+                    if (currency2 != null) {
+                        // cap the amount
+                        balance = Math.min(balance, currency2.getMaxBalance());
+                        account.modifyBalance(currency2, balance, false);
+                    }
+                }
+            }
+        }
     }
 
     public YamlConfiguration getConfig() {

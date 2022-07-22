@@ -18,6 +18,7 @@ import me.xanium.gemseconomy.currency.Currency;
 import me.xanium.gemseconomy.utils.OfflineModeProfiles;
 import me.xanium.gemseconomy.utils.SchedulerUtils;
 import me.xanium.gemseconomy.utils.UtilServer;
+import me.xanium.gemseconomy.utils.UtilTowny;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.jetbrains.annotations.Nullable;
@@ -183,7 +184,9 @@ public class MySQLStorage extends DataStorage {
                 currency.setExchangeRate(exchangeRate);
 
                 plugin.getCurrencyManager().add(currency);
-                UtilServer.consoleLog("Loaded currency: " + currency.getSingular() + " (" + currency.getPlural() + ")");
+                UtilServer.consoleLog("Loaded currency: %s (default_balance: %s, max_balance: %s, default_currency: %s, payable: %s, color: %s)"
+                        .formatted(currency.getSingular(), currency.getDefaultBalance(), currency.getMaxBalance(),
+                                currency.isDefaultCurrency(), currency.isPayable(), currency.getColor()));
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -347,11 +350,11 @@ public class MySQLStorage extends DataStorage {
         }
 
         if (account == null) {
-            if ((name.startsWith("towny-") || name.startsWith("town-") || name.startsWith("nation-"))) {
+            // TODO prevent players using /pay etc. commands to create trash accounts
+            if (UtilTowny.isTownyAccount(name)) {
                 // work around with Towny
                 account = new Account(OfflineModeProfiles.getUniqueId(name), name);
-                createAccount(account);
-                saveAccount(account);
+                account = createAccount(account);
             }
         }
 
@@ -392,8 +395,7 @@ public class MySQLStorage extends DataStorage {
 
         if (account == null) {
             account = new Account(uuid, Bukkit.getOfflinePlayer(uuid).getName());
-            createAccount(account);
-            saveAccount(account);
+            account = createAccount(account);
         }
 
         return account;
@@ -428,8 +430,9 @@ public class MySQLStorage extends DataStorage {
         return accounts;
     }
 
+    @SuppressWarnings("unchecked")
     @Override
-    public void createAccount(Account account) {
+    public Account createAccount(Account account) {
         try (Connection connection = getHikari().getConnection()) {
             PreparedStatement stmt = connection.prepareStatement(SAVE_ACCOUNT);
 
@@ -441,10 +444,16 @@ public class MySQLStorage extends DataStorage {
             // write balance data
             JSONObject obj = new JSONObject();
             for (Currency currency : plugin.getCurrencyManager().getCurrencies()) {
-                // put default balance in the account
-
-                //noinspection unchecked
-                obj.put(currency.getUuid().toString(), currency.getDefaultBalance());
+                if (UtilTowny.isTownyAccount(account.getNickname())) {
+                    // towny account - put zero balance
+                    account.setBalance(currency, 0D);
+                    obj.put(currency.getUuid().toString(), 0D);
+                } else {
+                    // non-towny account (possibly player) - put default balance
+                    double defaultBalance = currency.getDefaultBalance();
+                    account.setBalance(currency, defaultBalance);
+                    obj.put(currency.getUuid().toString(), defaultBalance);
+                }
             }
             String json = obj.toJSONString();
             stmt.setString(4, json);
@@ -455,11 +464,13 @@ public class MySQLStorage extends DataStorage {
         }
 
         plugin.getUpdateForwarder().sendUpdateMessage("account", account.getUuid().toString());
-        UtilServer.consoleLog("Account created: " + account.getNickname() + " [" + account.getUuid() + "]");
+        UtilServer.consoleLog("Account created and saved: " + account.getNickname() + " [" + account.getUuid() + "]");
+
+        return account;
     }
 
     @Override
-    public void saveAccount(Account account) {
+    public Account saveAccount(Account account) {
         try (Connection connection = getHikari().getConnection()) {
             PreparedStatement stmt = connection.prepareStatement(SAVE_ACCOUNT);
 
@@ -486,6 +497,8 @@ public class MySQLStorage extends DataStorage {
 
         plugin.getUpdateForwarder().sendUpdateMessage("account", account.getUuid().toString());
         UtilServer.consoleLog("Account saved: " + account.getNickname() + " [" + account.getUuid() + "]");
+
+        return account;
     }
 
     @Override

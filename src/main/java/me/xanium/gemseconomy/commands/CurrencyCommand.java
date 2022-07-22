@@ -418,7 +418,7 @@ public class CurrencyCommand implements CommandExecutor {
                                 }
 
                                 for (Player players : Bukkit.getOnlinePlayers()) {
-                                    plugin.getDataStore().loadAccount(players.getUniqueId(), account -> plugin.getAccountManager().add(account));
+                                    plugin.getDataStore().loadAccount(players.getUniqueId(), account -> plugin.getAccountManager().addAccount(account));
                                 }
                                 sender.sendMessage(F.getPrefix() + "§aLoaded all accounts for online players.");
                                 sender.sendMessage(F.getPrefix() + "§aData storage conversion is done.");
@@ -472,7 +472,7 @@ public class CurrencyCommand implements CommandExecutor {
                             }
 
                             for (Player players : Bukkit.getOnlinePlayers()) {
-                                plugin.getDataStore().loadAccount(players.getUniqueId(), account -> plugin.getAccountManager().add(account));
+                                plugin.getDataStore().loadAccount(players.getUniqueId(), account -> plugin.getAccountManager().addAccount(account));
                             }
                             sender.sendMessage(F.getPrefix() + "§aLoaded all accounts for online players.");
                         }

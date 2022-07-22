@@ -12,6 +12,7 @@ import me.xanium.gemseconomy.GemsEconomy;
 import me.xanium.gemseconomy.account.Account;
 import me.xanium.gemseconomy.currency.CachedTopListEntry;
 import me.xanium.gemseconomy.currency.Currency;
+import me.xanium.gemseconomy.listeners.EconomyListener;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -23,13 +24,12 @@ public abstract class DataStorage {
 
     private final StorageType storageType;
     private final boolean topSupported;
+    private static final ArrayList<DataStorage> methods = new ArrayList<>();
 
     public DataStorage(StorageType storageType, boolean topSupported) {
         this.storageType = storageType;
         this.topSupported = topSupported;
     }
-
-    private static final ArrayList<DataStorage> methods = new ArrayList<>();
 
     public static DataStorage getMethod(StorageType method) {
         for (DataStorage store : getMethods()) {
@@ -66,15 +66,21 @@ public abstract class DataStorage {
 
     public abstract void loadAccount(String name, Callback<Account> callback);
 
-    public abstract void saveAccount(Account account);
-
-    public abstract void deleteAccount(Account account);
+    /**
+     * @param account account to save to disk
+     * @return the account that was saved to disk
+     */
+    public abstract Account saveAccount(Account account);
 
     /**
      * This is MYSQL ONLY!
-     * @param account - Account to save to sql. See EconomyListener.java
+     *
+     * @param account account to save to disk. See {@link EconomyListener}
+     * @return the account that was saved to disk
      */
-    public abstract void createAccount(Account account);
+    public abstract Account createAccount(Account account);
+
+    public abstract void deleteAccount(Account account);
 
     public abstract ArrayList<Account> getOfflineAccounts();
 

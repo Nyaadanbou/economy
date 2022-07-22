@@ -9,16 +9,15 @@ import java.util.UUID;
 public class CurrencyManager {
 
     private final GemsEconomy plugin;
+    private final List<Currency> currencies = Lists.newArrayList();
 
     public CurrencyManager(GemsEconomy plugin) {
         this.plugin = plugin;
     }
 
-    private final List<Currency> currencies = Lists.newArrayList();
-
     public boolean currencyExist(String name) {
-        for(Currency currency : currencies) {
-            if(currency.getSingular().equalsIgnoreCase(name) || currency.getPlural().equalsIgnoreCase(name)){
+        for (Currency currency : currencies) {
+            if (currency.getSingular().equalsIgnoreCase(name) || currency.getPlural().equalsIgnoreCase(name)) {
                 return true;
             }
         }
@@ -26,8 +25,8 @@ public class CurrencyManager {
     }
 
     public Currency getCurrency(String name) {
-        for(Currency currency : currencies) {
-            if(currency.getSingular().equalsIgnoreCase(name) || currency.getPlural().equalsIgnoreCase(name)){
+        for (Currency currency : currencies) {
+            if (currency.getSingular().equalsIgnoreCase(name) || currency.getPlural().equalsIgnoreCase(name)) {
                 return currency;
             }
         }
@@ -50,14 +49,14 @@ public class CurrencyManager {
         return null;
     }
 
-    public void createNewCurrency(String singular, String plural){
-        if(currencyExist(singular) || currencyExist(plural)) {
+    public void createNewCurrency(String singular, String plural) {
+        if (currencyExist(singular) || currencyExist(plural)) {
             return;
         }
 
         Currency currency = new Currency(UUID.randomUUID(), singular, plural);
         currency.setExchangeRate(1.0);
-        if(currencies.size() == 0) {
+        if (currencies.size() == 0) {
             currency.setDefaultCurrency(true);
         }
 
@@ -71,7 +70,7 @@ public class CurrencyManager {
     }
 
     public void add(Currency currency) {
-        if(currencies.contains(currency))return;
+        if (currencies.contains(currency)) return;
 
         currencies.add(currency);
     }

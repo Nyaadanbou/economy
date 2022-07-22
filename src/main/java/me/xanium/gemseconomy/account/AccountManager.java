@@ -41,7 +41,7 @@ public class AccountManager {
             account = new Account(OfflineModeProfiles.getUniqueId(nickname), nickname);
 
             account.setCanReceiveCurrency(true);
-            add(account);
+            addAccount(account);
 
             switch (plugin.getDataStore().getStorageType()) {
                 case YAML -> plugin.getDataStore().saveAccount(account);
@@ -61,14 +61,14 @@ public class AccountManager {
         if (account == null) {
             account = new Account(uuid, playerName);
             account.setCanReceiveCurrency(true);
-            add(account);
+            addAccount(account);
 
             switch (plugin.getDataStore().getStorageType()) {
                 case YAML -> plugin.getDataStore().saveAccount(account);
                 case MYSQL -> plugin.getDataStore().createAccount(account);
             }
 
-            UtilServer.consoleLog("New account created for: " + account.getDisplayName());
+            UtilServer.consoleLog("New account created for: " + account.getDisplayName() + "[" + account.getUuid().toString() + "]");
         }
     }
 
@@ -103,7 +103,7 @@ public class AccountManager {
         }
     }
 
-    public void add(Account account) {
+    public void addAccount(Account account) {
         if (this.accounts.contains(account)) return;
         this.accounts.add(account);
     }

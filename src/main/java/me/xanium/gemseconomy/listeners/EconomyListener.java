@@ -34,7 +34,7 @@ public class EconomyListener implements Listener {
             if (account == null) {
                 plugin.getAccountManager().createAccount(player.getUniqueId());
             } else {
-                plugin.getAccountManager().add(account);
+                plugin.getAccountManager().addAccount(account);
                 String name = player.getName();
                 if (account.getNickname() == null || !account.getNickname().equalsIgnoreCase(name)) {
                     account.setNickname(name);
