@@ -15,10 +15,12 @@ import me.xanium.gemseconomy.account.Account;
 import me.xanium.gemseconomy.currency.CachedTopList;
 import me.xanium.gemseconomy.currency.CachedTopListEntry;
 import me.xanium.gemseconomy.currency.Currency;
+import me.xanium.gemseconomy.utils.OfflineModeProfiles;
 import me.xanium.gemseconomy.utils.SchedulerUtils;
 import me.xanium.gemseconomy.utils.UtilServer;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.jetbrains.annotations.Nullable;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
@@ -313,7 +315,7 @@ public class MySQLStorage extends DataStorage {
     }
 
     @Override
-    public Account loadAccount(String name) {
+    public @Nullable Account loadAccount(String name) {
         Account account = null;
 
         try (Connection connection = getHikari().getConnection()) {
@@ -343,6 +345,16 @@ public class MySQLStorage extends DataStorage {
         } catch (SQLException | ParseException e) {
             e.printStackTrace();
         }
+
+        if (account == null) {
+            if ((name.startsWith("towny-") || name.startsWith("town-") || name.startsWith("nation-"))) {
+                // work around with Towny
+                account = new Account(OfflineModeProfiles.getUniqueId(name), name);
+                createAccount(account);
+                saveAccount(account);
+            }
+        }
+
         return account;
     }
 
@@ -377,6 +389,7 @@ public class MySQLStorage extends DataStorage {
         } catch (SQLException | ParseException e) {
             e.printStackTrace();
         }
+
         if (account == null) {
             account = new Account(uuid, Bukkit.getOfflinePlayer(uuid).getName());
             createAccount(account);
@@ -388,18 +401,14 @@ public class MySQLStorage extends DataStorage {
 
     @Override
     public void loadAccount(UUID uuid, Callback<Account> callback) {
-        SchedulerUtils.runAsync(() -> {
-            Account account = this.loadAccount(uuid);
-            SchedulerUtils.run(() -> callback.call(account));
-        });
+        Account account = this.loadAccount(uuid);
+        SchedulerUtils.run(() -> callback.call(account));
     }
 
     @Override
     public void loadAccount(String name, Callback<Account> callback) {
-        SchedulerUtils.runAsync(() -> {
-            Account account = this.loadAccount(name);
-            SchedulerUtils.run(() -> callback.call(account));
-        });
+        Account account = this.loadAccount(name);
+        SchedulerUtils.run(() -> callback.call(account));
     }
 
     @Override
@@ -433,6 +442,8 @@ public class MySQLStorage extends DataStorage {
             JSONObject obj = new JSONObject();
             for (Currency currency : plugin.getCurrencyManager().getCurrencies()) {
                 // put default balance in the account
+
+                //noinspection unchecked
                 obj.put(currency.getUuid().toString(), currency.getDefaultBalance());
             }
             String json = obj.toJSONString();
@@ -461,6 +472,8 @@ public class MySQLStorage extends DataStorage {
             JSONObject obj = new JSONObject();
             for (Currency currency : plugin.getCurrencyManager().getCurrencies()) {
                 // put current balance in the account
+
+                //noinspection unchecked
                 obj.put(currency.getUuid().toString(), account.getBalance(currency.getSingular()));
             }
             String json = obj.toJSONString();

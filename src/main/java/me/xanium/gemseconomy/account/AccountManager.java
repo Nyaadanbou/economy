@@ -9,9 +9,8 @@
 package me.xanium.gemseconomy.account;
 
 import me.xanium.gemseconomy.GemsEconomy;
-import me.xanium.gemseconomy.utils.SchedulerUtils;
+import me.xanium.gemseconomy.utils.OfflineModeProfiles;
 import me.xanium.gemseconomy.utils.UtilServer;
-
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
@@ -30,25 +29,30 @@ public class AccountManager {
     }
 
     public void createAccount(String nickname) {
-        SchedulerUtils.runAsync(() -> {
-            Account account = getAccount(nickname);
+        // no more async
+        // we need to check the other plugins
+        // in case other plugins call it sync
 
-            if (account == null) {
-                account = new Account(UUID.randomUUID(), nickname);
-                account.setCanReceiveCurrency(true);
-                add(account);
+        Account account = getAccount(nickname);
 
-                if (plugin.getDataStore().getName().equalsIgnoreCase("yaml")) {
-                    // YAML
-                    plugin.getDataStore().saveAccount(account);
-                } else {
-                    // MYSQL
-                    plugin.getDataStore().createAccount(account);
-                }
+        if (account == null) {
+            // get the UUID of the name by using Mojang offline player way
+            // so that we can ensure same nicknames always point to the same UUID
+            account = new Account(OfflineModeProfiles.getUniqueId(nickname), nickname);
 
-                UtilServer.consoleLog("New account created for: " + account.getDisplayName());
+            account.setCanReceiveCurrency(true);
+            add(account);
+
+            if (plugin.getDataStore().getName().equalsIgnoreCase("yaml")) {
+                // YAML
+                plugin.getDataStore().saveAccount(account);
+            } else {
+                // MYSQL
+                plugin.getDataStore().createAccount(account);
             }
-        });
+
+            UtilServer.consoleLog("New account created for: " + account.getDisplayName());
+        }
     }
 
     public synchronized void createAccount(UUID uuid) {
@@ -80,14 +84,15 @@ public class AccountManager {
 
     public Account getAccount(String name) {
         for (Account account : this.accounts) {
-            if (account.getNickname() == null || !account.getNickname().equalsIgnoreCase(name)) continue;
+            if (account.getNickname() == null || !account.getNickname().equalsIgnoreCase(name))
+                continue;
             return account;
         }
         return plugin.getDataStore().loadAccount(name);
     }
 
     public Account getAccount(UUID uuid) {
-        for (Account account : this.accounts) { // This throws CME randomly
+        for (Account account : this.accounts) { // TODO This throws CME randomly
             if (!account.getUuid().equals(uuid)) continue;
             return account;
         }

@@ -36,7 +36,7 @@ public class EconomyListener implements Listener {
             } else {
                 plugin.getAccountManager().add(account);
                 String name = player.getName();
-                if (account.getNickname() == null || !account.getNickname().equals(name)) {
+                if (account.getNickname() == null || !account.getNickname().equalsIgnoreCase(name)) {
                     account.setNickname(name);
                     UtilServer.consoleLog("Account name changes detected, updating: " + name);
                     plugin.getDataStore().saveAccount(account);
