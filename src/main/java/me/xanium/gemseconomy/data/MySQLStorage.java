@@ -444,7 +444,8 @@ public class MySQLStorage extends DataStorage {
             // write balance data
             JSONObject obj = new JSONObject();
             for (Currency currency : plugin.getCurrencyManager().getCurrencies()) {
-                if (UtilTowny.isTownyAccount(account.getNickname())) {
+                String nickname = account.getNickname();
+                if (nickname != null && UtilTowny.isTownyAccount(nickname)) {
                     // towny account - put zero balance
                     account.setBalance(currency, 0D);
                     obj.put(currency.getUuid().toString(), 0D);
