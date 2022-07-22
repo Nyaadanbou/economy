@@ -42,7 +42,7 @@ public class MySQLStorage extends DataStorage {
     private final LinkedHashMap<UUID, CachedTopList> topList = new LinkedHashMap<>();
 
     public MySQLStorage(String host, int port, String database, String username, String password) {
-        super("MySQL", true);
+        super(StorageType.MYSQL, true);
         hikariConfig = new HikariConfig();
         hikariConfig.setJdbcUrl("jdbc:mysql://" + host + ":" + port + "/" + database + "?allowPublicKeyRetrieval=true&useSSL=false");
         hikariConfig.setPassword(password);

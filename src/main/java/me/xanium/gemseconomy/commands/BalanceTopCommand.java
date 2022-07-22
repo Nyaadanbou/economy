@@ -8,7 +8,7 @@
 
 /*
  * Decompiled with CFR 0_123.
- * 
+ *
  * Could not load the following classes:
  *  org.bukkit.ChatColor
  *  org.bukkit.command.Command
@@ -27,20 +27,21 @@ import me.xanium.gemseconomy.file.F;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+import org.jetbrains.annotations.NotNull;
 
 public class BalanceTopCommand implements CommandExecutor {
 
+    private static final int ACCOUNTS_PER_PAGE = 10;
     private final GemsEconomy plugin = GemsEconomy.getInstance();
-    private final int ACCOUNTS_PER_PAGE = 10;
 
     @Override
-    public boolean onCommand(CommandSender sender, Command command, String s670, String[] args) {
+    public boolean onCommand(CommandSender sender, @NotNull Command command, @NotNull String s670, String[] args) {
         if (!sender.hasPermission("gemseconomy.command.baltop")) {
             sender.sendMessage(F.getNoPerms());
             return true;
         }
         if (!plugin.getDataStore().isTopSupported()) {
-            sender.sendMessage(F.getBalanceTopNoSupport().replace("{storage}", plugin.getDataStore().getName()));
+            sender.sendMessage(F.getBalanceTopNoSupport().replace("{storage}", plugin.getDataStore().getStorageType().name()));
             return true;
         }
 

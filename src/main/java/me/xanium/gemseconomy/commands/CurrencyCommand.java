@@ -8,7 +8,7 @@
 
 /*
  * Decompiled with CFR 0_123.
- * 
+ *
  * Could not load the following classes:
  *  org.bukkit.ChatColor
  *  org.bukkit.command.Command
@@ -24,6 +24,7 @@ import me.xanium.gemseconomy.GemsEconomy;
 import me.xanium.gemseconomy.account.Account;
 import me.xanium.gemseconomy.currency.Currency;
 import me.xanium.gemseconomy.data.DataStorage;
+import me.xanium.gemseconomy.data.StorageType;
 import me.xanium.gemseconomy.file.F;
 import me.xanium.gemseconomy.utils.SchedulerUtils;
 import me.xanium.gemseconomy.utils.UtilServer;
@@ -34,6 +35,7 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -43,7 +45,7 @@ public class CurrencyCommand implements CommandExecutor {
     private final GemsEconomy plugin = GemsEconomy.getInstance();
 
     @Override
-    public boolean onCommand(CommandSender sender, Command command, String s124, String[] args) {
+    public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String s124, String[] args) {
         SchedulerUtils.runAsync(() -> {
             if (!sender.hasPermission("gemseconomy.command.currency")) {
                 sender.sendMessage(F.getNoPerms());
@@ -311,7 +313,8 @@ public class CurrencyCommand implements CommandExecutor {
                     }
                 } else if (cmd.equalsIgnoreCase("convert")) {
                     if (args.length == 2) {
-                        String method = args[1];
+                        String methodArg = args[1];
+                        StorageType method = StorageType.valueOf(methodArg.trim().toUpperCase());
                         DataStorage current = plugin.getDataStore();
                         DataStorage ds = DataStorage.getMethod(method);
 
@@ -321,12 +324,12 @@ public class CurrencyCommand implements CommandExecutor {
                         }
 
                         if (ds != null) {
-                            if (current.getName().equalsIgnoreCase(ds.getName())) {
+                            if (current.getStorageType() == ds.getStorageType()) {
                                 sender.sendMessage(F.getPrefix() + "§7You can't convert to the same datastore.");
                                 return;
                             }
 
-                            plugin.getConfig().set("storage", ds.getName());
+                            plugin.getConfig().set("storage", ds.getStorageType());
                             plugin.saveConfig();
 
                             sender.sendMessage(F.getPrefix() + "§aLoading data..");
@@ -354,9 +357,9 @@ public class CurrencyCommand implements CommandExecutor {
                                 }
                             }
 
-                            sender.sendMessage(F.getPrefix() + "§aSwitching from §f" + current.getName() + " §ato §f" + ds.getName() + "§a.");
+                            sender.sendMessage(F.getPrefix() + "§aSwitching from §f" + current.getStorageType() + " §ato §f" + ds.getStorageType() + "§a.");
 
-                            if (ds.getName().equalsIgnoreCase("yaml")) {
+                            if (ds.getStorageType() == StorageType.YAML) {
                                 SchedulerUtils.run(() -> {
                                     File data = new File(GemsEconomy.getInstance().getDataFolder() + File.separator + "data.yml");
                                     if (data.exists()) {
@@ -371,17 +374,17 @@ public class CurrencyCommand implements CommandExecutor {
                                 sender.sendMessage(F.getPrefix() + "§aDataStore is closed. Plugin is essentially dead now.");
                             }
 
-                            plugin.initializeDataStore(ds.getName(), false);
+                            plugin.initializeDataStore(ds.getStorageType(), false);
                             try {
                                 Thread.sleep(2000);
                             } catch (InterruptedException ex) {
                                 ex.printStackTrace();
                             }
 
-                            sender.sendMessage(F.getPrefix() + "§aInitialized " + ds.getName() + " Data Store. Check console for wrong username/password if using mysql.");
+                            sender.sendMessage(F.getPrefix() + "§aInitialized " + ds.getStorageType() + " Data Store. Check console for wrong username/password if using mysql.");
                             sender.sendMessage(F.getPrefix() + "§aIf there are sql login errors, you can just retry after you have fixed the credentials, changed the datastore back to what you were using and restarted the server!");
 
-                            if (plugin.getDataStore().getName() != null) {
+                            if (plugin.getDataStore().getStorageType() != null) {
                                 for (Currency c : currencies) {
                                     Currency newCurrency = new Currency(c.getUuid(), c.getSingular(), c.getPlural());
                                     newCurrency.setExchangeRate(c.getExchangeRate());
@@ -428,7 +431,8 @@ public class CurrencyCommand implements CommandExecutor {
                     }
                 } else if (cmd.equalsIgnoreCase("backend")) {
                     if (args.length == 2) {
-                        String method = args[1];
+                        String methodArg = args[1];
+                        StorageType method = StorageType.valueOf(methodArg.trim().toUpperCase());
                         DataStorage current = plugin.getDataStore();
                         DataStorage ds = DataStorage.getMethod(method);
 
@@ -438,13 +442,13 @@ public class CurrencyCommand implements CommandExecutor {
                         }
 
                         if (ds != null) {
-                            if (current.getName().equalsIgnoreCase(ds.getName())) {
+                            if (current.getStorageType() == ds.getStorageType()) {
                                 sender.sendMessage(F.getPrefix() + "§7You can't convert to the same datastore.");
                                 return;
                             }
 
 
-                            plugin.getConfig().set("storage", ds.getName());
+                            plugin.getConfig().set("storage", ds.getStorageType());
                             plugin.saveConfig();
 
                             sender.sendMessage(F.getPrefix() + "§aSaving data and closing up...");
@@ -458,9 +462,9 @@ public class CurrencyCommand implements CommandExecutor {
                                 sender.sendMessage(F.getPrefix() + "§aSuccessfully shutdown. Booting..");
                             }
 
-                            sender.sendMessage(F.getPrefix() + "§aSwitching from §f" + current.getName() + " §ato §f" + ds.getName() + "§a.");
+                            sender.sendMessage(F.getPrefix() + "§aSwitching from §f" + current.getStorageType() + " §ato §f" + ds.getStorageType() + "§a.");
 
-                            plugin.initializeDataStore(ds.getName(), true);
+                            plugin.initializeDataStore(ds.getStorageType(), true);
                             try {
                                 Thread.sleep(1000);
                             } catch (InterruptedException ex) {

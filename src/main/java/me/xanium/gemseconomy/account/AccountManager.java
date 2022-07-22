@@ -43,12 +43,9 @@ public class AccountManager {
             account.setCanReceiveCurrency(true);
             add(account);
 
-            if (plugin.getDataStore().getName().equalsIgnoreCase("yaml")) {
-                // YAML
-                plugin.getDataStore().saveAccount(account);
-            } else {
-                // MYSQL
-                plugin.getDataStore().createAccount(account);
+            switch (plugin.getDataStore().getStorageType()) {
+                case YAML -> plugin.getDataStore().saveAccount(account);
+                case MYSQL -> plugin.getDataStore().createAccount(account);
             }
 
             UtilServer.consoleLog("New account created for: " + account.getDisplayName());
@@ -66,12 +63,9 @@ public class AccountManager {
             account.setCanReceiveCurrency(true);
             add(account);
 
-            if (plugin.getDataStore().getName().equalsIgnoreCase("yaml")) {
-                // YAML
-                plugin.getDataStore().saveAccount(account);
-            } else {
-                // MYSQL
-                plugin.getDataStore().createAccount(account);
+            switch (plugin.getDataStore().getStorageType()) {
+                case YAML -> plugin.getDataStore().saveAccount(account);
+                case MYSQL -> plugin.getDataStore().createAccount(account);
             }
 
             UtilServer.consoleLog("New account created for: " + account.getDisplayName());

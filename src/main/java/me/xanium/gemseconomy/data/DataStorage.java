@@ -21,19 +21,19 @@ public abstract class DataStorage {
 
     public final GemsEconomy plugin = GemsEconomy.getInstance();
 
-    private final String name;
+    private final StorageType storageType;
     private final boolean topSupported;
 
-    public DataStorage(String name, boolean topSupported) {
-        this.name = name;
+    public DataStorage(StorageType storageType, boolean topSupported) {
+        this.storageType = storageType;
         this.topSupported = topSupported;
     }
 
     private static final ArrayList<DataStorage> methods = new ArrayList<>();
 
-    public static DataStorage getMethod(String name) {
+    public static DataStorage getMethod(StorageType method) {
         for (DataStorage store : getMethods()) {
-            if (store.getName().equalsIgnoreCase(name)) {
+            if (store.getStorageType() == method) {
                 return store;
             }
         }
@@ -78,8 +78,8 @@ public abstract class DataStorage {
 
     public abstract ArrayList<Account> getOfflineAccounts();
 
-    public String getName() {
-        return this.name;
+    public StorageType getStorageType() {
+        return this.storageType;
     }
 
     public boolean isTopSupported() {

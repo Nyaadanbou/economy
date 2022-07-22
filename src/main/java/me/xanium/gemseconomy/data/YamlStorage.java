@@ -31,7 +31,7 @@ public class YamlStorage extends DataStorage {
     private final File file;
 
     public YamlStorage(File file) {
-        super("YAML", false);
+        super(StorageType.YAML, false);
         this.file = file;
     }
 

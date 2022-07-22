@@ -15,21 +15,23 @@ import org.bukkit.Server;
 
 public class UtilServer {
 
-    private static Server getServer(){
-        return Bukkit.getServer();
-    }
     private static final String Console_Prefix = "§2[GemsEconomy] §f";
     private static final String Error_Prefix = "§c[G-Eco-Error] §f";
 
-    public static void consoleLog(String message){
-        if(GemsEconomy.getInstance().isDebug()) getServer().getConsoleSender().sendMessage(Console_Prefix + colorize(message));
+    private static Server getServer() {
+        return Bukkit.getServer();
     }
 
-    public static void consoleLog(Throwable message){
+    public static void consoleLog(String message) {
+        if (GemsEconomy.getInstance().isDebug())
+            getServer().getConsoleSender().sendMessage(Console_Prefix + colorize(message));
+    }
+
+    public static void consoleLog(Throwable message) {
         getServer().getConsoleSender().sendMessage(Error_Prefix + message);
     }
 
-    private static String colorize(String message){
+    private static String colorize(String message) {
         return ChatColor.translateAlternateColorCodes('&', message);
     }
 

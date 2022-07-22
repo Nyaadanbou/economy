@@ -15,6 +15,7 @@ import me.xanium.gemseconomy.commands.*;
 import me.xanium.gemseconomy.currency.CurrencyManager;
 import me.xanium.gemseconomy.data.DataStorage;
 import me.xanium.gemseconomy.data.MySQLStorage;
+import me.xanium.gemseconomy.data.StorageType;
 import me.xanium.gemseconomy.data.YamlStorage;
 import me.xanium.gemseconomy.file.Configuration;
 import me.xanium.gemseconomy.listeners.EconomyListener;
@@ -28,6 +29,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Objects;
 
 public class GemsEconomy extends JavaPlugin {
 
@@ -49,31 +51,34 @@ public class GemsEconomy extends JavaPlugin {
 
     private boolean disabling = false;
 
+    public static GemsEconomy getInstance() {
+        return instance;
+    }
+
     /**
      * Bug fix Update
-     *
-     * MySQL would not write or read any data from database - Fixed (Some help from @FurryKitten @ github)
-     * Rewritten many parts of loading / saving account data in MySQL.
-     * YAML Storage would cache offline users when adding currency to them - Fixed
-     * Balance Top command has been rewritten to support more efficient SQL queries.
-     * Balance Top cache expiry lowered to 3 minutes from 5.
-     * Added an option to enable/disable cheques in config.
+     * <p>
+     * MySQL would not write or read any data from database - Fixed (Some help
+     * from @FurryKitten @ github) Rewritten many parts of loading / saving
+     * account data in MySQL. YAML Storage would cache offline users when adding
+     * currency to them - Fixed Balance Top command has been rewritten to
+     * support more efficient SQL queries. Balance Top cache expiry lowered to 3
+     * minutes from 5. Added an option to enable/disable cheques in config.
      * There has also been many internal changes here and there.
-     *
-     * SQLITE Support has been dropped! IF this is relevant for you!
-     * Please change your backend to YAML with the command /currency convert yaml
-     *
-     * THIS UPDATE MODIFIES HOW A PLAYERS BALANCE IS SAVED, ONLY RELEVANT FOR MYSQL USERS!
-     * Please take a backup of your balances & accounts table before you start your server
-     * with this new version of GemsEconomy!
-     * The plugin will automatically alter the old table and add the new column.
-     * When players log in their data will be converted to the new format.
-     * IF you are using mysql, and utilize /baltop command a lot, the baltop might become
-     * inaccurate due to the players need to log on your server before it can read their balances.
-     *
-     * Please let me know if you find bugs!
-     * PM me here @ SpigotMC
-     *
+     * <p>
+     * SQLITE Support has been dropped! IF this is relevant for you! Please
+     * change your backend to YAML with the command /currency convert yaml
+     * <p>
+     * THIS UPDATE MODIFIES HOW A PLAYERS BALANCE IS SAVED, ONLY RELEVANT FOR
+     * MYSQL USERS! Please take a backup of your balances & accounts table
+     * before you start your server with this new version of GemsEconomy! The
+     * plugin will automatically alter the old table and add the new column.
+     * When players log in their data will be converted to the new format. IF
+     * you are using mysql, and utilize /baltop command a lot, the baltop might
+     * become inaccurate due to the players need to log on your server before it
+     * can read their balances.
+     * <p>
+     * Please let me know if you find bugs! PM me here @ SpigotMC
      */
 
     @Override
@@ -87,6 +92,7 @@ public class GemsEconomy extends JavaPlugin {
         setCheques(getConfig().getBoolean("cheque.enabled"));
     }
 
+    @SuppressWarnings("ConstantConditions")
     @Override
     public void onEnable() {
         instance = this;
@@ -96,7 +102,7 @@ public class GemsEconomy extends JavaPlugin {
         metrics = new Metrics(this);
         updateForwarder = new UpdateForwarder(this);
 
-        initializeDataStore(getConfig().getString("storage"), true);
+        initializeDataStore(StorageType.valueOf(Objects.requireNonNull(getConfig().getString("storage")).trim().toUpperCase()), true);
 
         getServer().getPluginManager().registerEvents(new EconomyListener(), this);
         getCommand("balance").setExecutor(new BalanceCommand());
@@ -121,7 +127,7 @@ public class GemsEconomy extends JavaPlugin {
             getEconomyLogger().save();
         }
 
-        if(isChequesEnabled()){
+        if (isChequesEnabled()) {
             chequeManager = new ChequeManager(this);
         }
 
@@ -139,13 +145,10 @@ public class GemsEconomy extends JavaPlugin {
         }
     }
 
-    public void initializeDataStore(String strategy, boolean load) {
+    public void initializeDataStore(StorageType strategy, boolean load) {
 
         DataStorage.getMethods().add(new YamlStorage(new File(getDataFolder(), "data.yml")));
         DataStorage.getMethods().add(new MySQLStorage(getConfig().getString("mysql.host"), getConfig().getInt("mysql.port"), getConfig().getString("mysql.database"), getConfig().getString("mysql.username"), getConfig().getString("mysql.password")));
-
-        // Disabled. Not many are using SQLite anyway. And MySQL has much better performance!
-        //DataStorage.getMethods().add(new SQLiteStorage(new File(getDataFolder(), getConfig().getString("sqlite.file"))));
 
         if (strategy != null) {
             dataStorage = DataStorage.getMethod(strategy);
@@ -157,7 +160,7 @@ public class GemsEconomy extends JavaPlugin {
         }
 
         try {
-            UtilServer.consoleLog("Initializing data store \"" + getDataStore().getName() + "\"...");
+            UtilServer.consoleLog("Initializing data store \"" + getDataStore().getStorageType() + "\"...");
             getDataStore().initialize();
 
             if (load) {
@@ -193,10 +196,6 @@ public class GemsEconomy extends JavaPlugin {
 
     public DataStorage getDataStore() {
         return dataStorage;
-    }
-
-    public static GemsEconomy getInstance() {
-        return instance;
     }
 
     public CurrencyManager getCurrencyManager() {
