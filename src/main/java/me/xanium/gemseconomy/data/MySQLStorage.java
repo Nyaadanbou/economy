@@ -42,8 +42,13 @@ public class MySQLStorage extends DataStorage {
     private HikariDataSource hikari;
     private final LinkedHashMap<UUID, CachedTopList> topList = new LinkedHashMap<>();
 
+    private final String database;
+
     public MySQLStorage(String host, int port, String database, String username, String password) {
         super(StorageType.MYSQL, true);
+
+        this.database = database;
+
         hikariConfig = new HikariConfig();
         hikariConfig.setJdbcUrl("jdbc:mysql://" + host + ":" + port + "/" + database + "?allowPublicKeyRetrieval=true&useSSL=false");
         hikariConfig.setPassword(password);
@@ -78,24 +83,25 @@ public class MySQLStorage extends DataStorage {
             PreparedStatement stmt;
             Map<String, List<String>> structure = new HashMap<>();
             DatabaseMetaData metaData = connection.getMetaData();
-            try (ResultSet tableResultSet = metaData.getTables(null, "public", null, new String[]{"TABLE"})) {
+            try (ResultSet tableResultSet = metaData.getTables(database, "public", null, new String[]{"TABLE"})) {
                 while (tableResultSet.next()) {
+                    String tableCat = tableResultSet.getString("TABLE_CAT");
                     String tableName = tableResultSet.getString("TABLE_NAME");
-                    UtilServer.consoleLog("Table: " + tableName);
+                    UtilServer.consoleLog("Table catalog: %s, Table name: %s".formatted(tableCat, tableName));
 
                     if (tableName.startsWith(getTablePrefix())) {
                         structure.put(tableName, new ArrayList<>());
-                        UtilServer.consoleLog("Added table");
+                        UtilServer.consoleLog("Added table: " + tableName);
                     }
                 }
             }
 
             for (String table : structure.keySet()) {
-                try (ResultSet columnResultSet = metaData.getColumns(null, "public", table, null)) {
+                try (ResultSet columnResultSet = metaData.getColumns(database, "public", table, null)) {
                     while (columnResultSet.next()) {
                         String columnName = columnResultSet.getString("COLUMN_NAME");
                         structure.get(table).add(columnName);
-                        UtilServer.consoleLog("Column: " + columnName + " (" + table + ")");
+                        UtilServer.consoleLog("Added column: " + columnName + " (" + table + ")");
                     }
                 }
             }
@@ -106,14 +112,13 @@ public class MySQLStorage extends DataStorage {
                     stmt = connection.prepareStatement("ALTER TABLE " + this.currencyTable + " ADD exchange_rate DECIMAL NULL DEFAULT NULL AFTER `color`;");
                     stmt.execute();
 
-                    UtilServer.consoleLog("Altered Table " + this.currencyTable + " to support the new exchange_rate variable.");
+                    UtilServer.consoleLog("Altered table " + this.currencyTable + " to support the new exchange_rate variable.");
                 }
-                // TODO fix bug 如果整个数据库中存在该列，则会判断成该列存在于GE实际使用的表中（但实际使用的表并不存在该列）
                 if (!currencyTableColumns.contains("max_balance")) {
                     stmt = connection.prepareStatement("ALTER TABLE " + this.currencyTable + " ADD max_balance DECIMAL NULL DEFAULT NULL AFTER `default_balance`;");
                     stmt.execute();
 
-                    UtilServer.consoleLog("Altered Table " + this.currencyTable + " to support the new max_balance variable.");
+                    UtilServer.consoleLog("Altered table " + this.currencyTable + " to support the new max_balance variable.");
                 }
             }
 
@@ -138,7 +143,7 @@ public class MySQLStorage extends DataStorage {
                     stmt = connection.prepareStatement("ALTER TABLE " + this.currencyTable + " ADD PRIMARY KEY (uuid)");
                     stmt.execute();
 
-                    UtilServer.consoleLog("Altered Tables " + this.accountsTable + " to support the new balance data saving");
+                    UtilServer.consoleLog("Altered tables " + this.accountsTable + " to support the new balance data saving");
                 }
             }
         } catch (SQLException e) {
@@ -184,9 +189,9 @@ public class MySQLStorage extends DataStorage {
                 currency.setExchangeRate(exchangeRate);
 
                 plugin.getCurrencyManager().add(currency);
-                UtilServer.consoleLog("Loaded currency: %s (default_balance: %s, max_balance: %s, default_currency: %s, payable: %s, color: %s)"
+                UtilServer.consoleLog("Loaded currency: %s (default_balance: %s, max_balance: %s, default_currency: %s, payable: %s)"
                         .formatted(currency.getSingular(), currency.getDefaultBalance(), currency.getMaxBalance(),
-                                currency.isDefaultCurrency(), currency.isPayable(), currency.getColor()));
+                                currency.isDefaultCurrency(), currency.isPayable()));
             }
         } catch (SQLException e) {
             e.printStackTrace();
