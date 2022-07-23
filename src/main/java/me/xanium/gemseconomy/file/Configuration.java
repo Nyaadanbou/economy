@@ -13,6 +13,7 @@ import org.bukkit.Material;
 import org.bukkit.configuration.file.FileConfiguration;
 
 import java.util.Arrays;
+import java.util.List;
 
 public class Configuration {
 
@@ -26,22 +27,22 @@ public class Configuration {
 
         FileConfiguration config = plugin.getConfig();
 
-        config.options().header(plugin.getDescription().getName()
-                + "\n"
-                + "Version: " + plugin.getDescription().getVersion()
-                + "\nGemsEconomy Main Configuration file."
-                + "\n"
-                + "Developer(s): " + plugin.getDescription().getAuthors()
-                + "\n\n"
-                + "You have two valid storage methods, yaml, mysql. If you choose mysql you would have to enter the database credentials down below."
-                + "\n"
-                + "All messages below are configurable, I hope you use them because it took 1 hour to make all of them into the plugin and configurable.");
+        config.options().setHeader(List.of(
+                "",
+                "Version: " + plugin.getDescription().getVersion(),
+                "GemsEconomy Main Configuration file.",
+                "Developer(s): " + plugin.getDescription().getAuthors(),
+                "",
+                "You have two valid storage methods, yaml, mysql. If you choose mysql you would have to enter the database credentials down below.",
+                "",
+                "All messages below are configurable, I hope you use them because it took 1 hour to make all of them into the plugin and configurable."
+        ));
 
         String path = "messages.";
 
         config.addDefault("storage", "yaml");
         config.addDefault("debug", false);
-        config.addDefault("vault", false);
+        config.addDefault("vault", true);
         config.addDefault("transaction_log", true);
 
         config.addDefault("mysql.database", "minecraft");
@@ -79,6 +80,8 @@ public class Configuration {
         config.addDefault(path + "add", "&7You gave &a{player}&7: {currencycolor}{amount}. ");
         config.addDefault(path + "take", "&7You took {currencycolor}{amount} &7from &a{player}&7.");
         config.addDefault(path + "set", "&7You set &a{player}&7's balance to {currencycolor}{amount}&7.");
+
+        config.addDefault(path + "debug_command.current_status", "&7Current debug mode: &a{status}&7.");
 
         config.addDefault(path + "exchange_rate_set", "&7Set the exchange rate for {currencycolor}{currency} &7to &a{amount}&7.");
         config.addDefault(path + "exchange_success_custom_other", "&7Successfully exchanged {currencycolor}({currEx}) &7for {currencycolor2}{receivedCurr}&7 to player {player}&7.");

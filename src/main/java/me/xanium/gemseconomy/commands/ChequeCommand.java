@@ -19,22 +19,22 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.jetbrains.annotations.NotNull;
 
 public class ChequeCommand implements CommandExecutor {
 
     private final GemsEconomy plugin = GemsEconomy.getInstance();
 
     @Override
-    public boolean onCommand(CommandSender sender, Command command, String s, String[] args) {
+    public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String s, String[] args) {
         if(!plugin.isChequesEnabled()){
             return true;
         }
 
-        if (!(sender instanceof Player)) {
+        if (!(sender instanceof Player player)) {
             sender.sendMessage(F.getNoConsole());
             return true;
         }
-        Player player = (Player) sender;
         if (!player.hasPermission("gemseconomy.command.cheque")) {
             player.sendMessage(F.getNoPerms());
             return true;

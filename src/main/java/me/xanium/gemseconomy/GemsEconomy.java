@@ -8,7 +8,6 @@
 
 package me.xanium.gemseconomy;
 
-import dev.jorel.commandapi.CommandAPI;
 import me.xanium.gemseconomy.account.AccountManager;
 import me.xanium.gemseconomy.bungee.UpdateForwarder;
 import me.xanium.gemseconomy.cheque.ChequeManager;
@@ -22,14 +21,11 @@ import me.xanium.gemseconomy.file.Configuration;
 import me.xanium.gemseconomy.listeners.EconomyListener;
 import me.xanium.gemseconomy.logging.EconomyLogger;
 import me.xanium.gemseconomy.utils.Metrics;
-import me.xanium.gemseconomy.utils.SchedulerUtils;
-import me.xanium.gemseconomy.utils.Updater;
 import me.xanium.gemseconomy.utils.UtilServer;
 import me.xanium.gemseconomy.vault.VaultHandler;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.Objects;
 
 public class GemsEconomy extends JavaPlugin {
@@ -113,6 +109,7 @@ public class GemsEconomy extends JavaPlugin {
         getCommand("currency").setExecutor(new CurrencyCommand());
         getCommand("cheque").setExecutor(new ChequeCommand());
         getCommand("exchange").setExecutor(new ExchangeCommand());
+        getCommand("debug").setExecutor(new DebugCommand());
 
         if (isVault()) {
             vaultHandler = new VaultHandler(this);
@@ -207,12 +204,11 @@ public class GemsEconomy extends JavaPlugin {
         return updateForwarder;
     }
 
-
     public boolean isDebug() {
         return debug;
     }
 
-    private void setDebug(boolean debug) {
+    public void setDebug(boolean debug) {
         this.debug = debug;
     }
 

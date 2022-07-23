@@ -17,13 +17,14 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
 
 public class BalanceCommand implements CommandExecutor {
 
     private final GemsEconomy plugin = GemsEconomy.getInstance();
 
     @Override
-    public boolean onCommand(final CommandSender sender, Command command, String s, final String[] args) {
+    public boolean onCommand(final @NotNull CommandSender sender, @NotNull Command command, @NotNull String s, final String[] args) {
         SchedulerUtils.runAsync(() -> {
             if (!sender.hasPermission("gemseconomy.command.balance")) {
                 sender.sendMessage(F.getNoPerms());

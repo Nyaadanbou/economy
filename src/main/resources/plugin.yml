@@ -32,8 +32,11 @@ commands:
     description: Pays another account
     usage: /pay <account> <amount> (currency)
   cheque:
-    usage: /cheque
     description: Write or Redeem a cheque.
+    usage: /cheque
   exchange:
-    usage: /exchange
     description: Exchange currencies.
+    usage: /exchange
+  debug:
+    description: Toggle debug mode.
+    usage: /ecodebug

@@ -16,13 +16,14 @@ import me.xanium.gemseconomy.utils.UtilServer;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+import org.jetbrains.annotations.NotNull;
 
 public class EconomyCommand implements CommandExecutor {
 
     private final GemsEconomy plugin = GemsEconomy.getInstance();
 
     @Override
-    public boolean onCommand(CommandSender sender, Command command, String s124, String[] args) {
+    public boolean onCommand(CommandSender sender, @NotNull Command command, @NotNull String s124, String[] args) {
         if (!sender.hasPermission("gemseconomy.command.economy")) {
             sender.sendMessage(F.getNoPerms());
             return true;
