@@ -8,33 +8,32 @@ load: STARTUP
 api-version: 1.15
 loadbefore:
   - ItemFrameShops
-softdepend: [Vault, NBTAPI]
+depend:
+  - CommandAPI
+softdepend:
+  - Vault
+  - NBTAPI
 commands:
   balance:
     description: Shows your balances
     usage: /balance (account)
-    aliases: [gbal, gmoney, bal, money]
+    aliases: [bal, money]
   baltop:
     description: Shows the top balances of the server
     usage: /baltop (currency) (page)
-    aliases: [gmoneytop, gecotop, gtop, gbaltop]
   currency:
     description: Manage the currencies.
     usage: /currency
-    aliases: [gcurr, gemscurrencies, gcurrency, currencies]
   economy:
     description: Give, set or take currency.
     usage: /eco <set|take|give> <account> <amount> (currency)
-    aliases: [geconomy, eco, geco, gemseconomy]
+    aliases: [eco]
   pay:
     description: Pays another account
     usage: /pay <account> <amount> (currency)
-    aliases: [gpay, gemspay]
   cheque:
     usage: /cheque
     description: Write or Redeem a cheque.
-    aliases: [note, banknote]
   exchange:
     usage: /exchange
     description: Exchange currencies.
-    aliases: [gex, gemsexchange, gexchange]
