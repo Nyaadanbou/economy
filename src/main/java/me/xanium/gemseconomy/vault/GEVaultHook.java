@@ -96,7 +96,7 @@ public class GEVaultHook extends AbstractEconomy {
     @Override
     public double getBalance(OfflinePlayer player) {
         if (GemsEconomy.getInstance().isDebug())
-            UtilServer.consoleLog("Lookup name: " + player.getName() + "(" + player.getUniqueId() + ")");
+            UtilServer.consoleLog("Lookup name: " + player.getName() + " (" + player.getUniqueId() + ")");
         Account user = GemsEconomy.getInstance().getAccountManager().getAccount(player.getUniqueId());
         Currency currency = GemsEconomy.getInstance().getCurrencyManager().getDefaultCurrency();
         return user.getBalance(currency);
@@ -105,7 +105,7 @@ public class GEVaultHook extends AbstractEconomy {
     @Override
     public EconomyResponse withdrawPlayer(OfflinePlayer player, double amount) {
         if (GemsEconomy.getInstance().isDebug())
-            UtilServer.consoleLog("Lookup name: " + player.getName() + "(" + player.getUniqueId() + ")");
+            UtilServer.consoleLog("Lookup name: " + player.getName() + " (" + player.getUniqueId() + ")");
 
         if (amount < 0) {
             return new EconomyResponse(0, 0, EconomyResponse.ResponseType.FAILURE, "Cannot deposit negative funds");
@@ -131,7 +131,7 @@ public class GEVaultHook extends AbstractEconomy {
     @Override
     public EconomyResponse depositPlayer(OfflinePlayer player, double amount) {
         if (GemsEconomy.getInstance().isDebug())
-            UtilServer.consoleLog("Lookup name: " + player.getName() + "(" + player.getUniqueId() + ")");
+            UtilServer.consoleLog("Lookup name: " + player.getName() + " (" + player.getUniqueId() + ")");
 
         if (amount < 0) {
             return new EconomyResponse(0, 0, EconomyResponse.ResponseType.FAILURE, "Cannot deposit negative funds");

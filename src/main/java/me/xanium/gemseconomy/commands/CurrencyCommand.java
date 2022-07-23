@@ -353,7 +353,7 @@ public class CurrencyCommand implements CommandExecutor {
 
                             if (plugin.isDebug()) {
                                 for (Currency c : currencies) {
-                                    UtilServer.consoleLog("Currency: " + c.getSingular() + "(" + c.getPlural() + "): " + c.format(1000000));
+                                    UtilServer.consoleLog("Currency: " + c.getSingular() + " (" + c.getPlural() + "): " + c.format(1000000));
                                 }
                             }
 
