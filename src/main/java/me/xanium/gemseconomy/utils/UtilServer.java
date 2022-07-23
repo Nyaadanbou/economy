@@ -30,7 +30,7 @@ public class UtilServer {
             Optional<String> walk = walker.walk(frameStream -> frameStream
                     .skip(1)
                     .map(f -> f.getClassName() + ":" + f.getMethodName())
-                    .filter(s -> !s.contains("run"))
+                    .filter(s -> !(s.contains("minecraft") || s.contains("bukkit")))
                     .reduce((e1, e2) -> e1 + " <- " + e2));
             getServer().getConsoleSender().sendMessage(Console_Prefix + colorize(message));
             getServer().getConsoleSender().sendMessage(Console_Prefix + walk.orElse(""));
