@@ -8,6 +8,7 @@
 
 package me.xanium.gemseconomy;
 
+import dev.jorel.commandapi.CommandAPI;
 import me.xanium.gemseconomy.account.AccountManager;
 import me.xanium.gemseconomy.bungee.UpdateForwarder;
 import me.xanium.gemseconomy.cheque.ChequeManager;
@@ -130,8 +131,6 @@ public class GemsEconomy extends JavaPlugin {
         if (isChequesEnabled()) {
             chequeManager = new ChequeManager(this);
         }
-
-        SchedulerUtils.runAsync(this::checkForUpdate);
     }
 
     @Override
@@ -173,24 +172,6 @@ public class GemsEconomy extends JavaPlugin {
             UtilServer.consoleLog("§cCheck your files, then try again.");
             e.printStackTrace();
             getServer().getPluginManager().disablePlugin(this);
-        }
-    }
-
-    private void checkForUpdate() {
-        Updater updater = new Updater(this);
-        try {
-            if (updater.checkForUpdates()) {
-                UtilServer.consoleLog("-------------------------------------------");
-                UtilServer.consoleLog("New Version: " + updater.getNewVersion());
-                UtilServer.consoleLog("Current Version: " + updater.getCurrentVersion());
-                UtilServer.consoleLog("Download link: " + updater.getResourceURL());
-                UtilServer.consoleLog("--------------------------------------------");
-            }
-        } catch (IOException e) {
-            UtilServer.consoleLog("Could not check for updates! Error log will follow if debug is enabled.");
-            if (isDebug()) {
-                UtilServer.consoleLog(e.getCause());
-            }
         }
     }
 
