@@ -37,6 +37,6 @@ commands:
   exchange:
     description: Exchange currencies.
     usage: /exchange
-  debug:
+  ecodebug:
     description: Toggle debug mode.
     usage: /ecodebug

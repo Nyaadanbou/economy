@@ -109,7 +109,7 @@ public class GemsEconomy extends JavaPlugin {
         getCommand("currency").setExecutor(new CurrencyCommand());
         getCommand("cheque").setExecutor(new ChequeCommand());
         getCommand("exchange").setExecutor(new ExchangeCommand());
-        getCommand("debug").setExecutor(new DebugCommand());
+        getCommand("ecodebug").setExecutor(new DebugCommand());
 
         if (isVault()) {
             vaultHandler = new VaultHandler(this);
