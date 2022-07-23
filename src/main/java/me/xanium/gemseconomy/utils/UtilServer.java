@@ -13,6 +13,8 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Server;
 
+import java.util.Optional;
+
 public class UtilServer {
 
     private static final String Console_Prefix = "§2[GemsEconomy] §f";
@@ -23,8 +25,15 @@ public class UtilServer {
     }
 
     public static void consoleLog(String message) {
-        if (GemsEconomy.getInstance().isDebug())
+        if (GemsEconomy.getInstance().isDebug()) {
+            StackWalker walker = StackWalker.getInstance();
+            Optional<String> walk = walker.walk(frameStream -> frameStream
+                    .map(f -> f.getClassName() + ":" + f.getMethodName())
+                    .filter(s -> !s.contains("run"))
+                    .reduce((e1, e2) -> e1 + " <- " + e2));
             getServer().getConsoleSender().sendMessage(Console_Prefix + colorize(message));
+            getServer().getConsoleSender().sendMessage(Console_Prefix + walk.orElse(""));
+        }
     }
 
     public static void consoleLog(Throwable message) {
