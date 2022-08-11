@@ -18,17 +18,17 @@ import org.jetbrains.annotations.NotNull;
 
 public class DebugCommand implements CommandExecutor {
 
-    private final GemsEconomy plugin = GemsEconomy.getInstance();
+    private final GemsEconomy plugin = GemsEconomy.inst();
 
     @Override
     public boolean onCommand(final @NotNull CommandSender sender, @NotNull Command command, @NotNull String s, final String[] args) {
         SchedulerUtils.runAsync(() -> {
             if (!sender.hasPermission("gemseconomy.command.debug")) {
-                sender.sendMessage(F.getNoPerms());
+                sender.sendMessage(F.noPerms());
                 return;
             }
             plugin.setDebug(!plugin.isDebug());
-            sender.sendMessage(F.getDebugStatus().replace("{status}", plugin.isDebug() + ""));
+            sender.sendMessage(F.debugStatus().replace("{status}", plugin.isDebug() + ""));
         });
         return true;
     }

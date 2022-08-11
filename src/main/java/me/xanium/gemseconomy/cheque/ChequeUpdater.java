@@ -2,6 +2,7 @@ package me.xanium.gemseconomy.cheque;
 
 import de.tr7zw.nbtapi.NBTItem;
 import me.xanium.gemseconomy.GemsEconomy;
+import me.xanium.gemseconomy.file.F;
 import me.xanium.gemseconomy.utils.UtilString;
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.Bukkit;
@@ -36,13 +37,13 @@ public class ChequeUpdater {
             }
 
             if (StringUtils.isEmpty(issuer)) {
-                issuer = UtilString.colorize(GemsEconomy.getInstance().getConfig().getString("cheque.console_name"));
+                issuer = F.consoleName();
             }
             if (StringUtils.isEmpty(value)) {
                 value = "0.0";
             }
             if (StringUtils.isEmpty(currency)) {
-                currency = GemsEconomy.getInstance().getCurrencyManager().getDefaultCurrency().getPlural();
+                currency = GemsEconomy.inst().getCurrencyManager().getDefaultCurrency().getPlural();
             }
             return new ChequeStorage(issuer, currency, Double.parseDouble(value));
         } catch (Throwable throwable) {

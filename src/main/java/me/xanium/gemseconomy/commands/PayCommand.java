@@ -23,25 +23,25 @@ import org.jetbrains.annotations.NotNull;
 
 public class PayCommand implements CommandExecutor {
 
-    private final GemsEconomy plugin = GemsEconomy.getInstance();
+    private final GemsEconomy plugin = GemsEconomy.inst();
 
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String s13542415, String[] args) {
         if (!(sender instanceof Player)) {
-            sender.sendMessage(F.getNoConsole());
+            sender.sendMessage(F.noConsole());
             return true;
         }
         SchedulerUtils.runAsync(() -> {
             if (!sender.hasPermission("gemseconomy.command.pay")) {
-                sender.sendMessage(F.getNoPerms());
+                sender.sendMessage(F.noPerms());
                 return;
             }
             if (args.length < 2) {
-                sender.sendMessage(F.getPayUsage());
+                sender.sendMessage(F.payUsage());
                 return;
             }
             if (plugin.getCurrencyManager().getDefaultCurrency() == null) {
-                sender.sendMessage(F.getNoDefaultCurrency());
+                sender.sendMessage(F.noDefaultCurrency());
                 return;
             }
 
@@ -53,11 +53,11 @@ public class PayCommand implements CommandExecutor {
                 double amount;
 
                 if (!currency.isPayable()) {
-                    sender.sendMessage(F.getCurrencyNotPayable().replace("{currencycolor}", "" + currency.getColor()).replace("{currency}", currency.getPlural()));
+                    sender.sendMessage(F.currencyNotPayable().replace("{currencycolor}", "" + currency.getColor()).replace("{currency}", currency.getPlural()));
                     return;
                 }
                 if (!sender.hasPermission("gemseconomy.command.pay." + currency.getPlural().toLowerCase()) && !sender.hasPermission("gemseconomy.command.pay." + currency.getSingular().toLowerCase())) {
-                    sender.sendMessage(F.getPayNoPerms().replace("{currencycolor}", "" + currency.getColor()).replace("{currency}", currency.getPlural()));
+                    sender.sendMessage(F.payNoPerms().replace("{currencycolor}", "" + currency.getColor()).replace("{currency}", currency.getPlural()));
                     return;
                 }
                 if (currency.isDecimalSupported()) {
@@ -67,7 +67,7 @@ public class PayCommand implements CommandExecutor {
                             throw new NumberFormatException();
                         }
                     } catch (NumberFormatException ex) {
-                        sender.sendMessage(F.getUnvalidAmount());
+                        sender.sendMessage(F.invalidAmount());
                         return;
                     }
                 } else {
@@ -77,7 +77,7 @@ public class PayCommand implements CommandExecutor {
                             throw new NumberFormatException();
                         }
                     } catch (NumberFormatException ex) {
-                        sender.sendMessage(F.getUnvalidAmount());
+                        sender.sendMessage(F.invalidAmount());
                         return;
                     }
                 }
@@ -101,29 +101,29 @@ public class PayCommand implements CommandExecutor {
 
                                     account.modifyBalance(currency, cappedAccBal, true);
                                     target.modifyBalance(currency, cappedTarBal, true);
-                                    GemsEconomy.getInstance().getEconomyLogger().log("[PAYMENT] " + account.getDisplayName() + " (New bal: " + currency.format(cappedAccBal) + ") -> paid " + target.getDisplayName() + " (New bal: " + currency.format(cappedTarBal) + ") - An amount of " + currency.format(amount));
+                                    GemsEconomy.inst().getEconomyLogger().log("[PAYMENT] " + account.getDisplayName() + " (New bal: " + currency.format(cappedAccBal) + ") -> paid " + target.getDisplayName() + " (New bal: " + currency.format(cappedTarBal) + ") - An amount of " + currency.format(amount));
 
                                     if (Bukkit.getPlayer(target.getUuid()) != null) {
-                                        Bukkit.getPlayer(target.getUuid()).sendMessage(F.getPaidMessage().replace("{currencycolor}", currency.getColor() + "").replace("{amount}", currency.format(amount)).replace("{player}", sender.getName()));
+                                        Bukkit.getPlayer(target.getUuid()).sendMessage(F.paidMessage().replace("{currencycolor}", currency.getColor() + "").replace("{amount}", currency.format(amount)).replace("{player}", sender.getName()));
                                     }
-                                    sender.sendMessage(F.getPayerMessage().replace("{currencycolor}", currency.getColor() + "").replace("{amount}", currency.format(amount)).replace("{player}", target.getDisplayName()));
+                                    sender.sendMessage(F.payerMessage().replace("{currencycolor}", currency.getColor() + "").replace("{amount}", currency.format(amount)).replace("{player}", target.getDisplayName()));
                                 } else {
-                                    sender.sendMessage(F.getInsufficientFunds().replace("{currencycolor}", "" + currency.getColor()).replace("{currency}", currency.getPlural()));
+                                    sender.sendMessage(F.insufficientFunds().replace("{currencycolor}", "" + currency.getColor()).replace("{currency}", currency.getPlural()));
                                 }
                             } else {
-                                sender.sendMessage(F.getCannotReceive().replace("{player}", target.getDisplayName()));
+                                sender.sendMessage(F.cannotReceive().replace("{player}", target.getDisplayName()));
                             }
                         } else {
-                            sender.sendMessage(F.getPayYourself());
+                            sender.sendMessage(F.payYourself());
                         }
                     } else {
-                        sender.sendMessage(F.getPlayerDoesNotExist());
+                        sender.sendMessage(F.playerDoesNotExist());
                     }
                 } else {
-                    sender.sendMessage(F.getAccountMissing());
+                    sender.sendMessage(F.accountMissing());
                 }
             } else {
-                sender.sendMessage(F.getUnknownCurrency());
+                sender.sendMessage(F.unknownCurrency());
             }
         });
         return true;

@@ -53,7 +53,7 @@ public class ChequeStorage {
     public int hashCode() {
         return Objects.hash(issuer, currency, value);
     }
-    public static final NamespacedKey key = new NamespacedKey(GemsEconomy.getInstance(), "cheque");
+    public static final NamespacedKey key = new NamespacedKey(GemsEconomy.inst(), "cheque");
     public static ChequeStorage read(ItemStack itemStack){
        ChequeStorage storage = itemStack.getItemMeta().getPersistentDataContainer().get(key,ChequeStorageType.INSTANCE);
        if(storage == null)

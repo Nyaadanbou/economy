@@ -16,18 +16,18 @@ import java.util.UUID;
 
 public class GemsEconomyAPI {
 
-    public final GemsEconomy plugin = GemsEconomy.getInstance();
+    public final GemsEconomy plugin = GemsEconomy.inst();
 
     public GemsEconomyAPI() {
         if (plugin.getCurrencyManager().getDefaultCurrency() == null) {
-            GemsEconomy.getInstance().getLogger().warning("||");
-            GemsEconomy.getInstance().getLogger().warning("||");
-            GemsEconomy.getInstance().getLogger().warning("||");
-            GemsEconomy.getInstance().getLogger().warning("There is no default currency, so therefore none of the API will work!!!");
-            GemsEconomy.getInstance().getLogger().warning("There is no default currency, so therefore none of the API will work!!!");
-            GemsEconomy.getInstance().getLogger().warning("||");
-            GemsEconomy.getInstance().getLogger().warning("||");
-            GemsEconomy.getInstance().getLogger().warning("||");
+            GemsEconomy.inst().getLogger().warning("||");
+            GemsEconomy.inst().getLogger().warning("||");
+            GemsEconomy.inst().getLogger().warning("||");
+            GemsEconomy.inst().getLogger().warning("There is no default currency, so therefore none of the API will work!!!");
+            GemsEconomy.inst().getLogger().warning("There is no default currency, so therefore none of the API will work!!!");
+            GemsEconomy.inst().getLogger().warning("||");
+            GemsEconomy.inst().getLogger().warning("||");
+            GemsEconomy.inst().getLogger().warning("||");
         }
     }
 

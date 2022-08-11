@@ -23,7 +23,7 @@ import org.bukkit.event.player.PlayerQuitEvent;
 
 public class EconomyListener implements Listener {
 
-    private final GemsEconomy plugin = GemsEconomy.getInstance();
+    private final GemsEconomy plugin = GemsEconomy.inst();
 
     @EventHandler(priority = EventPriority.LOWEST)
     public void onLogin(PlayerLoginEvent event) {
@@ -57,7 +57,7 @@ public class EconomyListener implements Listener {
 
         SchedulerUtils.runLater(40L, () -> {
             if (plugin.getCurrencyManager().getDefaultCurrency() == null && (player.isOp() || player.hasPermission("gemseconomy.command.currency"))) {
-                player.sendMessage(F.getPrefix() + "§cYou have not made a currency yet. Please do so by \"§e/currency§c\".");
+                player.sendMessage(F.prefix() + "§cYou have not made a currency yet. Please do so by \"§e/currency§c\".");
             }
         });
     }

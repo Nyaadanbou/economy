@@ -5,7 +5,7 @@ author: Xanium
 description: A multi-currency economy plugin for spigot servers!
 website: https://www.spigotmc.org/resources/gemseconomy.19655/
 load: STARTUP
-api-version: 1.15
+api-version: 1.19
 loadbefore:
   - ItemFrameShops
 depend:
@@ -13,30 +13,3 @@ depend:
 softdepend:
   - Vault
   - NBTAPI
-commands:
-  balance:
-    description: Shows your balances
-    usage: /balance (account)
-    aliases: [bal, money]
-  baltop:
-    description: Shows the top balances of the server
-    usage: /baltop (currency) (page)
-  currency:
-    description: Manage the currencies.
-    usage: /currency
-  economy:
-    description: Give, set or take currency.
-    usage: /eco <set|take|give> <account> <amount> (currency)
-    aliases: [eco]
-  pay:
-    description: Pays another account
-    usage: /pay <account> <amount> (currency)
-  cheque:
-    description: Write or Redeem a cheque.
-    usage: /cheque
-  exchange:
-    description: Exchange currencies.
-    usage: /exchange
-  ecodebug:
-    description: Toggle debug mode.
-    usage: /ecodebug

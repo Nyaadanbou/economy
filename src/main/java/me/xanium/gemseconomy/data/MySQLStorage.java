@@ -61,7 +61,7 @@ public class MySQLStorage extends DataStorage {
     }
 
     private String getTablePrefix() {
-        return GemsEconomy.getInstance().getConfig().getString("mysql.tableprefix");
+        return GemsEconomy.inst().getConfig().getString("mysql.tableprefix");
     }
 
     private void setupTables(Connection connection) throws SQLException {

@@ -21,13 +21,13 @@ import org.jetbrains.annotations.NotNull;
 
 public class BalanceCommand implements CommandExecutor {
 
-    private final GemsEconomy plugin = GemsEconomy.getInstance();
+    private final GemsEconomy plugin = GemsEconomy.inst();
 
     @Override
     public boolean onCommand(final @NotNull CommandSender sender, @NotNull Command command, @NotNull String s, final String[] args) {
         SchedulerUtils.runAsync(() -> {
             if (!sender.hasPermission("gemseconomy.command.balance")) {
-                sender.sendMessage(F.getNoPerms());
+                sender.sendMessage(F.noPerms());
                 return;
             }
             Account account;
@@ -36,31 +36,31 @@ public class BalanceCommand implements CommandExecutor {
             } else if (sender.hasPermission("gemseconomy.command.balance.other") && args.length == 1) {
                 account = plugin.getAccountManager().getAccount(args[0]);
             } else {
-                sender.sendMessage(F.getNoPerms());
+                sender.sendMessage(F.noPerms());
                 return;
             }
             if (account != null) {
                 int currencies = plugin.getCurrencyManager().getCurrencies().size();
 
                 if (currencies == 0) {
-                    sender.sendMessage(F.getNoDefaultCurrency());
+                    sender.sendMessage(F.noDefaultCurrency());
                 } else if (currencies == 1) {
                     Currency currency = plugin.getCurrencyManager().getDefaultCurrency();
                     if (currency == null) {
-                        sender.sendMessage(F.getBalanceNone().replace("{player}", account.getNickname()));
+                        sender.sendMessage(F.balanceNone().replace("{player}", account.getNickname()));
                         return;
                     }
                     double balance = account.getBalance(currency);
-                    sender.sendMessage(F.getBalance().replace("{player}", account.getDisplayName()).replace("{currencycolor}", "" + currency.getColor()).replace("{balance}", currency.format(balance)));
+                    sender.sendMessage(F.balance().replace("{player}", account.getDisplayName()).replace("{currencycolor}", "" + currency.getColor()).replace("{balance}", currency.format(balance)));
                 } else {
-                    sender.sendMessage(F.getBalanceMultiple().replace("{player}", account.getDisplayName()));
+                    sender.sendMessage(F.balanceMultiple().replace("{player}", account.getDisplayName()));
                     for (Currency currency : plugin.getCurrencyManager().getCurrencies()) {
                         double balance = account.getBalance(currency);
-                        sender.sendMessage(F.getBalanceList().replace("{currencycolor}", currency.getColor() + "").replace("{format}", currency.format(balance)));
+                        sender.sendMessage(F.balanceList().replace("{currencycolor}", currency.getColor() + "").replace("{format}", currency.format(balance)));
                     }
                 }
             } else {
-                sender.sendMessage(F.getPlayerDoesNotExist());
+                sender.sendMessage(F.playerDoesNotExist());
             }
         });
         return true;

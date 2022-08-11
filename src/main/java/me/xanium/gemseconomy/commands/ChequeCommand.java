@@ -23,7 +23,7 @@ import org.jetbrains.annotations.NotNull;
 
 public class ChequeCommand implements CommandExecutor {
 
-    private final GemsEconomy plugin = GemsEconomy.getInstance();
+    private final GemsEconomy plugin = GemsEconomy.inst();
 
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String s, String[] args) {
@@ -32,15 +32,15 @@ public class ChequeCommand implements CommandExecutor {
         }
 
         if (!(sender instanceof Player player)) {
-            sender.sendMessage(F.getNoConsole());
+            sender.sendMessage(F.noConsole());
             return true;
         }
         if (!player.hasPermission("gemseconomy.command.cheque")) {
-            player.sendMessage(F.getNoPerms());
+            player.sendMessage(F.noPerms());
             return true;
         }
         if (args.length == 0) {
-            F.getChequeHelp(player);
+            F.chequeHelp(player);
             return true;
         }
         if (args.length == 1) {
@@ -57,16 +57,16 @@ public class ChequeCommand implements CommandExecutor {
                         Account user = plugin.getAccountManager().getAccount(player);
                         Currency currency = plugin.getChequeManager().getCurrency(item);
                         user.deposit(currency, value);
-                        player.sendMessage(F.getChequeRedeemed());
+                        player.sendMessage(F.chequeRedeemed());
                         return true;
                     } else {
-                        player.sendMessage(F.getChequeInvalid());
+                        player.sendMessage(F.chequeInvalid());
                     }
                 } else {
-                    player.sendMessage(F.getChequeInvalid());
+                    player.sendMessage(F.chequeInvalid());
                 }
             } else {
-                player.sendMessage(F.getUnknownSubCommand());
+                player.sendMessage(F.unknownSubCommand());
             }
         }
 
@@ -86,13 +86,13 @@ public class ChequeCommand implements CommandExecutor {
                                 if(user.hasEnough(currency, amount)) {
                                     user.withdraw(currency, amount);
                                     player.getInventory().addItem(plugin.getChequeManager().write(player.getName(), currency, amount));
-                                    player.sendMessage(F.getChequeSucess());
+                                    player.sendMessage(F.chequeSuccess());
                                     return true;
                                 }else{
-                                    player.sendMessage(F.getInsufficientFunds().replace("{currencycolor}", currency.getColor()+"").replace("{currency}", currency.getSingular()));
+                                    player.sendMessage(F.insufficientFunds().replace("{currencycolor}", currency.getColor() + "").replace("{currency}", currency.getSingular()));
                                 }
                             } else {
-                                player.sendMessage(F.getUnknownCurrency());
+                                player.sendMessage(F.unknownCurrency());
                             }
                         }
 
@@ -101,19 +101,19 @@ public class ChequeCommand implements CommandExecutor {
                         if(user.hasEnough(amount)) {
                             user.withdraw(plugin.getCurrencyManager().getDefaultCurrency(), amount);
                             player.getInventory().addItem(plugin.getChequeManager().write(player.getName(), plugin.getCurrencyManager().getDefaultCurrency(), amount));
-                            player.sendMessage(F.getChequeSucess());
+                            player.sendMessage(F.chequeSuccess());
                             return true;
                         }else{
-                            player.sendMessage(F.getInsufficientFunds().replace("{currencycolor}", defaultCurrency.getColor()+"").replace("{currency}", defaultCurrency.getSingular()));
+                            player.sendMessage(F.insufficientFunds().replace("{currencycolor}", defaultCurrency.getColor() + "").replace("{currency}", defaultCurrency.getSingular()));
                         }
                     } else {
-                        player.sendMessage(F.getUnvalidAmount());
+                        player.sendMessage(F.invalidAmount());
                     }
                 } else {
-                    player.sendMessage(F.getUnvalidAmount());
+                    player.sendMessage(F.invalidAmount());
                 }
             } else {
-                player.sendMessage(F.getUnknownSubCommand());
+                player.sendMessage(F.unknownSubCommand());
             }
         }
         return true;

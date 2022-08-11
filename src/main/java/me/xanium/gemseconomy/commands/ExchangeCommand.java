@@ -12,22 +12,22 @@ import org.jetbrains.annotations.NotNull;
 
 public class ExchangeCommand implements CommandExecutor {
 
-    private final GemsEconomy plugin = GemsEconomy.getInstance();
+    private final GemsEconomy plugin = GemsEconomy.inst();
 
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String v21315, String[] args) {
         SchedulerUtils.runAsync(() -> {
             if (!sender.hasPermission("gemseconomy.command.exchange")) {
-                sender.sendMessage(F.getNoPerms());
+                sender.sendMessage(F.noPerms());
                 return;
             }
 
             if (args.length == 0) {
-                F.getExchangeHelp(sender);
+                F.exchangeHelp(sender);
             } else if (args.length == 3) {
 
                 if (!sender.hasPermission("gemseconomy.command.exchange.preset")) {
-                    sender.sendMessage(F.getExchangeNoPermPreset());
+                    sender.sendMessage(F.exchangeNoPermPreset());
                     return;
                 }
                 Currency toExchange = plugin.getCurrencyManager().getCurrency(args[0]);
@@ -42,7 +42,7 @@ public class ExchangeCommand implements CommandExecutor {
                                 throw new NumberFormatException();
                             }
                         } catch (NumberFormatException ex) {
-                            sender.sendMessage(F.getUnvalidAmount());
+                            sender.sendMessage(F.invalidAmount());
                             return;
                         }
                     } else {
@@ -52,14 +52,14 @@ public class ExchangeCommand implements CommandExecutor {
                                 throw new NumberFormatException();
                             }
                         } catch (NumberFormatException ex) {
-                            sender.sendMessage(F.getUnvalidAmount());
+                            sender.sendMessage(F.invalidAmount());
                             return;
                         }
                     }
                     Account account = plugin.getAccountManager().getAccount(sender.getName());
                     if (account != null) {
                         if (account.convert(toExchange, amount, toReceive, -1)) {
-                            sender.sendMessage(F.getExchangeSuccess()
+                            sender.sendMessage(F.exchangeSuccess()
                                     .replace("{currencycolor}", "" + toExchange.getColor())
                                     .replace("{ex_curr}", toExchange.format(amount))
                                     .replace("{currencycolor2}", "" + toReceive.getColor())
@@ -67,12 +67,12 @@ public class ExchangeCommand implements CommandExecutor {
                         }
                     }
                 } else {
-                    sender.sendMessage(F.getUnknownCurrency());
+                    sender.sendMessage(F.unknownCurrency());
                 }
 
             } else if (args.length == 4) {
                 if (!sender.hasPermission("gemseconomy.command.exchange.custom")) {
-                    sender.sendMessage(F.getExchangeNoPermCustom());
+                    sender.sendMessage(F.exchangeNoPermCustom());
                     return;
                 }
                 Currency toExchange = plugin.getCurrencyManager().getCurrency(args[0]);
@@ -89,7 +89,7 @@ public class ExchangeCommand implements CommandExecutor {
                                 throw new NumberFormatException();
                             }
                         } catch (NumberFormatException ex) {
-                            sender.sendMessage(F.getUnvalidAmount());
+                            sender.sendMessage(F.invalidAmount());
                         }
                     } else {
                         try {
@@ -99,13 +99,13 @@ public class ExchangeCommand implements CommandExecutor {
                                 throw new NumberFormatException();
                             }
                         } catch (NumberFormatException ex) {
-                            sender.sendMessage(F.getUnvalidAmount());
+                            sender.sendMessage(F.invalidAmount());
                         }
                     }
                     Account account = plugin.getAccountManager().getAccount(sender.getName());
                     if (account != null) {
                         if (account.convert(toExchange, toExchangeAmount, toReceive, toReceiveAmount)) {
-                            sender.sendMessage(F.getExchangeSuccessCustom()
+                            sender.sendMessage(F.exchangeSuccessCustom()
                                     .replace("{currencycolor}", "" + toExchange.getColor())
                                     .replace("{currEx}", toExchange.format(toExchangeAmount))
                                     .replace("{currencycolor2}", "" + toReceive.getColor())
@@ -113,16 +113,16 @@ public class ExchangeCommand implements CommandExecutor {
                         }
                     }
                 } else {
-                    sender.sendMessage(F.getUnknownCurrency());
+                    sender.sendMessage(F.unknownCurrency());
                 }
             } else if (args.length == 5) {
                 if (!sender.hasPermission("gemseconomy.command.exchange.custom.other")) {
-                    sender.sendMessage(F.getExchangeNoPermCustom());
+                    sender.sendMessage(F.exchangeNoPermCustom());
                     return;
                 }
                 Account account = plugin.getAccountManager().getAccount(args[0]);
                 if (account == null) {
-                    sender.sendMessage(F.getPlayerDoesNotExist());
+                    sender.sendMessage(F.playerDoesNotExist());
                     return;
                 }
                 Currency toExchange = plugin.getCurrencyManager().getCurrency(args[1]);
@@ -139,7 +139,7 @@ public class ExchangeCommand implements CommandExecutor {
                                 throw new NumberFormatException();
                             }
                         } catch (NumberFormatException ex) {
-                            sender.sendMessage(F.getUnvalidAmount());
+                            sender.sendMessage(F.invalidAmount());
                         }
                     } else {
                         try {
@@ -149,12 +149,12 @@ public class ExchangeCommand implements CommandExecutor {
                                 throw new NumberFormatException();
                             }
                         } catch (NumberFormatException ex) {
-                            sender.sendMessage(F.getUnvalidAmount());
+                            sender.sendMessage(F.invalidAmount());
                         }
                     }
 
                     if (account.convert(toExchange, toExchangeAmount, toReceive, toReceiveAmount)) {
-                        sender.sendMessage(F.getExchangeSuccessCustomOther()
+                        sender.sendMessage(F.exchangeSuccessCustomOther()
                                 .replace("{player}", account.getDisplayName())
                                 .replace("{currencycolor}", "" + toExchange.getColor())
                                 .replace("{currEx}", toExchange.format(toExchangeAmount))
@@ -163,10 +163,10 @@ public class ExchangeCommand implements CommandExecutor {
                     }
 
                 } else {
-                    sender.sendMessage(F.getUnknownCurrency());
+                    sender.sendMessage(F.unknownCurrency());
                 }
             } else {
-                sender.sendMessage(F.getUnknownSubCommand());
+                sender.sendMessage(F.unknownSubCommand());
             }
         });
         return true;

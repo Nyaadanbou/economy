@@ -10,6 +10,7 @@ package me.xanium.gemseconomy.cheque;
 
 import me.xanium.gemseconomy.GemsEconomy;
 import me.xanium.gemseconomy.currency.Currency;
+import me.xanium.gemseconomy.file.F;
 import me.xanium.gemseconomy.utils.UtilString;
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.Material;
@@ -40,7 +41,7 @@ public class ChequeManager {
         if(!currency.isPayable()) return null;
 
         if (creatorName.equals("CONSOLE")) {
-            creatorName = UtilString.colorize(plugin.getConfig().getString("cheque.console_name"));
+            creatorName = F.consoleName();
         }
         List<String> formatLore = new ArrayList<>();
 

@@ -8,10 +8,12 @@
 
 package me.xanium.gemseconomy;
 
+import dev.jorel.commandapi.CommandAPI;
 import me.xanium.gemseconomy.account.AccountManager;
+import me.xanium.gemseconomy.api.GemsEconomyAPI;
 import me.xanium.gemseconomy.bungee.UpdateForwarder;
 import me.xanium.gemseconomy.cheque.ChequeManager;
-import me.xanium.gemseconomy.commands.*;
+import me.xanium.gemseconomy.commandsv2.*;
 import me.xanium.gemseconomy.currency.CurrencyManager;
 import me.xanium.gemseconomy.data.DataStorage;
 import me.xanium.gemseconomy.data.MySQLStorage;
@@ -32,6 +34,8 @@ public class GemsEconomy extends JavaPlugin {
 
     private static GemsEconomy instance;
 
+    private GemsEconomyAPI api;
+
     private DataStorage dataStorage = null;
     private AccountManager accountManager;
     private ChequeManager chequeManager;
@@ -48,8 +52,15 @@ public class GemsEconomy extends JavaPlugin {
 
     private boolean disabling = false;
 
-    public static GemsEconomy getInstance() {
+    public static GemsEconomy inst() {
         return instance;
+    }
+
+    public static GemsEconomyAPI getAPI() {
+        if (instance.api == null) {
+            instance.api = new GemsEconomyAPI();
+        }
+        return instance.api;
     }
 
     /**
@@ -89,7 +100,6 @@ public class GemsEconomy extends JavaPlugin {
         setCheques(getConfig().getBoolean("cheque.enabled"));
     }
 
-    @SuppressWarnings("ConstantConditions")
     @Override
     public void onEnable() {
         instance = this;
@@ -102,14 +112,14 @@ public class GemsEconomy extends JavaPlugin {
         initializeDataStore(StorageType.valueOf(Objects.requireNonNull(getConfig().getString("storage")).trim().toUpperCase()), true);
 
         getServer().getPluginManager().registerEvents(new EconomyListener(), this);
-        getCommand("balance").setExecutor(new BalanceCommand());
-        getCommand("baltop").setExecutor(new BalanceTopCommand());
-        getCommand("economy").setExecutor(new EconomyCommand());
-        getCommand("pay").setExecutor(new PayCommand());
-        getCommand("currency").setExecutor(new CurrencyCommand());
-        getCommand("cheque").setExecutor(new ChequeCommand());
-        getCommand("exchange").setExecutor(new ExchangeCommand());
-        getCommand("ecodebug").setExecutor(new DebugCommand());
+        new BalanceCommand();
+        new BalanceTopCommand();
+        new ChequeCommand();
+        new CurrencyCommand();
+        new DebugCommand();
+        new EconomyCommand();
+        new ExchangeCommand();
+        new PayCommand();
 
         if (isVault()) {
             vaultHandler = new VaultHandler(this);

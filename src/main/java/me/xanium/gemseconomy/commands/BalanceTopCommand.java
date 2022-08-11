@@ -32,16 +32,16 @@ import org.jetbrains.annotations.NotNull;
 public class BalanceTopCommand implements CommandExecutor {
 
     private static final int ACCOUNTS_PER_PAGE = 10;
-    private final GemsEconomy plugin = GemsEconomy.getInstance();
+    private final GemsEconomy plugin = GemsEconomy.inst();
 
     @Override
     public boolean onCommand(CommandSender sender, @NotNull Command command, @NotNull String s670, String[] args) {
         if (!sender.hasPermission("gemseconomy.command.baltop")) {
-            sender.sendMessage(F.getNoPerms());
+            sender.sendMessage(F.noPerms());
             return true;
         }
         if (!plugin.getDataStore().isTopSupported()) {
-            sender.sendMessage(F.getBalanceTopNoSupport().replace("{storage}", plugin.getDataStore().getStorageType().name()));
+            sender.sendMessage(F.balanceTopNoSupport().replace("{storage}", plugin.getDataStore().getStorageType().name()));
             return true;
         }
 
@@ -50,7 +50,7 @@ public class BalanceTopCommand implements CommandExecutor {
         if (args.length > 0) {
             currency = plugin.getCurrencyManager().getCurrency(args[0]);
             if (currency == null) {
-                sender.sendMessage(F.getUnknownCurrency());
+                sender.sendMessage(F.unknownCurrency());
                 return true;
             }
 
@@ -58,7 +58,7 @@ public class BalanceTopCommand implements CommandExecutor {
                 try {
                     page = Integer.parseInt(args[1]);
                 } catch (NumberFormatException ex) {
-                    sender.sendMessage(F.getUnvalidPage());
+                    sender.sendMessage(F.invalidPage());
                     return true;
                 }
             }
@@ -72,7 +72,7 @@ public class BalanceTopCommand implements CommandExecutor {
 
         if (currency != null) {
             plugin.getDataStore().getTopList(currency, offset, ACCOUNTS_PER_PAGE, cachedTopListEntries -> {
-                sender.sendMessage(F.getBalanceTopHeader()
+                sender.sendMessage(F.balanceTopHeader()
                         .replace("{currencycolor}", "" + curr.getColor())
                         .replace("{currencyplural}", curr.getPlural())
                         .replace("{page}", String.valueOf(pageNumber)));
@@ -80,14 +80,14 @@ public class BalanceTopCommand implements CommandExecutor {
                 int num = (10 * (pageNumber - 1)) + 1;
                 for (CachedTopListEntry entry : cachedTopListEntries) {
                     double balance = entry.getAmount();
-                    sender.sendMessage(F.getBalanceTop().replace("{number}", String.valueOf(num)).replace("{currencycolor}", "" + curr.getColor())
+                    sender.sendMessage(F.balanceTop().replace("{number}", String.valueOf(num)).replace("{currencycolor}", "" + curr.getColor())
                             .replace("{player}", entry.getName()).replace("{balance}", curr.format(balance)));
                     num++;
                 }
                 if (cachedTopListEntries.isEmpty()) {
-                    sender.sendMessage(F.getBalanceTopEmpty());
+                    sender.sendMessage(F.balanceTopEmpty());
                 } else {
-                    sender.sendMessage(F.getBalanceTopNext().replace("{currencycolor}", "" + curr.getColor()).replace("{currencyplural}", curr.getPlural()).replace("{page}", String.valueOf((pageNumber + 1))));
+                    sender.sendMessage(F.balanceTopNext().replace("{currencycolor}", "" + curr.getColor()).replace("{currencyplural}", curr.getPlural()).replace("{page}", String.valueOf((pageNumber + 1))));
                 }
             });
         }

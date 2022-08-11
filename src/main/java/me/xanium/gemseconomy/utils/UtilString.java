@@ -28,7 +28,7 @@ public class UtilString {
             }
 
         } catch (NumberFormatException ex) {
-            sender.sendMessage(F.getPrefix() + F.getUnvalidAmount());
+            sender.sendMessage(F.prefix() + F.invalidAmount());
             return false;
         }
         return true;

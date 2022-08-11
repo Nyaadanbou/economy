@@ -25,12 +25,12 @@ public class UtilServer {
     }
 
     public static void consoleLog(String message) {
-        if (GemsEconomy.getInstance().isDebug()) {
+        if (GemsEconomy.inst().isDebug()) {
             StackWalker walker = StackWalker.getInstance();
             Optional<String> walk = walker.walk(frameStream -> frameStream
                     .skip(1)
                     .map(f -> f.getClassName() + ":" + f.getMethodName())
-                    .filter(s -> !(s.contains("minecraft") || s.contains("bukkit")))
+                    .filter(s -> !(s.contains("minecraft")))
                     .reduce((e1, e2) -> e1 + " <- " + e2));
             getServer().getConsoleSender().sendMessage(Console_Prefix + colorize(message));
             getServer().getConsoleSender().sendMessage(Console_Prefix + walk.orElse(""));
