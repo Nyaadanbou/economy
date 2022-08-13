@@ -7,6 +7,7 @@ import dev.jorel.commandapi.arguments.StringArgument;
 import me.xanium.gemseconomy.GemsEconomy;
 import me.xanium.gemseconomy.account.Account;
 import me.xanium.gemseconomy.commandsv2.argument.BaseArguments;
+import me.xanium.gemseconomy.commandsv2.argument.BaseSuggestions;
 import me.xanium.gemseconomy.currency.Currency;
 import me.xanium.gemseconomy.file.F;
 
@@ -19,15 +20,17 @@ public class ExchangeCommand {
     private static final String PERM_EXCHANGE_CUSTOM_OTHER = "gemseconomy.command.exchange.custom.other";
 
     public ExchangeCommand() {
-        final Argument<String> toReceiveArgument = new StringArgument("要兑换消耗的货币数额").replaceSuggestions(ArgumentSuggestions.strings("1"));
-        final Argument<String> toExchangeArgument = new StringArgument("要兑换获得的货币数额").replaceSuggestions(ArgumentSuggestions.strings("1"));
+        final Argument<String> toExchangeAmountArgument = new StringArgument("兑换获得的货币数额").replaceSuggestions(ArgumentSuggestions.strings("10"));
+        final Argument<String> toReceiveAmountArgument = new StringArgument("兑换消耗的货币数额").replaceSuggestions(ArgumentSuggestions.strings("10"));
+        final Argument<String> toExchangeCurrencyArgument = new StringArgument("兑换消耗的货币单位").replaceSuggestions(BaseSuggestions.CURRENCY);
+        final Argument<String> toReceiveCurrencyArgument = new StringArgument("兑换获得的货币单位").replaceSuggestions(BaseSuggestions.CURRENCY);
 
         new CommandAPICommand(NAME)
                 .withPermission(PERM_EXCHANGE)
                 .withPermission(PERM_EXCHANGE_PRESET)
-                .withArguments(BaseArguments.CURRENCY)
-                .withArguments(toReceiveArgument)
-                .withArguments(BaseArguments.CURRENCY)
+                .withArguments(toExchangeCurrencyArgument)
+                .withArguments(toExchangeAmountArgument)
+                .withArguments(toReceiveCurrencyArgument)
                 .executesPlayer((sender, args) -> {
                     Currency toExchange = GemsEconomy.inst().getCurrencyManager().getCurrency(args[0].toString());
                     Currency toReceive = GemsEconomy.inst().getCurrencyManager().getCurrency(args[2].toString());
@@ -73,10 +76,10 @@ public class ExchangeCommand {
         new CommandAPICommand(NAME)
                 .withPermission(PERM_EXCHANGE)
                 .withPermission(PERM_EXCHANGE_CUSTOM)
-                .withArguments(BaseArguments.CURRENCY)
-                .withArguments(toExchangeArgument)
-                .withArguments(BaseArguments.CURRENCY)
-                .withArguments(toReceiveArgument)
+                .withArguments(toExchangeCurrencyArgument)
+                .withArguments(toExchangeAmountArgument)
+                .withArguments(toReceiveCurrencyArgument)
+                .withArguments(toReceiveAmountArgument)
                 .executesPlayer((sender, args) -> {
                     Currency toExchange = GemsEconomy.inst().getCurrencyManager().getCurrency(args[0].toString());
                     Currency toReceive = GemsEconomy.inst().getCurrencyManager().getCurrency(args[2].toString());
@@ -124,10 +127,10 @@ public class ExchangeCommand {
                 .withPermission(PERM_EXCHANGE)
                 .withPermission(PERM_EXCHANGE_CUSTOM_OTHER)
                 .withArguments(BaseArguments.ACCOUNT)
-                .withArguments(BaseArguments.CURRENCY)
-                .withArguments(toExchangeArgument)
-                .withArguments(BaseArguments.CURRENCY)
-                .withArguments(toReceiveArgument)
+                .withArguments(toExchangeCurrencyArgument)
+                .withArguments(toExchangeAmountArgument)
+                .withArguments(toReceiveCurrencyArgument)
+                .withArguments(toReceiveAmountArgument)
                 .executesPlayer((sender, args) -> {
                     Account account = GemsEconomy.inst().getAccountManager().getAccount(args[0].toString());
                     if (account == null) {
