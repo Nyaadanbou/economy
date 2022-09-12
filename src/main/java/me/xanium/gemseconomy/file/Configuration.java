@@ -26,17 +26,6 @@ public class Configuration {
 
         FileConfiguration config = plugin.getConfig();
 
-        config.options().setHeader(List.of(
-                "",
-                "Version: " + plugin.getDescription().getVersion(),
-                "GemsEconomy Main Configuration file.",
-                "Developer(s): " + plugin.getDescription().getAuthors(),
-                "",
-                "You have two valid storage methods, yaml, mysql. If you choose mysql you would have to enter the database credentials down below.",
-                "",
-                "All messages below are configurable, I hope you use them because it took 1 hour to make all of them into the plugin and configurable."
-        ));
-
         String path = "messages.";
 
         config.addDefault("storage", "mysql");
