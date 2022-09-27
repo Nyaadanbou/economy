@@ -78,7 +78,7 @@ public class GemsEconomy extends JavaPlugin {
      * change your backend to YAML with the command /currency convert yaml
      * <p>
      * THIS UPDATE MODIFIES HOW A PLAYERS BALANCE IS SAVED, ONLY RELEVANT FOR
-     * MYSQL USERS! Please take a backup of your balances & accounts table
+     * MYSQL USERS! Please take a backup of your balances and accounts table
      * before you start your server with this new version of GemsEconomy! The
      * plugin will automatically alter the old table and add the new column.
      * When players log in their data will be converted to the new format. IF
