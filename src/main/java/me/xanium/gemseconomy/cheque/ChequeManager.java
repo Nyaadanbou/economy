@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+@SuppressWarnings("deprecation")
 public class ChequeManager {
 
     private final GemsEconomy plugin;
@@ -38,7 +39,7 @@ public class ChequeManager {
     }
 
     public ItemStack write(String creatorName, Currency currency, double amount) {
-        if(!currency.isPayable()) return null;
+        if (!currency.isPayable()) return null;
 
         if (creatorName.equals("CONSOLE")) {
             creatorName = F.consoleName();
@@ -51,36 +52,30 @@ public class ChequeManager {
         ItemStack ret = chequeBaseItem.clone();
         ItemMeta meta = ret.getItemMeta();
         meta.setLore(formatLore);
-        ChequeStorage storage = new ChequeStorage(creatorName,currency.getPlural(), amount);
-        meta.getPersistentDataContainer().set(ChequeStorage.key, ChequeStorageType.INSTANCE,storage);
-        ChequeUpdater.tryApplyFallback(ret, storage); //Backward compatibility
+        ChequeStorage storage = new ChequeStorage(creatorName, currency.getPlural(), amount);
+        meta.getPersistentDataContainer().set(ChequeStorage.key, ChequeStorageType.INSTANCE, storage);
         ret.setItemMeta(meta);
         return ret;
     }
 
     public boolean isValid(ItemStack itemstack) {
         ChequeStorage storage = ChequeStorage.read(itemstack);
-        return storage != null && StringUtils.isNotBlank(storage.getCurrency())&& StringUtils.isNotBlank(storage.getIssuer());
+        return storage != null && StringUtils.isNotBlank(storage.getCurrency()) && StringUtils.isNotBlank(storage.getIssuer());
     }
 
     public double getValue(ItemStack itemstack) {
         ChequeStorage storage = ChequeStorage.read(itemstack);
-        if(storage != null){
-           return storage.getValue();
-        }
-        return 0;
+        return storage != null ? storage.getValue() : 0;
     }
 
     /**
-     *
      * @param itemstack - The Cheque.
      * @return - Currency it represents.
      */
     public Currency getCurrency(ItemStack itemstack) {
         ChequeStorage storage = ChequeStorage.read(itemstack);
-        if(storage != null){
-            return plugin.getCurrencyManager().getCurrency(storage.getCurrency());
-        }
-        return plugin.getCurrencyManager().getDefaultCurrency();
+        return storage != null
+                ? plugin.getCurrencyManager().getCurrency(storage.getCurrency())
+                : plugin.getCurrencyManager().getDefaultCurrency();
     }
 }

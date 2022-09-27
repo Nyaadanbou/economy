@@ -7,6 +7,16 @@ import org.bukkit.inventory.ItemStack;
 import java.util.Objects;
 
 public class ChequeStorage {
+    private String issuer;
+    private String currency;
+    private double value;
+
+    public static final NamespacedKey key = new NamespacedKey(GemsEconomy.inst(), "cheque");
+
+    public static ChequeStorage read(ItemStack itemStack) {
+        return itemStack.getItemMeta().getPersistentDataContainer().get(key, ChequeStorageType.INSTANCE);
+    }
+
     public String getIssuer() {
         return issuer;
     }
@@ -37,10 +47,6 @@ public class ChequeStorage {
         this.value = value;
     }
 
-    private String issuer;
-   private String currency;
-    private double value;
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -52,13 +58,6 @@ public class ChequeStorage {
     @Override
     public int hashCode() {
         return Objects.hash(issuer, currency, value);
-    }
-    public static final NamespacedKey key = new NamespacedKey(GemsEconomy.inst(), "cheque");
-    public static ChequeStorage read(ItemStack itemStack){
-       ChequeStorage storage = itemStack.getItemMeta().getPersistentDataContainer().get(key,ChequeStorageType.INSTANCE);
-       if(storage == null)
-           storage = ChequeUpdater.tryUpdate(itemStack);
-       return storage;
     }
 
 }
