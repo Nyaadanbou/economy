@@ -46,27 +46,27 @@ public class F {
     }
 
     public static String noPerms() {
-        return prefix() + colorize(cfg.getString("messages.nopermission"));
+        return colorize(cfg.getString("messages.nopermission"));
     }
 
     public static String noConsole() {
-        return prefix() + colorize(cfg.getString("messages.noconsole"));
+        return colorize(cfg.getString("messages.noconsole"));
     }
 
     public static String insufficientFunds() {
-        return prefix() + colorize(cfg.getString("messages.insufficientFunds"));
+        return colorize(cfg.getString("messages.insufficientFunds"));
     }
 
     public static String targetInsufficientFunds() {
-        return prefix() + colorize(cfg.getString("messages.targetInsufficientFunds"));
+        return colorize(cfg.getString("messages.targetInsufficientFunds"));
     }
 
     public static String payerMessage() {
-        return prefix() + colorize(cfg.getString("messages.payer"));
+        return colorize(cfg.getString("messages.payer"));
     }
 
     public static String paidMessage() {
-        return prefix() + colorize(cfg.getString("messages.paid"));
+        return colorize(cfg.getString("messages.paid"));
     }
 
     public static String payUsage() {
@@ -74,31 +74,31 @@ public class F {
     }
 
     public static String addMessage() {
-        return prefix() + colorize(cfg.getString("messages.add"));
+        return colorize(cfg.getString("messages.add"));
     }
 
     public static String takeMessage() {
-        return prefix() + colorize(cfg.getString("messages.take"));
+        return colorize(cfg.getString("messages.take"));
     }
 
     public static String setMessage() {
-        return prefix() + colorize(cfg.getString("messages.set"));
+        return colorize(cfg.getString("messages.set"));
     }
 
     public static String playerDoesNotExist() {
-        return prefix() + colorize(cfg.getString("messages.player_is_null"));
+        return colorize(cfg.getString("messages.player_is_null"));
     }
 
     public static String payYourself() {
-        return prefix() + colorize(cfg.getString("messages.pay_yourself"));
+        return colorize(cfg.getString("messages.pay_yourself"));
     }
 
     public static String unknownCurrency() {
-        return prefix() + colorize(cfg.getString("messages.unknownCurrency"));
+        return colorize(cfg.getString("messages.unknownCurrency"));
     }
 
     public static String unknownSubCommand() {
-        return prefix() + colorize(cfg.getString("messages.unknownCommand"));
+        return colorize(cfg.getString("messages.unknownCommand"));
     }
 
     public static void manageHelp(CommandSender sender) {
@@ -114,11 +114,11 @@ public class F {
     }
 
     public static String balance() {
-        return prefix() + colorize(cfg.getString("messages.balance.current"));
+        return colorize(cfg.getString("messages.balance.current"));
     }
 
     public static String balanceMultiple() {
-        return prefix() + colorize(cfg.getString("messages.balance.multiple"));
+        return colorize(cfg.getString("messages.balance.multiple"));
     }
 
     public static String balanceList() {
@@ -126,11 +126,11 @@ public class F {
     }
 
     public static String invalidAmount() {
-        return prefix() + colorize(cfg.getString("messages.invalidamount"));
+        return colorize(cfg.getString("messages.invalidamount"));
     }
 
     public static String invalidPage() {
-        return prefix() + colorize(cfg.getString("messages.invalidpage"));
+        return colorize(cfg.getString("messages.invalidpage"));
     }
 
     public static void chequeHelp(CommandSender sender) {
@@ -140,15 +140,15 @@ public class F {
     }
 
     public static String chequeSuccess() {
-        return prefix() + colorize(cfg.getString("messages.cheque.success"));
+        return colorize(cfg.getString("messages.cheque.success"));
     }
 
     public static String chequeRedeemed() {
-        return prefix() + colorize(cfg.getString("messages.cheque.redeemed"));
+        return colorize(cfg.getString("messages.cheque.redeemed"));
     }
 
     public static String chequeInvalid() {
-        return prefix() + colorize(cfg.getString("messages.cheque.invalid"));
+        return colorize(cfg.getString("messages.cheque.invalid"));
     }
 
     public static String giveUsage() {
@@ -180,35 +180,35 @@ public class F {
     }
 
     public static String noDefaultCurrency() {
-        return prefix() + colorize(cfg.getString("messages.noDefaultCurrency"));
+        return colorize(cfg.getString("messages.noDefaultCurrency"));
     }
 
     public static String balanceNone() {
-        return prefix() + colorize(cfg.getString("messages.balance.none"));
+        return colorize(cfg.getString("messages.balance.none"));
     }
 
     public static String balanceTopNoSupport() {
-        return prefix() + colorize(cfg.getString("messages.balance_top.nosupport"));
+        return colorize(cfg.getString("messages.balance_top.nosupport"));
     }
 
     public static String payNoPerms() {
-        return prefix() + colorize(cfg.getString("messages.payNoPermission"));
+        return colorize(cfg.getString("messages.payNoPermission"));
     }
 
     public static String currencyNotPayable() {
-        return prefix() + colorize(cfg.getString("messages.currencyNotPayable"));
+        return colorize(cfg.getString("messages.currencyNotPayable"));
     }
 
     public static String accountMissing() {
-        return prefix() + colorize(cfg.getString("messages.accountMissing"));
+        return colorize(cfg.getString("messages.accountMissing"));
     }
 
     public static String cannotReceive() {
-        return prefix() + colorize(cfg.getString("messages.cannotReceiveMoney"));
+        return colorize(cfg.getString("messages.cannotReceiveMoney"));
     }
 
     public static String currencyOverflow() {
-        return prefix() + colorize(cfg.getString("messages.currencyOverflow"));
+        return colorize(cfg.getString("messages.currencyOverflow"));
     }
 
     public static String currencyUsageCreate() {
@@ -278,31 +278,31 @@ public class F {
     }
 
     public static String exchangeSuccess() {
-        return prefix() + colorize(cfg.getString("messages.exchange_success"));
+        return colorize(cfg.getString("messages.exchange_success"));
     }
 
     public static String exchangeSuccessCustom() {
-        return prefix() + colorize(cfg.getString("messages.exchange_success_custom"));
+        return colorize(cfg.getString("messages.exchange_success_custom"));
     }
 
     public static String exchangeSuccessCustomOther() {
-        return prefix() + colorize(cfg.getString("messages.exchange_success_custom_other"));
+        return colorize(cfg.getString("messages.exchange_success_custom_other"));
     }
 
     public static String exchangeRateSet() {
-        return prefix() + colorize(cfg.getString("messages.exchange_rate_set"));
+        return colorize(cfg.getString("messages.exchange_rate_set"));
     }
 
     public static String exchangeNoPermCustom() {
-        return prefix() + colorize(cfg.getString("messages.exchange_command.no_perms.custom"));
+        return colorize(cfg.getString("messages.exchange_command.no_perms.custom"));
     }
 
     public static String exchangeNoPermPreset() {
-        return prefix() + colorize(cfg.getString("messages.exchange_command.no_perms.preset"));
+        return colorize(cfg.getString("messages.exchange_command.no_perms.preset"));
     }
 
     public static String debugStatus() {
-        return prefix() + colorize(cfg.getString("messages.debug_command.current_status"));
+        return colorize(cfg.getString("messages.debug_command.current_status"));
     }
 
 }
