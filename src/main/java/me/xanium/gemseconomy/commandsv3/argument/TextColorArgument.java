@@ -54,8 +54,10 @@ public class TextColorArgument extends CommandArgument<CommandSender, TextColor>
             if (input == null) {
                 return ArgumentParseResult.failure(new NoInputProvidedException(TextColorArgument.Parser.class, commandContext));
             }
-            if (input.length() == 6) {
-                // Input is 6-digit hex value
+            if (NamedTextColor.NAMES.value(input) != null) { // Input is a NamedTextColor
+                inputQueue.remove();
+                return ArgumentParseResult.success(Objects.requireNonNull(NamedTextColor.NAMES.value(input)));
+            } else if (input.length() == 6) { // Input is 6-digit hex value
                 try {
                     int hex = HexFormat.fromHexDigits(input);
                     TextColor color = TextColor.color(hex);
@@ -64,10 +66,6 @@ public class TextColorArgument extends CommandArgument<CommandSender, TextColor>
                 } catch (IllegalArgumentException e) {
                     return ArgumentParseResult.failure(new IllegalArgumentException("Your input 6-digit hex value is not in correct format"));
                 }
-            } else if (NamedTextColor.NAMES.value(input) != null) {
-                // Input is a NamedTextColor
-                inputQueue.remove();
-                return ArgumentParseResult.success(Objects.requireNonNull(NamedTextColor.NAMES.value(input)));
             }
             return ArgumentParseResult.failure(new IllegalArgumentException("Your input must either be a 6-digit hex value or a NamedTextColor from TAB auto completions"));
         }
