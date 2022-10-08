@@ -18,7 +18,6 @@ import me.xanium.gemseconomy.data.StorageType;
 import me.xanium.gemseconomy.utils.SchedulerUtils;
 import me.xanium.gemseconomy.utils.UtilServer;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextColor;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
@@ -96,24 +95,15 @@ public class CurrencyCommand extends GemsCommand {
                     GemsEconomy.lang().sendComponent(sender, "msg_currency_maximum_balance", "maximum_balance", Double.toString(currency.getMaxBalance()));
                     GemsEconomy.lang().sendComponent(sender, GemsEconomy.lang()
                             .component(sender, "msg_currency_decimal_support")
-                            .replaceText(config -> {
-                                config.matchLiteral("{status}");
-                                config.replacement(currency.isDecimalSupported() ? Component.text("Yes", NamedTextColor.GREEN) : Component.text("No", NamedTextColor.RED));
-                            })
+                            .replaceText(GemsMessages.STATUS_REPLACEMENT.apply(currency.isDecimalSupported()))
                     );
                     GemsEconomy.lang().sendComponent(sender, GemsEconomy.lang()
                             .component(sender, "msg_currency_default")
-                            .replaceText(config -> {
-                                config.matchLiteral("{status}");
-                                config.replacement(currency.isDefaultCurrency() ? Component.text("Yes", NamedTextColor.GREEN) : Component.text("No", NamedTextColor.RED));
-                            })
+                            .replaceText(GemsMessages.STATUS_REPLACEMENT.apply(currency.isDefaultCurrency()))
                     );
                     GemsEconomy.lang().sendComponent(sender, GemsEconomy.lang()
                             .component(sender, "msg_currency_payable")
-                            .replaceText(config -> {
-                                config.matchLiteral("{status}");
-                                config.replacement(currency.isPayable() ? Component.text("Yes", NamedTextColor.GREEN) : Component.text("No", NamedTextColor.RED));
-                            })
+                            .replaceText(GemsMessages.STATUS_REPLACEMENT.apply(currency.isPayable()))
                     );
                     GemsEconomy.lang().sendComponent(sender, GemsEconomy.lang()
                             .component(sender, "msg_currency_color")
@@ -249,10 +239,7 @@ public class CurrencyCommand extends GemsCommand {
                     GemsEconomy.lang().sendComponent(sender, GemsEconomy.lang()
                             .component(sender, "msg_toggled_currency_payable")
                             .replaceText(GemsMessages.CURRENCY_REPLACEMENT.apply(currency.getDisplayName()))
-                            .replaceText(config -> {
-                                config.matchLiteral("{status}");
-                                config.replacement(currency.isPayable() ? Component.text("Yes", NamedTextColor.GREEN) : Component.text("No", NamedTextColor.RED));
-                            })
+                            .replaceText(GemsMessages.STATUS_REPLACEMENT.apply(currency.isPayable()))
                     );
                 })
                 .build();
@@ -267,10 +254,7 @@ public class CurrencyCommand extends GemsCommand {
                     GemsEconomy.lang().sendComponent(sender, GemsEconomy.lang()
                             .component(sender, "msg_toggled_currency_decimal_support")
                             .replaceText(GemsMessages.CURRENCY_REPLACEMENT.apply(currency.getDisplayName()))
-                            .replaceText(config -> {
-                                config.matchLiteral("{status}");
-                                config.replacement(currency.isDecimalSupported() ? Component.text("Yes", NamedTextColor.GREEN) : Component.text("No", NamedTextColor.RED));
-                            })
+                            .replaceText(GemsMessages.STATUS_REPLACEMENT.apply(currency.isDecimalSupported()))
                     );
                 })
                 .build();

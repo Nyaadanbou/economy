@@ -18,6 +18,10 @@ import java.util.function.Function;
 @SuppressWarnings("unused")
 public class GemsMessages {
 
+    public static final Function<Boolean, Consumer<TextReplacementConfig.Builder>> STATUS_REPLACEMENT = (bool) -> config -> {
+        config.matchLiteral("{status}");
+        config.replacement(bool ? GemsEconomy.lang().component("msg_enabled") : GemsEconomy.lang().component("msg_disabled"));
+    };
     public static final Function<String, Consumer<TextReplacementConfig.Builder>> ACCOUNT_REPLACEMENT = (name) -> config -> {
         config.matchLiteral("{account}");
         config.replacement(name);

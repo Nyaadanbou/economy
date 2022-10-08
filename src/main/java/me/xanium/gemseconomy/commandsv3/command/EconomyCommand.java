@@ -94,12 +94,7 @@ public class EconomyCommand extends GemsCommand {
                     GemsEconomy.inst().setDebug(!GemsEconomy.inst().isDebug());
                     GemsEconomy.lang().sendComponent(sender, GemsEconomy.lang()
                             .component(sender, "msg_debug_status")
-                            .replaceText(config -> {
-                                config.matchLiteral("{status}");
-                                config.replacement(GemsEconomy.inst().isDebug()
-                                        ? GemsEconomy.lang().component(sender, "msg_enabled")
-                                        : GemsEconomy.lang().component(sender, "msg_disabled"));
-                            })
+                            .replaceText(GemsMessages.STATUS_REPLACEMENT.apply(GemsEconomy.inst().isDebug()))
                     );
                 })
                 .build();
