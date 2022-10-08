@@ -10,7 +10,6 @@ package me.xanium.gemseconomy.cheque;
 
 import me.xanium.gemseconomy.GemsEconomy;
 import me.xanium.gemseconomy.currency.Currency;
-import me.xanium.gemseconomy.file.F;
 import me.xanium.gemseconomy.utils.UtilString;
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.Material;
@@ -42,12 +41,15 @@ public class ChequeManager {
         if (!currency.isPayable()) return null;
 
         if (creatorName.equals("CONSOLE")) {
-            creatorName = F.consoleName();
+            creatorName = GemsEconomy.lang().toLegacy("msg_console_name");
         }
         List<String> formatLore = new ArrayList<>();
 
-        for (String baseLore2 : Objects.requireNonNull(chequeBaseItem.getItemMeta().getLore())) {
-            formatLore.add(baseLore2.replace("{value}", currency.format(amount)).replace("{player}", creatorName));
+        for (String baseLore : Objects.requireNonNull(chequeBaseItem.getItemMeta().getLore())) {
+            formatLore.add(baseLore
+                    .replace("{value}", currency.format(amount))
+                    .replace("{player}", creatorName)
+            );
         }
         ItemStack ret = chequeBaseItem.clone();
         ItemMeta meta = ret.getItemMeta();
@@ -69,11 +71,11 @@ public class ChequeManager {
     }
 
     /**
-     * @param itemstack - The Cheque.
-     * @return - Currency it represents.
+     * @param itemStack - The cheque item
+     * @return Currency it represents
      */
-    public Currency getCurrency(ItemStack itemstack) {
-        ChequeStorage storage = ChequeStorage.read(itemstack);
+    public Currency getCurrency(ItemStack itemStack) {
+        ChequeStorage storage = ChequeStorage.read(itemStack);
         return storage != null
                 ? plugin.getCurrencyManager().getCurrency(storage.getCurrency())
                 : plugin.getCurrencyManager().getDefaultCurrency();

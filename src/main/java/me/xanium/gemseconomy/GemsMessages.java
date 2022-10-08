@@ -1,0 +1,95 @@
+package me.xanium.gemseconomy;
+
+import de.themoep.utils.lang.bukkit.LanguageManager;
+import net.kyori.adventure.audience.Audience;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.minimessage.MiniMessage;
+import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
+import org.bukkit.ChatColor;
+import org.bukkit.command.CommandSender;
+import org.bukkit.plugin.java.JavaPlugin;
+
+@SuppressWarnings("unused")
+public class GemsMessages {
+
+    private final LanguageManager lang;
+
+    public GemsMessages(JavaPlugin plugin) {
+        this.lang = new LanguageManager(plugin, "languages", "zh");
+        this.lang.setPlaceholderPrefix("{");
+        this.lang.setPlaceholderSuffix("}");
+    }
+
+    public LanguageManager internal() {
+        return lang;
+    }
+
+    public String raw(CommandSender sender, String key, String... subst) {
+        if (subst.length == 0) {
+            return this.lang.getConfig(sender).get(key);
+        } else {
+            return this.lang.getConfig(sender).get(key, subst);
+        }
+    }
+
+    public String raw(String key, String... subst) {
+        return raw(null, key, subst);
+    }
+
+    public String legacy(CommandSender sender, String key, String... subst) {
+        return ChatColor.translateAlternateColorCodes('&', raw(sender, key, subst));
+    }
+
+    public String legacy(String key, String... subst) {
+        return legacy(null, key, subst);
+    }
+
+    public Component component(CommandSender sender, String key, String... subst) {
+        return MiniMessage.miniMessage().deserialize(raw(sender, key, subst));
+    }
+
+    public Component component(String key, String... subst) {
+        return component(null, key, subst);
+    }
+
+    public String toLegacy(CommandSender sender, String key, String... subst) {
+        return LegacyComponentSerializer.legacyAmpersand().serialize(component(sender, key, subst));
+    }
+
+    public String toLegacy(String key, String... subst) {
+        return toLegacy(null, key, subst);
+    }
+
+    public void sendComponent(CommandSender sender, String key, String... subst) {
+        Audience audience = GemsEconomy.inst().getAdventure().sender(sender);
+        Component component = component(sender, key, subst);
+        audience.sendMessage(component);
+    }
+
+    public void sendComponent(CommandSender sender, Component component) {
+        Audience audience = GemsEconomy.inst().getAdventure().sender(sender);
+        audience.sendMessage(component);
+    }
+
+    public void sendActionBar(CommandSender sender, String key, String... subst) {
+        Audience audience = GemsEconomy.inst().getAdventure().sender(sender);
+        Component component = component(sender, key, subst);
+        audience.sendActionBar(component);
+    }
+
+    public void sendActionBar(CommandSender sender, Component component) {
+        Audience audience = GemsEconomy.inst().getAdventure().sender(sender);
+        audience.sendActionBar(component);
+    }
+
+    public void sendLegacy(CommandSender sender, String key, String... subst) {
+        String legacy = legacy(sender, key, subst);
+        sender.sendMessage(legacy);
+    }
+
+    public void sendRaw(CommandSender sender, String key, String... subst) {
+        String raw = raw(sender, key, subst);
+        sender.sendMessage(raw);
+    }
+
+}

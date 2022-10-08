@@ -1,4 +1,5 @@
 package me.xanium.gemseconomy.utils;
+
 import java.nio.charset.StandardCharsets;
 import java.util.UUID;
 
@@ -8,8 +9,7 @@ import java.util.UUID;
 public final class OfflineModeProfiles {
 
     /**
-     * Gets the {@link UUID} given to a player with the
-     * given username on an offline mode server.
+     * Gets the {@link UUID} given to a player with the given username on an offline mode server.
      *
      * @param username the name of the player
      * @return the uuid
@@ -21,4 +21,5 @@ public final class OfflineModeProfiles {
     private OfflineModeProfiles() {
         throw new UnsupportedOperationException("This class cannot be instantiated");
     }
+
 }

@@ -13,8 +13,8 @@ import me.xanium.gemseconomy.currency.Currency;
 import me.xanium.gemseconomy.utils.OfflineModeProfiles;
 import me.xanium.gemseconomy.utils.SchedulerUtils;
 import me.xanium.gemseconomy.utils.UtilServer;
+import net.kyori.adventure.text.format.TextColor;
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -23,6 +23,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.LinkedList;
+import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
 
@@ -70,7 +71,7 @@ public class YamlStorage extends DataStorage {
                 String single = getConfig().getString(path + ".singular");
                 String plural = getConfig().getString(path + ".plural");
                 Currency currency = new Currency(UUID.fromString(uuid), single, plural);
-                currency.setColor(ChatColor.valueOf(getConfig().getString(path + ".color").toUpperCase()));
+                currency.setColor(TextColor.fromHexString(Objects.requireNonNull(getConfig().getString(path + ".color"), path + ".color cannot be null")));
                 currency.setDecimalSupported(getConfig().getBoolean(path + ".decimalsupported"));
                 currency.setDefaultBalance(getConfig().getDouble(path + ".defaultbalance"));
                 currency.setMaxBalance(getConfig().getDouble(path + ".maxbalance"));
@@ -98,7 +99,7 @@ public class YamlStorage extends DataStorage {
         getConfig().set(path + ".decimalsupported", currency.isDecimalSupported());
         getConfig().set(path + ".defaultcurrency", currency.isDefaultCurrency());
         getConfig().set(path + ".payable", currency.isPayable());
-        getConfig().set(path + ".color", currency.getColor().name());
+        getConfig().set(path + ".color", currency.getColor().asHexString());
         getConfig().set(path + ".exchange_rate", currency.getExchangeRate());
         try {
             getConfig().save(getFile());
@@ -127,7 +128,7 @@ public class YamlStorage extends DataStorage {
     public ArrayList<Account> getOfflineAccounts() {
         String path = "accounts";
         ArrayList<Account> accounts = new ArrayList<>();
-        for (String uuid : getConfig().getConfigurationSection(path).getKeys(false)) {
+        for (String uuid : Objects.requireNonNull(getConfig().getConfigurationSection(path)).getKeys(false)) {
             Account acc = loadAccount(UUID.fromString(uuid));
             accounts.add(acc);
         }

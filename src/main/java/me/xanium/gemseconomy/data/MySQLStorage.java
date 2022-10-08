@@ -19,17 +19,30 @@ import me.xanium.gemseconomy.utils.OfflineModeProfiles;
 import me.xanium.gemseconomy.utils.SchedulerUtils;
 import me.xanium.gemseconomy.utils.UtilServer;
 import me.xanium.gemseconomy.utils.UtilTowny;
+import net.kyori.adventure.text.format.TextColor;
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.jetbrains.annotations.Nullable;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
-import java.sql.*;
-import java.util.*;
+import java.sql.Connection;
+import java.sql.DatabaseMetaData;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
+@SuppressWarnings({"SqlDialectInspection", "SqlNoDataSourceInspection"})
 public class MySQLStorage extends DataStorage {
 
     private final String currencyTable = getTablePrefix() + "_currencies";
@@ -61,7 +74,7 @@ public class MySQLStorage extends DataStorage {
     }
 
     private String getTablePrefix() {
-        return GemsEconomy.inst().getConfig().getString("mysql.tableprefix");
+        return GemsEconomy.inst().getConfig().getString("mysql.prefix");
     }
 
     private void setupTables(Connection connection) throws SQLException {
@@ -176,7 +189,7 @@ public class MySQLStorage extends DataStorage {
                 boolean decimals = set.getInt("decimals_supported") == 1;
                 boolean isDefault = set.getInt("is_default") == 1;
                 boolean payable = set.getInt("payable") == 1;
-                ChatColor color = ChatColor.valueOf(set.getString("color"));
+                TextColor color = TextColor.fromHexString(Objects.requireNonNull(set.getString("color"), "color column cannot be null"));
                 double exchangeRate = set.getDouble("exchange_rate");
                 Currency currency = new Currency(uuid, singular, plural);
                 currency.setDefaultBalance(defaultBalance);
@@ -211,7 +224,7 @@ public class MySQLStorage extends DataStorage {
                 boolean decimals = set.getInt("decimals_supported") == 1;
                 boolean isDefault = set.getInt("is_default") == 1;
                 boolean payable = set.getInt("payable") == 1;
-                ChatColor color = ChatColor.valueOf(set.getString("color"));
+                TextColor color = TextColor.fromHexString(Objects.requireNonNull(set.getString("color"), "color column cannot be null"));
                 double exchangeRate = set.getDouble("exchange_rate");
 
                 currency.setDefaultBalance(defaultBalance);
@@ -242,7 +255,7 @@ public class MySQLStorage extends DataStorage {
             stmt.setInt(7, currency.isDecimalSupported() ? 1 : 0);
             stmt.setInt(8, currency.isDefaultCurrency() ? 1 : 0);
             stmt.setInt(9, currency.isPayable() ? 1 : 0);
-            stmt.setString(10, currency.getColor().name());
+            stmt.setString(10, currency.getColor().toString());
             stmt.setDouble(11, currency.getExchangeRate());
 
             stmt.execute();
@@ -355,7 +368,6 @@ public class MySQLStorage extends DataStorage {
         }
 
         if (account == null) {
-            // TODO prevent players using /pay etc. commands to create trash accounts
             if (UtilTowny.isTownyAccount(name)) {
                 // work around with Towny
                 account = new Account(OfflineModeProfiles.getUniqueId(name), name);
@@ -522,4 +534,5 @@ public class MySQLStorage extends DataStorage {
     public HikariDataSource getHikari() {
         return hikari;
     }
+
 }

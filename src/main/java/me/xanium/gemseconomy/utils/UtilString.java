@@ -9,30 +9,13 @@
 package me.xanium.gemseconomy.utils;
 
 import com.google.common.collect.Lists;
-import me.xanium.gemseconomy.file.F;
 import org.bukkit.ChatColor;
-import org.bukkit.command.CommandSender;
 
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.util.List;
 
 public class UtilString {
-
-    public static boolean validateInput(CommandSender sender, String input) {
-        double amount;
-        try {
-            amount = Double.parseDouble(input);
-            if (amount < 0) {
-                throw new NumberFormatException();
-            }
-
-        } catch (NumberFormatException ex) {
-            sender.sendMessage(F.prefix() + F.invalidAmount());
-            return false;
-        }
-        return true;
-    }
 
     public static String format(double money) {
         DecimalFormat format = new DecimalFormat();

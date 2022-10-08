@@ -14,6 +14,7 @@ import me.xanium.gemseconomy.currency.Currency;
 
 import java.util.UUID;
 
+@SuppressWarnings("unused")
 public class GemsEconomyAPI {
 
     public final GemsEconomy plugin = GemsEconomy.inst();
@@ -119,6 +120,5 @@ public class GemsEconomyAPI {
         }
         return null;
     }
-
 
 }

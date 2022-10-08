@@ -9,18 +9,23 @@
 package me.xanium.gemseconomy.currency;
 
 import me.xanium.gemseconomy.utils.UtilString;
-import org.bukkit.ChatColor;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.format.TextColor;
+import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
+import org.jetbrains.annotations.NotNull;
 
 import java.text.NumberFormat;
 import java.util.UUID;
 
+@SuppressWarnings("unused")
 public class Currency {
 
     private final UUID uuid;
     private String singular;
     private String plural;
     private String symbol = null;
-    private ChatColor color = ChatColor.WHITE;
+    private TextColor color = NamedTextColor.WHITE;
     private boolean decimalSupported = true;
     private boolean payable = true;
     private boolean defaultCurrency = false;
@@ -70,7 +75,7 @@ public class Currency {
         return this.maxBalance == 0D ? Integer.MAX_VALUE : this.maxBalance;
     }
 
-    public String format(double amount) {
+    public @NotNull String format(double amount) {
         StringBuilder amt = new StringBuilder();
         if (this.getSymbol() != null) {
             amt.append(this.getSymbol());
@@ -92,6 +97,18 @@ public class Currency {
             amt.append(this.getSingular().replace("_", " "));
         }
         return amt.toString();
+    }
+
+    public @NotNull Component componentFormat(double amount) {
+        return Component.text(format(amount)).color(color);
+    }
+
+    public @NotNull String getDisplayNameLegacy() {
+        return LegacyComponentSerializer.legacyAmpersand().serialize(getDisplayName());
+    }
+
+    public @NotNull Component getDisplayName() {
+        return Component.text(singular).color(color);
     }
 
     public boolean isDefaultCurrency() {
@@ -118,11 +135,11 @@ public class Currency {
         this.decimalSupported = decimalSupported;
     }
 
-    public ChatColor getColor() {
+    public TextColor getColor() {
         return this.color;
     }
 
-    public void setColor(ChatColor color) {
+    public void setColor(TextColor color) {
         this.color = color;
     }
 

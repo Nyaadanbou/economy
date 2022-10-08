@@ -14,6 +14,7 @@ import java.util.Date;
 import java.util.Locale;
 import java.util.TimeZone;
 
+@SuppressWarnings("unused")
 public class UtilTime {
 
     public static final String DATE_FORMAT_NOW = "dd/MM/yyyy HH:mm:ss";
@@ -36,14 +37,14 @@ public class UtilTime {
         return sdf.format(cal.getTime());
     }
 
-    public static String clock(boolean seconds){
+    public static String clock(boolean seconds) {
         TimeZone zone = TimeZone.getTimeZone("Europe/Oslo");
         Date date = new Date();
-        if(seconds){
+        if (seconds) {
             SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss");
             sdf.setTimeZone(zone);
             return sdf.format(date);
-        }else {
+        } else {
             SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
             sdf.setTimeZone(zone);
             return sdf.format(date);
@@ -54,10 +55,11 @@ public class UtilTime {
         return System.currentTimeMillis() - from > required;
     }
 
-    public static String getCurrentDay(){
+    public static String getCurrentDay() {
         SimpleDateFormat dayFormat = new SimpleDateFormat("EEEE", Locale.US);
         Calendar calendar = Calendar.getInstance();
         return dayFormat.format(calendar.getTime());
 
     }
+
 }

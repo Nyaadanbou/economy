@@ -17,6 +17,7 @@ import java.util.Set;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
+@SuppressWarnings("unused")
 public abstract class AbstractLogger {
 
     private final GemsEconomy plugin;
@@ -25,6 +26,7 @@ public abstract class AbstractLogger {
     private final Set<String> toAdd;
     private volatile boolean zipping;
 
+    @SuppressWarnings("ResultOfMethodCallIgnored")
     public AbstractLogger(GemsEconomy plugin) {
         this.plugin = plugin;
         this.folder = new File(plugin.getDataFolder() + File.separator + "logs");
@@ -55,10 +57,11 @@ public abstract class AbstractLogger {
         return folder;
     }
 
+    @SuppressWarnings("ResultOfMethodCallIgnored")
     public void zipAndReplace() {
         zipping = true;
 
-       plugin.getServer().getScheduler().runTaskAsynchronously(plugin, () -> {
+        plugin.getServer().getScheduler().runTaskAsynchronously(plugin, () -> {
             try {
                 String date = UtilTime.date();
                 date = date.replace("/", "-");
@@ -126,7 +129,7 @@ public abstract class AbstractLogger {
             StringBuilder builder = new StringBuilder();
             appendDate(builder);
             StackTraceElement element = ex.getStackTrace()[0];
-            builder.append('[').append(ex.toString()).append(']').append(' ');
+            builder.append('[').append(ex).append(']').append(' ');
             builder.append('[').append("ERROR - ").append(ex.getMessage()).append(" -- ").append(element.getFileName())
                     .append(" where ").append(element.getMethodName()).append(" at ").append(element.getLineNumber())
                     .append(']').append(' ');
@@ -137,11 +140,11 @@ public abstract class AbstractLogger {
         }
     }
 
-    private final void appendDate(StringBuilder builder) {
+    private void appendDate(StringBuilder builder) {
         builder.append('[').append(getDateAndTime()).append(']').append(' ');
     }
 
-    private final void writeToFile(String string) throws IOException {
+    private void writeToFile(String string) throws IOException {
         if (zipping) {
             toAdd.add(string);
             return;

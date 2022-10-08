@@ -26,9 +26,8 @@ public class UpdateForwarder implements PluginMessageListener {
     /**
      * GemsEconomy Bungee-Spigot Messaging Listener
      * <p>
-     * This listener is used to update currencies and balance for players on
-     * different servers. This is important to sustain synced balances and
-     * currencies on all the servers.
+     * This listener is used to update currencies and balance for players on different servers. This is important to
+     * sustain synced balances and currencies on all the servers.
      */
     private final GemsEconomy plugin;
 
@@ -98,6 +97,5 @@ public class UpdateForwarder implements PluginMessageListener {
         }
         player.sendPluginMessage(GemsEconomy.inst(), "BungeeCord", out.toByteArray());
     }
-
 
 }

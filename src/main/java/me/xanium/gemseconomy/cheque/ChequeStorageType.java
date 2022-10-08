@@ -29,4 +29,5 @@ public class ChequeStorageType implements PersistentDataType<String, ChequeStora
     public @NotNull ChequeStorage fromPrimitive(@NotNull String primitive, @NotNull PersistentDataAdapterContext context) {
         return gson.fromJson(primitive, ChequeStorage.class);
     }
+
 }

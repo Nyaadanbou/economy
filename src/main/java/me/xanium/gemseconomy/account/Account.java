@@ -14,7 +14,7 @@ import me.xanium.gemseconomy.event.GemsConversionEvent;
 import me.xanium.gemseconomy.event.GemsPostTransactionEvent;
 import me.xanium.gemseconomy.event.GemsPreTransactionEvent;
 import me.xanium.gemseconomy.utils.SchedulerUtils;
-import me.xanium.gemseconomy.utils.TranactionType;
+import me.xanium.gemseconomy.utils.TransactionType;
 import me.xanium.gemseconomy.utils.UtilServer;
 import org.bukkit.Bukkit;
 
@@ -41,7 +41,7 @@ public class Account {
 
     public boolean withdraw(Currency currency, double amount) {
         if (hasEnough(currency, amount)) {
-            GemsPreTransactionEvent pre = new GemsPreTransactionEvent(currency, this, amount, TranactionType.WITHDRAW);
+            GemsPreTransactionEvent pre = new GemsPreTransactionEvent(currency, this, amount, TransactionType.WITHDRAW);
             SchedulerUtils.run(() -> Bukkit.getPluginManager().callEvent(pre));
             if (pre.isCancelled()) return false;
 
@@ -50,7 +50,7 @@ public class Account {
 
             this.modifyBalance(currency, cappedAmount, true);
 
-            GemsPostTransactionEvent post = new GemsPostTransactionEvent(currency, this, amount, TranactionType.WITHDRAW);
+            GemsPostTransactionEvent post = new GemsPostTransactionEvent(currency, this, amount, TransactionType.WITHDRAW);
             SchedulerUtils.run(() -> Bukkit.getPluginManager().callEvent(post));
 
             GemsEconomy.inst().getEconomyLogger().log("[WITHDRAW] Account: " + getDisplayName() + " were withdrawn: " + currency.format(amount) + " and now has " + currency.format(cappedAmount));
@@ -61,7 +61,7 @@ public class Account {
 
     public boolean deposit(Currency currency, double amount) {
         if (canReceiveCurrency()) {
-            GemsPreTransactionEvent pre = new GemsPreTransactionEvent(currency, this, amount, TranactionType.DEPOSIT);
+            GemsPreTransactionEvent pre = new GemsPreTransactionEvent(currency, this, amount, TransactionType.DEPOSIT);
             SchedulerUtils.run(() -> Bukkit.getPluginManager().callEvent(pre));
             if (pre.isCancelled()) return false;
 
@@ -70,7 +70,7 @@ public class Account {
 
             this.modifyBalance(currency, cappedAmount, true);
 
-            GemsPostTransactionEvent post = new GemsPostTransactionEvent(currency, this, amount, TranactionType.DEPOSIT);
+            GemsPostTransactionEvent post = new GemsPostTransactionEvent(currency, this, amount, TransactionType.DEPOSIT);
             SchedulerUtils.run(() -> Bukkit.getPluginManager().callEvent(post));
 
             GemsEconomy.inst().getEconomyLogger().log("[DEPOSIT] Account: " + getDisplayName() + " were deposited: " + currency.format(amount) + " and now has " + currency.format(cappedAmount));
@@ -79,14 +79,14 @@ public class Account {
         return false;
     }
 
-    public boolean convert(Currency exchanged, double exchangeAmount, Currency received, double amount) {
-        GemsConversionEvent event = new GemsConversionEvent(exchanged, received, this, exchangeAmount, amount);
+    public boolean convert(Currency exchanged, double exchangeAmount, Currency received, double receiveAmount) {
+        GemsConversionEvent event = new GemsConversionEvent(exchanged, received, this, exchangeAmount, receiveAmount);
         SchedulerUtils.run(() -> Bukkit.getPluginManager().callEvent(event));
         if (event.isCancelled()) return false;
 
-        if (amount != -1) {
+        if (receiveAmount != -1) {
             double removed = getBalance(exchanged) - exchangeAmount;
-            double added = getBalance(received) + amount;
+            double added = getBalance(received) + receiveAmount;
 
             // cap balance
             double cappedRemoved = Math.min(removed, exchanged.getMaxBalance());
@@ -95,7 +95,7 @@ public class Account {
             modifyBalance(exchanged, cappedRemoved, false);
             modifyBalance(received, cappedAdded, false);
             GemsEconomy.inst().getDataStore().saveAccount(this);
-            GemsEconomy.inst().getEconomyLogger().log("[CONVERSION - Custom Amount] Account: " + getDisplayName() + " converted " + exchanged.format(exchangeAmount) + " to " + received.format(amount));
+            GemsEconomy.inst().getEconomyLogger().log("[CONVERSION - Custom Amount] Account: " + getDisplayName() + " converted " + exchanged.format(exchangeAmount) + " to " + received.format(receiveAmount));
             return true;
         }
         double rate;
@@ -165,13 +165,13 @@ public class Account {
         // cap the amount
         double cappedAmount = Math.min(amount, currency.getMaxBalance());
 
-        GemsPreTransactionEvent pre = new GemsPreTransactionEvent(currency, this, amount, TranactionType.SET);
+        GemsPreTransactionEvent pre = new GemsPreTransactionEvent(currency, this, amount, TransactionType.SET);
         SchedulerUtils.run(() -> Bukkit.getPluginManager().callEvent(pre));
         if (pre.isCancelled()) return;
 
         getBalances().put(currency, cappedAmount);
 
-        GemsPostTransactionEvent post = new GemsPostTransactionEvent(currency, this, cappedAmount, TranactionType.SET);
+        GemsPostTransactionEvent post = new GemsPostTransactionEvent(currency, this, cappedAmount, TransactionType.SET);
         SchedulerUtils.run(() -> Bukkit.getPluginManager().callEvent(post));
 
         GemsEconomy.inst().getEconomyLogger().log("[BALANCE SET] Account: " + getDisplayName() + " were set to: " + currency.format(cappedAmount));

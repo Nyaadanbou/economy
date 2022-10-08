@@ -115,5 +115,6 @@ public class AccountManager {
     public List<Account> getAllAccounts() {
         return plugin.getDataStore().getOfflineAccounts();
     }
+
 }
 

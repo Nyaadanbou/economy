@@ -2,6 +2,8 @@ package me.xanium.gemseconomy.currency;
 
 import com.google.common.collect.Lists;
 import me.xanium.gemseconomy.GemsEconomy;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 import java.util.UUID;
@@ -24,7 +26,7 @@ public class CurrencyManager {
         return false;
     }
 
-    public Currency getCurrency(String name) {
+    public @Nullable Currency getCurrency(String name) {
         for (Currency currency : currencies) {
             if (currency.getSingular().equalsIgnoreCase(name) || currency.getPlural().equalsIgnoreCase(name)) {
                 return currency;
@@ -33,7 +35,7 @@ public class CurrencyManager {
         return null;
     }
 
-    public Currency getCurrency(UUID uuid) {
+    public @Nullable Currency getCurrency(UUID uuid) {
         for (Currency currency : getCurrencies()) {
             if (!currency.getUuid().equals(uuid)) continue;
             return currency;
@@ -41,7 +43,7 @@ public class CurrencyManager {
         return null;
     }
 
-    public Currency getDefaultCurrency() {
+    public @Nullable Currency getDefaultCurrency() {
         for (Currency currency : currencies) {
             if (!currency.isDefaultCurrency()) continue;
             return currency;
@@ -49,9 +51,9 @@ public class CurrencyManager {
         return null;
     }
 
-    public void createNewCurrency(String singular, String plural) {
+    public @Nullable Currency createNewCurrency(String singular, String plural) {
         if (currencyExist(singular) || currencyExist(plural)) {
-            return;
+            return null;
         }
 
         Currency currency = new Currency(UUID.randomUUID(), singular, plural);
@@ -63,19 +65,22 @@ public class CurrencyManager {
         add(currency);
 
         plugin.getDataStore().saveCurrency(currency);
+
+        return currency;
     }
 
-    public void deleteCurrency(Currency currency) {
+    public void remove(Currency currency) {
+        currencies.remove(currency);
         plugin.getDataStore().deleteCurrency(currency);
     }
 
     public void add(Currency currency) {
         if (currencies.contains(currency)) return;
-
         currencies.add(currency);
     }
 
-    public List<Currency> getCurrencies() {
+    public @NotNull List<Currency> getCurrencies() {
         return currencies;
     }
+
 }

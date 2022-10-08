@@ -15,10 +15,9 @@ description = "A multi-currency economy plugin for spigot servers"
 repositories {
     mavenLocal()
     mavenCentral()
-
-    maven("https://repo.purpurmc.org/snapshots") {
+    maven("https://repo.papermc.io/repository/maven-public/") {
         content {
-            includeGroup("org.purpurmc.purpur")
+            includeGroup("io.papermc.paper")
         }
     }
     maven("https://jitpack.io") {
@@ -26,27 +25,33 @@ repositories {
             includeGroup("com.github.MilkBowl")
         }
     }
-    maven("https://repo.codemc.org/repository/maven-public/") {
+    maven("https://repo.minebench.de") {
         content {
-            includeGroup("org.purpurmc.purpur")
+            includeGroup("de.themoep.utils")
         }
     }
 }
 
 dependencies {
     // API
-    compileOnly("org.purpurmc.purpur","purpur-api", "1.19.2-R0.1-SNAPSHOT")
+    compileOnly("io.papermc.paper", "paper-api", "1.17.1-R0.1-SNAPSHOT")
+    compileOnly("org.jetbrains", "annotations", "23.0.0")
 
     // Plugin libraries
-    compileOnly("me.lucko", "helper" ,"5.6.10")
-    compileOnly("com.github.MilkBowl","VaultAPI","1.7")
-    compileOnly("dev.jorel","commandapi-core","8.5.1")
-    compileOnly("org.jetbrains","annotations","23.0.0")
+    compileOnly("me.lucko", "helper", "5.6.10")
+    compileOnly("com.github.MilkBowl", "VaultAPI", "1.7")
 
     // Libraries that needs to be shaded
-    implementation("cloud.commandframework","cloud-paper","1.7.1")
-    implementation("cloud.commandframework", "cloud-minecraft-extras", "1.7.1")
-    implementation("com.zaxxer","HikariCP","5.0.1")
+    implementation("net.kyori", "adventure-api", "4.11.0")
+    implementation("net.kyori", "adventure-platform-bukkit", "4.1.2")
+    implementation("net.kyori", "adventure-text-minimessage", "4.11.0")
+    implementation("de.themoep.utils", "lang-bukkit", "1.3-SNAPSHOT")
+    implementation("com.zaxxer", "HikariCP", "5.0.1")
+    val cloudVersion = "1.7.1"
+    implementation("cloud.commandframework", "cloud-paper", cloudVersion)
+    implementation("cloud.commandframework", "cloud-minecraft-extras", cloudVersion)
+
+    annotationProcessor("cloud.commandframework:cloud-annotations:1.7.1")
 }
 
 indra {
@@ -72,8 +77,9 @@ tasks {
         minimize()
         archiveFileName.set("${project.name}-${project.version}.jar")
         sequenceOf(
-            "org.slf4j",
-            "org.jetbrains",
+//            "org.slf4j",
+//            "org.jetbrains",
+            "net.kyori",
             "com.zaxxer",
             "cloud.commandframework",
             "io.leangen.geantyref"
@@ -92,7 +98,7 @@ tasks {
         doLast {
             exec {
                 workingDir("build/libs")
-                commandLine("scp", jar.get().archiveFileName.get(), "dev:data/devmisc/plugins")
+                commandLine("scp", jar.get().archiveFileName.get(), "dev:data/dev/plugins")
             }
         }
     }
