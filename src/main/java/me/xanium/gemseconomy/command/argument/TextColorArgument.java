@@ -14,7 +14,6 @@ import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.util.HexFormat;
 import java.util.List;
-import java.util.Objects;
 import java.util.Queue;
 import java.util.function.BiFunction;
 
@@ -54,15 +53,16 @@ public class TextColorArgument extends CommandArgument<CommandSender, TextColor>
             if (input == null) {
                 return ArgumentParseResult.failure(new NoInputProvidedException(TextColorArgument.Parser.class, commandContext));
             }
-            if (NamedTextColor.NAMES.value(input) != null) { // Input is a NamedTextColor
+            NamedTextColor namedTextColor = NamedTextColor.NAMES.value(input);
+            if (namedTextColor != null) { // Input is a NamedTextColor
                 inputQueue.remove();
-                return ArgumentParseResult.success(Objects.requireNonNull(NamedTextColor.NAMES.value(input)));
+                return ArgumentParseResult.success(namedTextColor);
             } else if (input.length() == 6) { // Input is 6-digit hex value
                 try {
-                    int hex = HexFormat.fromHexDigits(input);
-                    TextColor color = TextColor.color(hex);
+                    int hexDigits = HexFormat.fromHexDigits(input);
+                    TextColor textColor = TextColor.color(hexDigits);
                     inputQueue.remove();
-                    return ArgumentParseResult.success(color);
+                    return ArgumentParseResult.success(textColor);
                 } catch (IllegalArgumentException e) {
                     return ArgumentParseResult.failure(new IllegalArgumentException("Your input 6-digit hex value is not in correct format"));
                 }

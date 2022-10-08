@@ -215,10 +215,10 @@ public class CurrencyCommand extends GemsCommand {
                 .handler(context -> {
                     CommandSender sender = context.getSender();
                     Currency currency = context.get("currency");
-                    Currency c = GemsEconomy.inst().getCurrencyManager().getDefaultCurrency();
-                    if (c != null) {
-                        c.setDefaultCurrency(false);
-                        GemsEconomy.inst().getDataStore().saveCurrency(c);
+                    Currency defaultCurrency = GemsEconomy.inst().getCurrencyManager().getDefaultCurrency();
+                    if (defaultCurrency != null) {
+                        defaultCurrency.setDefaultCurrency(false);
+                        GemsEconomy.inst().getDataStore().saveCurrency(defaultCurrency);
                     }
                     currency.setDefaultCurrency(true);
                     GemsEconomy.inst().getDataStore().saveCurrency(currency);
