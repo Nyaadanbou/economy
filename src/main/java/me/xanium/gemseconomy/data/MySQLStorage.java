@@ -257,7 +257,7 @@ public class MySQLStorage extends DataStorage {
             stmt.setInt(7, currency.isDecimalSupported() ? 1 : 0);
             stmt.setInt(8, currency.isDefaultCurrency() ? 1 : 0);
             stmt.setInt(9, currency.isPayable() ? 1 : 0);
-            stmt.setString(10, currency.getColor().toString());
+            stmt.setString(10, currency.getColor().asHexString());
             stmt.setDouble(11, currency.getExchangeRate());
 
             stmt.execute();
