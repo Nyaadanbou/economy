@@ -3,13 +3,13 @@ package me.xanium.gemseconomy.commandsv3.command;
 import cloud.commandframework.Command;
 import me.lucko.helper.utils.annotation.NonnullByDefault;
 import me.xanium.gemseconomy.GemsEconomy;
+import me.xanium.gemseconomy.GemsMessages;
 import me.xanium.gemseconomy.account.Account;
 import me.xanium.gemseconomy.commandsv3.GemsCommand;
 import me.xanium.gemseconomy.commandsv3.GemsCommands;
 import me.xanium.gemseconomy.commandsv3.argument.AmountArgument;
 import me.xanium.gemseconomy.commandsv3.argument.CurrencyArgument;
 import me.xanium.gemseconomy.currency.Currency;
-import net.kyori.adventure.text.Component;
 import org.bukkit.Material;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -101,13 +101,10 @@ public class ChequeCommand extends GemsCommand {
             player.getInventory().addItem(GemsEconomy.inst().getChequeManager().write(player.getName(), currency, amount));
             GemsEconomy.lang().sendComponent(player, "msg_cheque_written");
         } else {
-            Component message = GemsEconomy.lang()
+            GemsEconomy.lang().sendComponent(player, GemsEconomy.lang()
                     .component(player, "err_insufficient_funds")
-                    .replaceText(config -> {
-                        config.matchLiteral("{currency}");
-                        config.replacement(currency.getDisplayName());
-                    });
-            GemsEconomy.lang().sendComponent(player, message);
+                    .replaceText(GemsMessages.CURRENCY_REPLACEMENT.apply(currency.getDisplayName()))
+            );
         }
     }
 

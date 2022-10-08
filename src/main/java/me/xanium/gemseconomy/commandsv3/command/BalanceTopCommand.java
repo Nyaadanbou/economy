@@ -4,12 +4,12 @@ import cloud.commandframework.Command;
 import cloud.commandframework.arguments.standard.IntegerArgument;
 import me.lucko.helper.utils.annotation.NonnullByDefault;
 import me.xanium.gemseconomy.GemsEconomy;
+import me.xanium.gemseconomy.GemsMessages;
 import me.xanium.gemseconomy.commandsv3.GemsCommand;
 import me.xanium.gemseconomy.commandsv3.GemsCommands;
 import me.xanium.gemseconomy.commandsv3.argument.CurrencyArgument;
 import me.xanium.gemseconomy.currency.CachedTopListEntry;
 import me.xanium.gemseconomy.currency.Currency;
-import net.kyori.adventure.text.Component;
 import org.bukkit.command.CommandSender;
 
 import java.util.List;
@@ -64,31 +64,31 @@ public class BalanceTopCommand extends GemsCommand {
     private void sendBalanceTop(CommandSender sender, Currency currency, int offset, int pageNum) {
         GemsEconomy.inst().getDataStore().getTopList(currency, offset, ACCOUNTS_PER_PAGE, cachedTopListEntries -> {
 
-            Component headerMessage = GemsEconomy.lang()
+            GemsEconomy.lang().sendComponent(sender, GemsEconomy.lang()
                     .component(sender, "msg_balance_top_header")
-                    .replaceText(config -> config.matchLiteral("{currency}").replacement(currency.getDisplayName()))
-                    .replaceText(config -> config.matchLiteral("{page}").replacement(Component.text(pageNum)));
-            GemsEconomy.lang().sendComponent(sender, headerMessage);
+                    .replaceText(GemsMessages.CURRENCY_REPLACEMENT.apply(currency.getDisplayName()))
+                    .replaceText(config -> config.matchLiteral("{page}").replacement(Integer.toString(pageNum)))
+            );
 
             final AtomicInteger index = new AtomicInteger((10 * (pageNum - 1)) + 1);
             for (CachedTopListEntry entry : cachedTopListEntries) {
                 double balance = entry.getAmount();
-                Component entryMessage = GemsEconomy.lang()
+                GemsEconomy.lang().sendComponent(sender, GemsEconomy.lang()
                         .component(sender, "msg_balance_top_entry")
-                        .replaceText(config -> config.matchLiteral("{index}").replacement(Component.text(index.get())))
-                        .replaceText(config -> config.matchLiteral("{player}").replacement(Component.text(entry.getName())))
-                        .replaceText(config -> config.matchLiteral("{balance}").replacement(currency.componentFormat(balance)));
-                GemsEconomy.lang().sendComponent(sender, entryMessage);
+                        .replaceText(GemsMessages.AMOUNT_REPLACEMENT.apply(currency, balance))
+                        .replaceText(GemsMessages.ACCOUNT_REPLACEMENT.apply(entry.getName()))
+                        .replaceText(config -> config.matchLiteral("{index}").replacement(index.toString()))
+                );
                 index.incrementAndGet();
             }
             if (cachedTopListEntries.isEmpty()) {
                 GemsEconomy.lang().sendComponent(sender, "err_balance_top_empty");
             } else {
-                Component nextMessage = GemsEconomy.lang()
+                GemsEconomy.lang().sendComponent(sender, GemsEconomy.lang()
                         .component(sender, "msg_balance_top_next")
-                        .replaceText(config -> config.matchLiteral("{currency}").replacement(currency.getDisplayName()))
-                        .replaceText(config -> config.matchLiteral("{page}").replacement(Component.text(pageNum + 1)));
-                GemsEconomy.lang().sendComponent(sender, nextMessage);
+                        .replaceText(GemsMessages.CURRENCY_REPLACEMENT.apply(currency.getDisplayName()))
+                        .replaceText(config -> config.matchLiteral("{page}").replacement(Integer.toString(pageNum + 1)))
+                );
             }
 
         });

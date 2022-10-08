@@ -19,7 +19,7 @@ cheque:
   name: '&a支票'
   lore:
     - '&7价值: {value}.'
-    - '&7&o发行人 {player}'
+    - '&7&o发行人 {account}'
 messages:
   help:
     eco_command:

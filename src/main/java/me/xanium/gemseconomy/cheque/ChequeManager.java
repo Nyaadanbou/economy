@@ -48,7 +48,7 @@ public class ChequeManager {
         for (String baseLore : Objects.requireNonNull(chequeBaseItem.getItemMeta().getLore())) {
             formatLore.add(baseLore
                     .replace("{value}", currency.format(amount))
-                    .replace("{player}", creatorName)
+                    .replace("{account}", creatorName)
             );
         }
         ItemStack ret = chequeBaseItem.clone();

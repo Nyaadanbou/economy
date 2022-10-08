@@ -1,16 +1,35 @@
 package me.xanium.gemseconomy;
 
 import de.themoep.utils.lang.bukkit.LanguageManager;
+import me.xanium.gemseconomy.currency.Currency;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.TextReplacementConfig;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import java.util.function.BiFunction;
+import java.util.function.Consumer;
+import java.util.function.Function;
+
 @SuppressWarnings("unused")
 public class GemsMessages {
+
+    public static final Function<String, Consumer<TextReplacementConfig.Builder>> ACCOUNT_REPLACEMENT = (name) -> config -> {
+        config.matchLiteral("{account}");
+        config.replacement(name);
+    };
+    public static final Function<Component, Consumer<TextReplacementConfig.Builder>> CURRENCY_REPLACEMENT = (format) -> config -> {
+        config.matchLiteral("{currency}");
+        config.replacement(format);
+    };
+    public static final BiFunction<Currency, Double, Consumer<TextReplacementConfig.Builder>> AMOUNT_REPLACEMENT = (currency, amount) -> config -> {
+        config.matchLiteral("{amount}");
+        config.replacement(currency.componentFormat(amount));
+    };
 
     private final LanguageManager lang;
 

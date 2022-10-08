@@ -3,6 +3,7 @@ package me.xanium.gemseconomy.commandsv3.command;
 import cloud.commandframework.Command;
 import me.lucko.helper.utils.annotation.NonnullByDefault;
 import me.xanium.gemseconomy.GemsEconomy;
+import me.xanium.gemseconomy.GemsMessages;
 import me.xanium.gemseconomy.account.Account;
 import me.xanium.gemseconomy.commandsv3.GemsCommand;
 import me.xanium.gemseconomy.commandsv3.GemsCommands;
@@ -70,28 +71,18 @@ public class BalanceCommand extends GemsCommand {
             double balance = account.getBalance(currency);
             Component balanceMessage = GemsEconomy.lang()
                     .component(sender, "msg_balance_current")
-                    .replaceText(config -> {
-                        config.matchLiteral("{player}");
-                        config.replacement(account.getNickname());
-                    })
-                    .replaceText(config -> {
-                        config.matchLiteral("{balance}");
-                        config.replacement(builder -> builder
-                                .content(Double.toString(balance))
-                                .color(currency.getColor())
-                        );
-                    });
+                    .replaceText(GemsMessages.ACCOUNT_REPLACEMENT.apply(account.getNickname()))
+                    .replaceText(GemsMessages.AMOUNT_REPLACEMENT.apply(currency, balance));
             GemsEconomy.lang().sendComponent(sender, balanceMessage);
         } else {
             GemsEconomy.lang().sendComponent(sender, "msg_balance_multiple", "player", account.getNickname());
             for (Currency currency : GemsEconomy.inst().getCurrencyManager().getCurrencies()) {
                 if (sender.hasPermission("gemseconomy.currency." + currency.getSingular() + ".view")) {
                     double balance = account.getBalance(currency);
-                    Component balanceMessage = GemsEconomy.lang().component(sender, "msg_balance_list").replaceText(config -> {
-                        config.matchLiteral("{balance}");
-                        config.replacement(currency.componentFormat(balance));
-                    });
-                    GemsEconomy.lang().sendComponent(sender, balanceMessage);
+                    GemsEconomy.lang().sendComponent(sender, GemsEconomy.lang()
+                            .component(sender, "msg_balance_list")
+                            .replaceText(GemsMessages.AMOUNT_REPLACEMENT.apply(currency, balance))
+                    );
                 }
             }
         }

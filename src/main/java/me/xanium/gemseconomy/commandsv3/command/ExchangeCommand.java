@@ -2,6 +2,7 @@ package me.xanium.gemseconomy.commandsv3.command;
 
 import cloud.commandframework.Command;
 import me.xanium.gemseconomy.GemsEconomy;
+import me.xanium.gemseconomy.GemsMessages;
 import me.xanium.gemseconomy.account.Account;
 import me.xanium.gemseconomy.commandsv3.GemsCommand;
 import me.xanium.gemseconomy.commandsv3.GemsCommands;
@@ -78,10 +79,7 @@ public class ExchangeCommand extends GemsCommand {
                     if (account.convert(toExchange, toExchangeAmount, toReceive, toReceiveAmount)) {
                         GemsEconomy.lang().sendComponent(sender, GemsEconomy.lang()
                                 .component(sender, "msg_exchanged_currency_for_other_player")
-                                .replaceText(config -> {
-                                    config.matchLiteral("{player}");
-                                    config.replacement(account.getNickname());
-                                })
+                                .replaceText(GemsMessages.ACCOUNT_REPLACEMENT.apply(account.getNickname()))
                                 .replaceText(config -> {
                                     config.matchLiteral("{exchanged_curr}");
                                     config.replacement(toExchange.format(toExchangeAmount));

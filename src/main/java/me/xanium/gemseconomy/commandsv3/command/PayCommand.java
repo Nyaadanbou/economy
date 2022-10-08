@@ -5,6 +5,7 @@ import cloud.commandframework.bukkit.arguments.selector.MultiplePlayerSelector;
 import cloud.commandframework.bukkit.parsers.selector.MultiplePlayerSelectorArgument;
 import me.lucko.helper.utils.annotation.NonnullByDefault;
 import me.xanium.gemseconomy.GemsEconomy;
+import me.xanium.gemseconomy.GemsMessages;
 import me.xanium.gemseconomy.account.Account;
 import me.xanium.gemseconomy.commandsv3.GemsCommand;
 import me.xanium.gemseconomy.commandsv3.GemsCommands;
@@ -54,10 +55,7 @@ public class PayCommand extends GemsCommand {
             !sender.hasPermission("gemseconomy.command.pay." + currency.getSingular().toLowerCase())) {
             GemsEconomy.lang().sendComponent(sender, GemsEconomy.lang()
                     .component(sender, "msg_pay_no_permission")
-                    .replaceText(config -> {
-                        config.matchLiteral("{currency}");
-                        config.replacement(currency.getDisplayName());
-                    })
+                    .replaceText(GemsMessages.CURRENCY_REPLACEMENT.apply(currency.getDisplayName()))
             );
             return;
         }
@@ -65,10 +63,7 @@ public class PayCommand extends GemsCommand {
         if (!currency.isPayable()) {
             GemsEconomy.lang().sendComponent(sender, GemsEconomy.lang()
                     .component(sender, "msg_currency_is_not_payable")
-                    .replaceText(config -> {
-                        config.matchLiteral("{currency}");
-                        config.replacement(currency.getDisplayName());
-                    })
+                    .replaceText(GemsMessages.CURRENCY_REPLACEMENT.apply(currency.getDisplayName()))
             );
             return;
         }
@@ -103,10 +98,7 @@ public class PayCommand extends GemsCommand {
         if (!self.hasEnough(currency, amount)) {
             GemsEconomy.lang().sendComponent(sender, GemsEconomy.lang()
                     .component(sender, "err_insufficient_funds")
-                    .replaceText(config -> {
-                        config.matchLiteral("{currency}");
-                        config.replacement(currency.getDisplayName());
-                    })
+                    .replaceText(GemsMessages.CURRENCY_REPLACEMENT.apply(currency.getDisplayName()))
             );
             return;
         }
@@ -115,14 +107,8 @@ public class PayCommand extends GemsCommand {
         if (targetAccount.isOverflow(currency, amount)) {
             GemsEconomy.lang().sendComponent(sender, GemsEconomy.lang()
                     .component(sender, "msg_currency_overflow")
-                    .replaceText(config -> {
-                        config.matchLiteral("{player}");
-                        config.replacement(targetAccount.getNickname());
-                    })
-                    .replaceText(config -> {
-                        config.matchLiteral("{currency}");
-                        config.replacement(currency.getDisplayName());
-                    })
+                    .replaceText(GemsMessages.ACCOUNT_REPLACEMENT.apply(targetAccount.getNickname()))
+                    .replaceText(GemsMessages.CURRENCY_REPLACEMENT.apply(currency.getDisplayName()))
             );
             return;
         }
@@ -144,25 +130,13 @@ public class PayCommand extends GemsCommand {
 
         GemsEconomy.lang().sendComponent(targetPlayer, GemsEconomy.lang()
                 .component(targetPlayer, "msg_received_currency")
-                .replaceText(config -> {
-                    config.matchLiteral("{player}");
-                    config.replacement(sender.getName());
-                })
-                .replaceText(config -> {
-                    config.matchLiteral("{amount}");
-                    config.replacement(currency.componentFormat(amount));
-                })
+                .replaceText(GemsMessages.ACCOUNT_REPLACEMENT.apply(self.getNickname()))
+                .replaceText(GemsMessages.AMOUNT_REPLACEMENT.apply(currency, amount))
         );
         GemsEconomy.lang().sendComponent(sender, GemsEconomy.lang()
                 .component(sender, "msg_paid_currency")
-                .replaceText(config -> {
-                    config.matchLiteral("{player}");
-                    config.replacement(targetPlayer.getName());
-                })
-                .replaceText(config -> {
-                    config.matchLiteral("{amount}");
-                    config.replacement(currency.componentFormat(amount));
-                })
+                .replaceText(GemsMessages.ACCOUNT_REPLACEMENT.apply(targetAccount.getNickname()))
+                .replaceText(GemsMessages.AMOUNT_REPLACEMENT.apply(currency, amount))
         );
     }
 

@@ -5,6 +5,7 @@ import cloud.commandframework.arguments.standard.DoubleArgument;
 import cloud.commandframework.arguments.standard.EnumArgument;
 import cloud.commandframework.arguments.standard.StringArgument;
 import me.xanium.gemseconomy.GemsEconomy;
+import me.xanium.gemseconomy.GemsMessages;
 import me.xanium.gemseconomy.account.Account;
 import me.xanium.gemseconomy.commandsv3.GemsCommand;
 import me.xanium.gemseconomy.commandsv3.GemsCommands;
@@ -17,7 +18,6 @@ import me.xanium.gemseconomy.data.StorageType;
 import me.xanium.gemseconomy.utils.SchedulerUtils;
 import me.xanium.gemseconomy.utils.UtilServer;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.TextReplacementConfig;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextColor;
 import org.bukkit.Bukkit;
@@ -27,15 +27,8 @@ import org.bukkit.entity.Player;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Consumer;
-import java.util.function.Function;
 
 public class CurrencyCommand extends GemsCommand {
-
-    private final Function<Currency, Consumer<TextReplacementConfig.Builder>> currencyReplacement = currency -> config -> {
-        config.matchLiteral("{currency}");
-        config.replacement(currency.getDisplayName());
-    };
 
     public CurrencyCommand(GemsEconomy plugin, GemsCommands manager) {
         super(plugin, manager);
@@ -58,10 +51,10 @@ public class CurrencyCommand extends GemsCommand {
 
                     Currency currency = GemsEconomy.inst().getCurrencyManager().createNewCurrency(singular, plural);
                     if (currency != null) {
-                        Component currencyMessage = GemsEconomy.lang()
+                        GemsEconomy.lang().sendComponent(sender, GemsEconomy.lang()
                                 .component(sender, "msg_created_currency")
-                                .replaceText(currencyReplacement.apply(currency));
-                        GemsEconomy.lang().sendComponent(sender, currencyMessage);
+                                .replaceText(GemsMessages.CURRENCY_REPLACEMENT.apply(currency.getDisplayName()))
+                        );
                     } else {
                         GemsEconomy.lang().sendComponent(sender, "err_currency_exists");
                     }
@@ -74,10 +67,10 @@ public class CurrencyCommand extends GemsCommand {
                     CommandSender sender = context.getSender();
                     GemsEconomy.lang().sendComponent(sender, "msg_currency_list_header", "size", Integer.toString(GemsEconomy.inst().getCurrencyManager().getCurrencies().size()));
                     for (Currency currency : GemsEconomy.inst().getCurrencyManager().getCurrencies()) {
-                        Component entryMessage = GemsEconomy.lang()
+                        GemsEconomy.lang().sendComponent(sender, GemsEconomy.lang()
                                 .component(sender, "msg_currency_list_entry")
-                                .replaceText(currencyReplacement.apply(currency));
-                        GemsEconomy.lang().sendComponent(sender, entryMessage);
+                                .replaceText(GemsMessages.CURRENCY_REPLACEMENT.apply(currency.getDisplayName()))
+                        );
                     }
                 }).build();
 
@@ -145,7 +138,7 @@ public class CurrencyCommand extends GemsCommand {
                     GemsEconomy.inst().getDataStore().saveCurrency(currency);
                     GemsEconomy.lang().sendComponent(sender, GemsEconomy.lang()
                             .component(sender, "msg_set_currency_default_balance")
-                            .replaceText(currencyReplacement.apply(currency))
+                            .replaceText(GemsMessages.CURRENCY_REPLACEMENT.apply(currency.getDisplayName()))
                             .replaceText(config -> {
                                 config.matchLiteral("{default_balance}");
                                 config.replacement(Component.text(currency.getDefaultBalance()));
@@ -166,7 +159,7 @@ public class CurrencyCommand extends GemsCommand {
                     GemsEconomy.inst().getDataStore().saveCurrency(currency);
                     GemsEconomy.lang().sendComponent(sender, GemsEconomy.lang()
                             .component(sender, "msg_set_currency_maximum_balance")
-                            .replaceText(currencyReplacement.apply(currency))
+                            .replaceText(GemsMessages.CURRENCY_REPLACEMENT.apply(currency.getDisplayName()))
                             .replaceText(config -> {
                                 config.matchLiteral("{maximum_balance}");
                                 config.replacement(Component.text(currency.getMaxBalance()));
@@ -187,7 +180,7 @@ public class CurrencyCommand extends GemsCommand {
                     GemsEconomy.inst().getDataStore().saveCurrency(currency);
                     GemsEconomy.lang().sendComponent(sender, GemsEconomy.lang()
                             .component(sender, "msg_set_currency_color")
-                            .replaceText(currencyReplacement.apply(currency))
+                            .replaceText(GemsMessages.CURRENCY_REPLACEMENT.apply(currency.getDisplayName()))
                             .replaceText(config -> {
                                 config.matchLiteral("{color}");
                                 config.replacement(Component.text(currency.getColor().asHexString(), currency.getColor()));
@@ -208,14 +201,14 @@ public class CurrencyCommand extends GemsCommand {
                         GemsEconomy.inst().getDataStore().saveCurrency(currency);
                         GemsEconomy.lang().sendComponent(sender, GemsEconomy.lang()
                                 .component(sender, "msg_removed_currency_symbol")
-                                .replaceText(currencyReplacement.apply(currency))
+                                .replaceText(GemsMessages.CURRENCY_REPLACEMENT.apply(currency.getDisplayName()))
                         );
                     } else if (symbol.length() == 1) {
                         currency.setSymbol(symbol);
                         GemsEconomy.inst().getDataStore().saveCurrency(currency);
                         GemsEconomy.lang().sendComponent(sender, GemsEconomy.lang()
                                 .component(sender, "msg_set_currency_symbol")
-                                .replaceText(currencyReplacement.apply(currency))
+                                .replaceText(GemsMessages.CURRENCY_REPLACEMENT.apply(currency.getDisplayName()))
                                 .replaceText(config -> {
                                     config.matchLiteral("{symbol}");
                                     config.replacement(currency.getSymbol());
@@ -241,7 +234,7 @@ public class CurrencyCommand extends GemsCommand {
                     GemsEconomy.inst().getDataStore().saveCurrency(currency);
                     GemsEconomy.lang().sendComponent(sender, GemsEconomy.lang()
                             .component(sender, "msg_set_default_currency")
-                            .replaceText(currencyReplacement.apply(currency))
+                            .replaceText(GemsMessages.CURRENCY_REPLACEMENT.apply(currency.getDisplayName()))
                     );
                 })
                 .build();
@@ -255,7 +248,7 @@ public class CurrencyCommand extends GemsCommand {
                     GemsEconomy.inst().getDataStore().saveCurrency(currency);
                     GemsEconomy.lang().sendComponent(sender, GemsEconomy.lang()
                             .component(sender, "msg_toggled_currency_payable")
-                            .replaceText(currencyReplacement.apply(currency))
+                            .replaceText(GemsMessages.CURRENCY_REPLACEMENT.apply(currency.getDisplayName()))
                             .replaceText(config -> {
                                 config.matchLiteral("{status}");
                                 config.replacement(currency.isPayable() ? Component.text("Yes", NamedTextColor.GREEN) : Component.text("No", NamedTextColor.RED));
@@ -273,7 +266,7 @@ public class CurrencyCommand extends GemsCommand {
                     GemsEconomy.inst().getDataStore().saveCurrency(currency);
                     GemsEconomy.lang().sendComponent(sender, GemsEconomy.lang()
                             .component(sender, "msg_toggled_currency_decimal_support")
-                            .replaceText(currencyReplacement.apply(currency))
+                            .replaceText(GemsMessages.CURRENCY_REPLACEMENT.apply(currency.getDisplayName()))
                             .replaceText(config -> {
                                 config.matchLiteral("{status}");
                                 config.replacement(currency.isDecimalSupported() ? Component.text("Yes", NamedTextColor.GREEN) : Component.text("No", NamedTextColor.RED));
@@ -293,7 +286,7 @@ public class CurrencyCommand extends GemsCommand {
                     GemsEconomy.inst().getCurrencyManager().remove(currency);
                     GemsEconomy.lang().sendComponent(sender, GemsEconomy.lang()
                             .component(sender, "msg_deleted_currency")
-                            .replaceText(currencyReplacement.apply(currency))
+                            .replaceText(GemsMessages.CURRENCY_REPLACEMENT.apply(currency.getDisplayName()))
                     );
                 })
                 .build();
@@ -312,7 +305,7 @@ public class CurrencyCommand extends GemsCommand {
                     GemsEconomy.inst().getDataStore().saveCurrency(currency);
                     GemsEconomy.lang().sendComponent(sender, GemsEconomy.lang()
                             .component(sender, "msg_set_exchange_rate")
-                            .replaceText(currencyReplacement.apply(currency))
+                            .replaceText(GemsMessages.CURRENCY_REPLACEMENT.apply(currency.getDisplayName()))
                             .replaceText(config -> {
                                 config.matchLiteral("{rate}");
                                 config.replacement(Double.toString(rate));
