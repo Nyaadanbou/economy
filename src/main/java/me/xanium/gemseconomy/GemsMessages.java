@@ -76,7 +76,7 @@ public class GemsMessages {
     }
 
     public String toLegacy(CommandSender sender, String key, String... subst) {
-        return LegacyComponentSerializer.legacyAmpersand().serialize(component(sender, key, subst));
+        return LegacyComponentSerializer.legacySection().serialize(component(sender, key, subst));
     }
 
     public String toLegacy(String key, String... subst) {
