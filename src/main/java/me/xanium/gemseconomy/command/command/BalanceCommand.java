@@ -65,7 +65,7 @@ public class BalanceCommand extends GemsCommand {
         } else if (currencies == 1) {
             Currency currency = GemsEconomy.inst().getCurrencyManager().getDefaultCurrency();
             if (currency == null) {
-                GemsEconomy.lang().sendComponent(sender, "err_balance_none", "player", account.getNickname());
+                GemsEconomy.lang().sendComponent(sender, "err_balance_none", "account", account.getNickname());
                 return;
             }
             double balance = account.getBalance(currency);
@@ -75,7 +75,7 @@ public class BalanceCommand extends GemsCommand {
                     .replaceText(GemsMessages.AMOUNT_REPLACEMENT.apply(currency, balance));
             GemsEconomy.lang().sendComponent(sender, balanceMessage);
         } else {
-            GemsEconomy.lang().sendComponent(sender, "msg_balance_multiple", "player", account.getNickname());
+            GemsEconomy.lang().sendComponent(sender, "msg_balance_multiple", "account", account.getNickname());
             for (Currency currency : GemsEconomy.inst().getCurrencyManager().getCurrencies()) {
                 if (sender.hasPermission("gemseconomy.currency." + currency.getSingular() + ".view")) {
                     double balance = account.getBalance(currency);

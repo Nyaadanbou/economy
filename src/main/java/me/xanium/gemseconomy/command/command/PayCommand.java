@@ -90,7 +90,7 @@ public class PayCommand extends GemsCommand {
 
         // Check target receivable
         if (!targetAccount.canReceiveCurrency()) {
-            GemsEconomy.lang().sendComponent(sender, "err_cannot_receive_money", "player", targetAccount.getNickname());
+            GemsEconomy.lang().sendComponent(sender, "err_cannot_receive_money", "account", targetAccount.getNickname());
             return;
         }
 
