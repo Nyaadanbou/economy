@@ -1,15 +1,15 @@
-package me.xanium.gemseconomy.commandsv3.command;
+package me.xanium.gemseconomy.command.command;
 
 import cloud.commandframework.Command;
 import me.xanium.gemseconomy.GemsEconomy;
 import me.xanium.gemseconomy.GemsMessages;
 import me.xanium.gemseconomy.account.Account;
-import me.xanium.gemseconomy.commandsv3.GemsCommand;
-import me.xanium.gemseconomy.commandsv3.GemsCommands;
-import me.xanium.gemseconomy.commandsv3.argument.AccountArgument;
-import me.xanium.gemseconomy.commandsv3.argument.AmountArgument;
-import me.xanium.gemseconomy.commandsv3.argument.CurrencyArgument;
-import me.xanium.gemseconomy.commandsv3.argument.PreprocessorUtil;
+import me.xanium.gemseconomy.command.GemsCommand;
+import me.xanium.gemseconomy.command.GemsCommands;
+import me.xanium.gemseconomy.command.argument.AccountArgument;
+import me.xanium.gemseconomy.command.argument.AmountArgument;
+import me.xanium.gemseconomy.command.argument.CurrencyArgument;
+import me.xanium.gemseconomy.command.argument.PreprocessorUtil;
 import me.xanium.gemseconomy.currency.Currency;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;

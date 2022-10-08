@@ -1,4 +1,4 @@
-package me.xanium.gemseconomy.commandsv3;
+package me.xanium.gemseconomy.command;
 
 import me.xanium.gemseconomy.GemsEconomy;
 

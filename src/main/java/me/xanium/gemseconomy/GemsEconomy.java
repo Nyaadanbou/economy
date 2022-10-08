@@ -12,7 +12,7 @@ import me.xanium.gemseconomy.account.AccountManager;
 import me.xanium.gemseconomy.api.GemsEconomyAPI;
 import me.xanium.gemseconomy.bungee.UpdateForwarder;
 import me.xanium.gemseconomy.cheque.ChequeManager;
-import me.xanium.gemseconomy.commandsv3.GemsCommands;
+import me.xanium.gemseconomy.command.GemsCommands;
 import me.xanium.gemseconomy.currency.CurrencyManager;
 import me.xanium.gemseconomy.data.DataStorage;
 import me.xanium.gemseconomy.data.MySQLStorage;

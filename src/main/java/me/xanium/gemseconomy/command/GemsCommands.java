@@ -1,4 +1,4 @@
-package me.xanium.gemseconomy.commandsv3;
+package me.xanium.gemseconomy.command;
 
 import cloud.commandframework.Command;
 import cloud.commandframework.arguments.flags.CommandFlag;
@@ -15,14 +15,14 @@ import cloud.commandframework.minecraft.extras.MinecraftExceptionHandler;
 import cloud.commandframework.paper.PaperCommandManager;
 import io.leangen.geantyref.TypeToken;
 import me.xanium.gemseconomy.GemsEconomy;
-import me.xanium.gemseconomy.commandsv3.command.BalanceCommand;
-import me.xanium.gemseconomy.commandsv3.command.BalanceTopCommand;
-import me.xanium.gemseconomy.commandsv3.command.ChequeCommand;
-import me.xanium.gemseconomy.commandsv3.command.CurrencyCommand;
-import me.xanium.gemseconomy.commandsv3.command.EconomyCommand;
-import me.xanium.gemseconomy.commandsv3.command.ExchangeCommand;
-import me.xanium.gemseconomy.commandsv3.command.InternalCommand;
-import me.xanium.gemseconomy.commandsv3.command.PayCommand;
+import me.xanium.gemseconomy.command.command.BalanceCommand;
+import me.xanium.gemseconomy.command.command.BalanceTopCommand;
+import me.xanium.gemseconomy.command.command.ChequeCommand;
+import me.xanium.gemseconomy.command.command.CurrencyCommand;
+import me.xanium.gemseconomy.command.command.EconomyCommand;
+import me.xanium.gemseconomy.command.command.ExchangeCommand;
+import me.xanium.gemseconomy.command.command.InternalCommand;
+import me.xanium.gemseconomy.command.command.PayCommand;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.util.ComponentMessageThrowable;

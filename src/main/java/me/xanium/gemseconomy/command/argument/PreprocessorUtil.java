@@ -1,4 +1,4 @@
-package me.xanium.gemseconomy.commandsv3.argument;
+package me.xanium.gemseconomy.command.argument;
 
 import cloud.commandframework.arguments.parser.ArgumentParseResult;
 import cloud.commandframework.context.CommandContext;

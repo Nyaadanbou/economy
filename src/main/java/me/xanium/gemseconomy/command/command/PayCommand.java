@@ -1,4 +1,4 @@
-package me.xanium.gemseconomy.commandsv3.command;
+package me.xanium.gemseconomy.command.command;
 
 import cloud.commandframework.Command;
 import cloud.commandframework.bukkit.arguments.selector.MultiplePlayerSelector;
@@ -7,10 +7,10 @@ import me.lucko.helper.utils.annotation.NonnullByDefault;
 import me.xanium.gemseconomy.GemsEconomy;
 import me.xanium.gemseconomy.GemsMessages;
 import me.xanium.gemseconomy.account.Account;
-import me.xanium.gemseconomy.commandsv3.GemsCommand;
-import me.xanium.gemseconomy.commandsv3.GemsCommands;
-import me.xanium.gemseconomy.commandsv3.argument.AmountArgument;
-import me.xanium.gemseconomy.commandsv3.argument.CurrencyArgument;
+import me.xanium.gemseconomy.command.GemsCommand;
+import me.xanium.gemseconomy.command.GemsCommands;
+import me.xanium.gemseconomy.command.argument.AmountArgument;
+import me.xanium.gemseconomy.command.argument.CurrencyArgument;
 import me.xanium.gemseconomy.currency.Currency;
 import me.xanium.gemseconomy.event.GemsPayEvent;
 import me.xanium.gemseconomy.utils.SchedulerUtils;

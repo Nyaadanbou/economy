@@ -1,9 +1,9 @@
-package me.xanium.gemseconomy.commandsv3.command;
+package me.xanium.gemseconomy.command.command;
 
 import cloud.commandframework.Command;
 import me.xanium.gemseconomy.GemsEconomy;
-import me.xanium.gemseconomy.commandsv3.GemsCommand;
-import me.xanium.gemseconomy.commandsv3.GemsCommands;
+import me.xanium.gemseconomy.command.GemsCommand;
+import me.xanium.gemseconomy.command.GemsCommands;
 import org.bukkit.command.CommandSender;
 
 import java.util.List;

@@ -77,4 +77,5 @@ public class ChequeManager {
                 ? plugin.getCurrencyManager().getCurrency(storage.getCurrency())
                 : plugin.getCurrencyManager().getDefaultCurrency();
     }
+
 }

@@ -1,4 +1,4 @@
-package me.xanium.gemseconomy.commandsv3.command;
+package me.xanium.gemseconomy.command.command;
 
 import cloud.commandframework.Command;
 import cloud.commandframework.arguments.standard.DoubleArgument;
@@ -7,11 +7,11 @@ import cloud.commandframework.arguments.standard.StringArgument;
 import me.xanium.gemseconomy.GemsEconomy;
 import me.xanium.gemseconomy.GemsMessages;
 import me.xanium.gemseconomy.account.Account;
-import me.xanium.gemseconomy.commandsv3.GemsCommand;
-import me.xanium.gemseconomy.commandsv3.GemsCommands;
-import me.xanium.gemseconomy.commandsv3.argument.AmountArgument;
-import me.xanium.gemseconomy.commandsv3.argument.CurrencyArgument;
-import me.xanium.gemseconomy.commandsv3.argument.TextColorArgument;
+import me.xanium.gemseconomy.command.GemsCommand;
+import me.xanium.gemseconomy.command.GemsCommands;
+import me.xanium.gemseconomy.command.argument.AmountArgument;
+import me.xanium.gemseconomy.command.argument.CurrencyArgument;
+import me.xanium.gemseconomy.command.argument.TextColorArgument;
 import me.xanium.gemseconomy.currency.Currency;
 import me.xanium.gemseconomy.data.DataStorage;
 import me.xanium.gemseconomy.data.StorageType;
@@ -201,7 +201,7 @@ public class CurrencyCommand extends GemsCommand {
                                 .replaceText(GemsMessages.CURRENCY_REPLACEMENT.apply(currency.getDisplayName()))
                                 .replaceText(config -> {
                                     config.matchLiteral("{symbol}");
-                                    config.replacement(currency.getSymbol());
+                                    config.replacement(symbol);
                                 })
                         );
                     } else {
