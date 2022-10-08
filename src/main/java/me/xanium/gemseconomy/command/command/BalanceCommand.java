@@ -39,6 +39,8 @@ public class BalanceCommand extends GemsCommand {
                                 return;
                             }
                             sendBalance(player, ownAccount);
+                        } else if (account.get().getNickname().equalsIgnoreCase(sender.getName())) { // Player specified his own name
+                            sendBalance(player, account.get());
                         } else if (sender.hasPermission("gemseconomy.command.balance.other")) { // Player specified an account, so view other's account
                             sendBalance(player, account.get());
                         } else {
