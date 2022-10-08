@@ -15,6 +15,7 @@ import org.apache.commons.lang.StringUtils;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -37,14 +38,10 @@ public class ChequeManager {
         chequeBaseItem = item;
     }
 
-    public ItemStack write(String creatorName, Currency currency, double amount) {
+    public @Nullable ItemStack write(String creatorName, Currency currency, double amount) {
         if (!currency.isPayable()) return null;
 
-        if (creatorName.equals("CONSOLE")) {
-            creatorName = GemsEconomy.lang().toLegacy("msg_console_name");
-        }
         List<String> formatLore = new ArrayList<>();
-
         for (String baseLore : Objects.requireNonNull(chequeBaseItem.getItemMeta().getLore())) {
             formatLore.add(baseLore
                     .replace("{value}", currency.format(amount))
@@ -74,7 +71,7 @@ public class ChequeManager {
      * @param itemStack - The cheque item
      * @return Currency it represents
      */
-    public Currency getCurrency(ItemStack itemStack) {
+    public @Nullable Currency getCurrency(ItemStack itemStack) {
         ChequeStorage storage = ChequeStorage.read(itemStack);
         return storage != null
                 ? plugin.getCurrencyManager().getCurrency(storage.getCurrency())

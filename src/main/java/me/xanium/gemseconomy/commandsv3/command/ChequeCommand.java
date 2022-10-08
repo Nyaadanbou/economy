@@ -97,9 +97,14 @@ public class ChequeCommand extends GemsCommand {
     @NonnullByDefault
     private void makeCheque(Player player, Account user, double amount, Currency currency) {
         if (user.hasEnough(currency, amount)) {
-            user.withdraw(currency, amount);
-            player.getInventory().addItem(GemsEconomy.inst().getChequeManager().write(player.getName(), currency, amount));
-            GemsEconomy.lang().sendComponent(player, "msg_cheque_written");
+            ItemStack cheque = GemsEconomy.inst().getChequeManager().write(player.getName(), currency, amount);
+            if (cheque != null) {
+                user.withdraw(currency, amount);
+                player.getInventory().addItem(cheque);
+                GemsEconomy.lang().sendComponent(player, "msg_cheque_written");
+            } else {
+                GemsEconomy.lang().sendComponent(player, "err_cheque_written");
+            }
         } else {
             GemsEconomy.lang().sendComponent(player, GemsEconomy.lang()
                     .component(player, "err_insufficient_funds")
