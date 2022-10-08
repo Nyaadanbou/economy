@@ -11,11 +11,11 @@ package me.xanium.gemseconomy.file;
 import me.xanium.gemseconomy.GemsEconomy;
 import org.bukkit.configuration.file.FileConfiguration;
 
-public class Configuration {
+public class GemsConfig {
 
     private final GemsEconomy plugin;
 
-    public Configuration(GemsEconomy plugin) {
+    public GemsConfig(GemsEconomy plugin) {
         this.plugin = plugin;
     }
 

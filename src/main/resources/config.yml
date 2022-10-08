@@ -5,7 +5,7 @@
 storage: mysql
 vault: true
 debug: false
-transaction_log: true
+transaction_log: false
 mysql:
   database: bungeecord
   prefix: gemseconomy
@@ -19,7 +19,7 @@ cheque:
   name: '&a支票'
   lore:
     - '&7价值: {value}.'
-    - '&7&o发行人 {account}'
+    - '&7发行人 {account}'
 messages:
   help:
     eco_command:

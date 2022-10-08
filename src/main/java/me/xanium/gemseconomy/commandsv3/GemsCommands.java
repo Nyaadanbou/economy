@@ -21,6 +21,7 @@ import me.xanium.gemseconomy.commandsv3.command.ChequeCommand;
 import me.xanium.gemseconomy.commandsv3.command.CurrencyCommand;
 import me.xanium.gemseconomy.commandsv3.command.EconomyCommand;
 import me.xanium.gemseconomy.commandsv3.command.ExchangeCommand;
+import me.xanium.gemseconomy.commandsv3.command.InternalCommand;
 import me.xanium.gemseconomy.commandsv3.command.PayCommand;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -139,6 +140,7 @@ public class GemsCommands extends PaperCommandManager<CommandSender> {
 
         // ---- Register all commands ----
         Stream.of(
+                new InternalCommand(plugin, this),
                 new BalanceCommand(plugin, this),
                 new BalanceTopCommand(plugin, this),
                 new ChequeCommand(plugin, this),

@@ -3,6 +3,7 @@ package me.xanium.gemseconomy.commandsv3;
 import me.xanium.gemseconomy.GemsEconomy;
 
 public abstract class GemsCommand {
+
     protected final GemsEconomy plugin;
     protected final GemsCommands manager;
 
@@ -12,4 +13,5 @@ public abstract class GemsCommand {
     }
 
     abstract public void register();
+    
 }

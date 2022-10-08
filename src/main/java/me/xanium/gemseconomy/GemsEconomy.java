@@ -18,7 +18,7 @@ import me.xanium.gemseconomy.data.DataStorage;
 import me.xanium.gemseconomy.data.MySQLStorage;
 import me.xanium.gemseconomy.data.StorageType;
 import me.xanium.gemseconomy.data.YamlStorage;
-import me.xanium.gemseconomy.file.Configuration;
+import me.xanium.gemseconomy.file.GemsConfig;
 import me.xanium.gemseconomy.listeners.EconomyListener;
 import me.xanium.gemseconomy.logging.EconomyLogger;
 import me.xanium.gemseconomy.utils.UtilServer;
@@ -34,13 +34,11 @@ public class GemsEconomy extends JavaPlugin {
 
     private static GemsEconomy instance;
 
+    private GemsConfig config;
     private GemsMessages messages;
-
     private BukkitAudiences adventure;
-
     private GemsEconomyAPI api;
     private DataStorage dataStorage = null;
-
     private AccountManager accountManager;
     private ChequeManager chequeManager;
     private CurrencyManager currencyManager;
@@ -48,8 +46,9 @@ public class GemsEconomy extends JavaPlugin {
     private EconomyLogger economyLogger;
     private UpdateForwarder updateForwarder;
     private GemsCommands commandManager;
+
     private boolean debug = false;
-    private boolean vault = false;
+    private boolean vault = true;
     private boolean logging = false;
     private boolean cheques = false;
     private boolean disabling = false;
@@ -72,8 +71,8 @@ public class GemsEconomy extends JavaPlugin {
 
     @Override
     public void onLoad() {
-        Configuration configuration = new Configuration(this);
-        configuration.loadDefaultConfig();
+        config = new GemsConfig(this);
+        config.loadDefaultConfig();
 
         setDebug(getConfig().getBoolean("debug"));
         setVault(getConfig().getBoolean("vault"));
@@ -130,6 +129,7 @@ public class GemsEconomy extends JavaPlugin {
             adventure.close();
             adventure = null;
         }
+
         if (isVault()) getVaultHandler().unhook();
 
         if (getDataStore() != null) {
@@ -140,7 +140,13 @@ public class GemsEconomy extends JavaPlugin {
     public void initializeDataStore(StorageType strategy, boolean load) {
 
         DataStorage.getMethods().add(new YamlStorage(new File(getDataFolder(), "data.yml")));
-        DataStorage.getMethods().add(new MySQLStorage(getConfig().getString("mysql.host"), getConfig().getInt("mysql.port"), getConfig().getString("mysql.database"), getConfig().getString("mysql.username"), getConfig().getString("mysql.password")));
+        DataStorage.getMethods().add(new MySQLStorage(
+                getConfig().getString("mysql.host"),
+                getConfig().getInt("mysql.port"),
+                getConfig().getString("mysql.database"),
+                getConfig().getString("mysql.username"),
+                getConfig().getString("mysql.password")
+        ));
 
         if (strategy != null) {
             dataStorage = DataStorage.getMethod(strategy);
@@ -161,11 +167,23 @@ public class GemsEconomy extends JavaPlugin {
                 UtilServer.consoleLog("Loaded " + getCurrencyManager().getCurrencies().size() + " currencies!");
             }
         } catch (Throwable e) {
-            UtilServer.consoleLog("§cCannot load initial data from DataStore.");
+            UtilServer.consoleLog("§cCannot load initial data from data storage.");
             UtilServer.consoleLog("§cCheck your files, then try again.");
             e.printStackTrace();
             getServer().getPluginManager().disablePlugin(this);
         }
+    }
+
+    public void reloadLanguages() {
+        messages = new GemsMessages(this);
+    }
+
+    public void reloadConfiguration() {
+        // TODO support reloading config.yml
+    }
+
+    public void reloadDataStorage() {
+        // TODO support reloading data storage
     }
 
     public BukkitAudiences getAdventure() {
@@ -235,4 +253,5 @@ public class GemsEconomy extends JavaPlugin {
     public void setCheques(boolean cheques) {
         this.cheques = cheques;
     }
+
 }
