@@ -42,22 +42,14 @@ public class GEVaultHook extends AbstractEconomy {
     public String currencyNamePlural() {
         Currency currency = GemsEconomy.inst().getCurrencyManager().getDefaultCurrency();
         if (currency == null) return "";
-        if (currency.getPlural() != null) {
-            return currency.getPlural();
-        } else {
-            return "";
-        }
+        return currency.getPlural();
     }
 
     @Override
     public String currencyNameSingular() {
         Currency currency = GemsEconomy.inst().getCurrencyManager().getDefaultCurrency();
         if (currency == null) return "";
-        if (currency.getSingular() != null) {
-            return currency.getSingular();
-        } else {
-            return "";
-        }
+        return currency.getSingular();
     }
 
     @Override

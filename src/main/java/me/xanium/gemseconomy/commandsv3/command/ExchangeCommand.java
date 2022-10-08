@@ -48,11 +48,11 @@ public class ExchangeCommand extends GemsCommand {
                                     .component(sender, "msg_exchanged_currency")
                                     .replaceText(config -> {
                                         config.matchLiteral("{exchanged_curr}");
-                                        config.replacement(toExchange.format(toExchangeAmount));
+                                        config.replacement(toExchange.componentFormat(toExchangeAmount));
                                     })
                                     .replaceText(config -> {
                                         config.matchLiteral("{received_curr}");
-                                        config.replacement(toReceive.format(toReceiveAmount));
+                                        config.replacement(toReceive.componentFormat(toReceiveAmount));
                                     })
                             );
                         }
@@ -82,11 +82,11 @@ public class ExchangeCommand extends GemsCommand {
                                 .replaceText(GemsMessages.ACCOUNT_REPLACEMENT.apply(account.getNickname()))
                                 .replaceText(config -> {
                                     config.matchLiteral("{exchanged_curr}");
-                                    config.replacement(toExchange.format(toExchangeAmount));
+                                    config.replacement(toExchange.componentFormat(toExchangeAmount));
                                 })
                                 .replaceText(config -> {
                                     config.matchLiteral("{received_curr}");
-                                    config.replacement(toReceive.format(toReceiveAmount));
+                                    config.replacement(toReceive.componentFormat(toReceiveAmount));
                                 })
                         );
                     }

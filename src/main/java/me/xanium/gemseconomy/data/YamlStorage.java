@@ -7,12 +7,14 @@
  */
 package me.xanium.gemseconomy.data;
 
+import com.google.common.base.Preconditions;
 import me.xanium.gemseconomy.account.Account;
 import me.xanium.gemseconomy.currency.CachedTopListEntry;
 import me.xanium.gemseconomy.currency.Currency;
 import me.xanium.gemseconomy.utils.OfflineModeProfiles;
 import me.xanium.gemseconomy.utils.SchedulerUtils;
 import me.xanium.gemseconomy.utils.UtilServer;
+import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextColor;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
@@ -68,17 +70,28 @@ public class YamlStorage extends DataStorage {
             Set<String> currencies = section.getKeys(false);
             for (String uuid : currencies) {
                 String path = "currencies." + uuid;
-                String single = getConfig().getString(path + ".singular");
-                String plural = getConfig().getString(path + ".plural");
+                String single = Objects.requireNonNull(getConfig().getString(path + ".singular"), path + ".singular");
+                String plural = Objects.requireNonNull(getConfig().getString(path + ".plural"), path + ".plural");
+
+                String rawColor = Objects.requireNonNull(getConfig().getString(path + ".color"), path + ".color");
+                TextColor color = Objects.requireNonNullElse(TextColor.fromHexString(rawColor), NamedTextColor.WHITE);
+                boolean decimalSupported = getConfig().getBoolean(path + ".decimalsupported");
+                double defaultBalance = getConfig().getDouble(path + ".defaultbalance");
+                double maxBalance = getConfig().getDouble(path + ".maxbalance");
+                boolean defaultCurrency = getConfig().getBoolean(path + ".defaultcurrency");
+                boolean payable = getConfig().getBoolean(path + ".payable");
+                String symbol = getConfig().getString(path + ".symbol");
+                double exchangeRate = getConfig().getDouble(path + ".exchange_rate");
+
                 Currency currency = new Currency(UUID.fromString(uuid), single, plural);
-                currency.setColor(TextColor.fromHexString(Objects.requireNonNull(getConfig().getString(path + ".color"), path + ".color cannot be null")));
-                currency.setDecimalSupported(getConfig().getBoolean(path + ".decimalsupported"));
-                currency.setDefaultBalance(getConfig().getDouble(path + ".defaultbalance"));
-                currency.setMaxBalance(getConfig().getDouble(path + ".maxbalance"));
-                currency.setDefaultCurrency(getConfig().getBoolean(path + ".defaultcurrency"));
-                currency.setPayable(getConfig().getBoolean(path + ".payable"));
-                currency.setSymbol(getConfig().getString(path + ".symbol"));
-                currency.setExchangeRate(getConfig().getDouble(path + ".exchange_rate"));
+                currency.setColor(color);
+                currency.setDecimalSupported(decimalSupported);
+                currency.setDefaultBalance(defaultBalance);
+                currency.setMaxBalance(maxBalance);
+                currency.setDefaultCurrency(defaultCurrency);
+                currency.setPayable(payable);
+                currency.setSymbol(symbol);
+                currency.setExchangeRate(exchangeRate);
                 plugin.getCurrencyManager().add(currency);
 
                 UtilServer.consoleLog("Loaded currency: %s (default_balance: %s, max_balance: %s, default_currency: %s, payable: %s, color: %s)"
@@ -90,7 +103,7 @@ public class YamlStorage extends DataStorage {
 
     @Override
     public void saveCurrency(Currency currency) {
-        String path = "currencies." + currency.getUuid().toString();
+        String path = "currencies." + currency.getUuid();
         getConfig().set(path + ".singular", currency.getSingular());
         getConfig().set(path + ".plural", currency.getPlural());
         getConfig().set(path + ".defaultbalance", currency.getDefaultBalance());
@@ -110,7 +123,7 @@ public class YamlStorage extends DataStorage {
 
     @Override
     public void deleteCurrency(Currency currency) {
-        String path = "currencies." + currency.getUuid().toString();
+        String path = "currencies." + currency.getUuid();
         getConfig().set(path, null);
         try {
             getConfig().save(getFile());
@@ -126,9 +139,10 @@ public class YamlStorage extends DataStorage {
 
     @Override
     public ArrayList<Account> getOfflineAccounts() {
-        String path = "accounts";
+        ConfigurationSection section = getConfig().getConfigurationSection("accounts");
+        Preconditions.checkNotNull(section, "section");
         ArrayList<Account> accounts = new ArrayList<>();
-        for (String uuid : Objects.requireNonNull(getConfig().getConfigurationSection(path)).getKeys(false)) {
+        for (String uuid : section.getKeys(false)) {
             Account acc = loadAccount(UUID.fromString(uuid));
             accounts.add(acc);
         }
@@ -196,7 +210,7 @@ public class YamlStorage extends DataStorage {
         getConfig().set(path + ".uuid", account.getUuid().toString());
         for (Currency currency : account.getBalances().keySet()) {
             double balance = account.getBalance(currency);
-            getConfig().set(path + ".balances." + currency.getUuid().toString(), balance);
+            getConfig().set(path + ".balances." + currency.getUuid(), balance);
         }
         getConfig().set(path + ".payable", account.canReceiveCurrency());
         try {

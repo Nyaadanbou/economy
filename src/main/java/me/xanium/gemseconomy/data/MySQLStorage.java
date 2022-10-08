@@ -19,6 +19,7 @@ import me.xanium.gemseconomy.utils.OfflineModeProfiles;
 import me.xanium.gemseconomy.utils.SchedulerUtils;
 import me.xanium.gemseconomy.utils.UtilServer;
 import me.xanium.gemseconomy.utils.UtilTowny;
+import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextColor;
 import org.bukkit.Bukkit;
 import org.jetbrains.annotations.Nullable;
@@ -189,8 +190,9 @@ public class MySQLStorage extends DataStorage {
                 boolean decimals = set.getInt("decimals_supported") == 1;
                 boolean isDefault = set.getInt("is_default") == 1;
                 boolean payable = set.getInt("payable") == 1;
-                TextColor color = TextColor.fromHexString(Objects.requireNonNull(set.getString("color"), "color column cannot be null"));
+                TextColor color = Objects.requireNonNullElse(TextColor.fromHexString(set.getString("color")), NamedTextColor.WHITE);
                 double exchangeRate = set.getDouble("exchange_rate");
+
                 Currency currency = new Currency(uuid, singular, plural);
                 currency.setDefaultBalance(defaultBalance);
                 currency.setMaxBalance(maxBalance);
@@ -224,7 +226,7 @@ public class MySQLStorage extends DataStorage {
                 boolean decimals = set.getInt("decimals_supported") == 1;
                 boolean isDefault = set.getInt("is_default") == 1;
                 boolean payable = set.getInt("payable") == 1;
-                TextColor color = TextColor.fromHexString(Objects.requireNonNull(set.getString("color"), "color column cannot be null"));
+                TextColor color = Objects.requireNonNullElse(TextColor.fromHexString(set.getString("color")), NamedTextColor.WHITE);
                 double exchangeRate = set.getDouble("exchange_rate");
 
                 currency.setDefaultBalance(defaultBalance);

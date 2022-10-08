@@ -14,6 +14,7 @@ import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.text.NumberFormat;
 import java.util.UUID;
@@ -33,17 +34,17 @@ public class Currency {
     private double maxBalance = 0D; // zero means unlimited
     private double exchangeRate = 0D;
 
-    public Currency(UUID uuid, String singular, String plural) {
+    public Currency(@NotNull UUID uuid, @NotNull String singular, @NotNull String plural) {
         this.uuid = uuid;
         this.singular = singular;
         this.plural = plural;
     }
 
-    public void setSingular(String singular) {
+    public void setSingular(@NotNull String singular) {
         this.singular = singular;
     }
 
-    public void setPlural(String plural) {
+    public void setPlural(@NotNull String plural) {
         this.plural = plural;
     }
 
@@ -55,15 +56,15 @@ public class Currency {
         this.maxBalance = maxBalance;
     }
 
-    public UUID getUuid() {
+    public @NotNull UUID getUuid() {
         return this.uuid;
     }
 
-    public String getSingular() {
+    public @NotNull String getSingular() {
         return this.singular;
     }
 
-    public String getPlural() {
+    public @NotNull String getPlural() {
         return this.plural;
     }
 
@@ -135,19 +136,19 @@ public class Currency {
         this.decimalSupported = decimalSupported;
     }
 
-    public TextColor getColor() {
+    public @NotNull TextColor getColor() {
         return this.color;
     }
 
-    public void setColor(TextColor color) {
+    public void setColor(@NotNull TextColor color) {
         this.color = color;
     }
 
-    public String getSymbol() {
+    public @Nullable String getSymbol() {
         return this.symbol;
     }
 
-    public void setSymbol(String symbol) {
+    public void setSymbol(@Nullable String symbol) {
         this.symbol = symbol;
     }
 
