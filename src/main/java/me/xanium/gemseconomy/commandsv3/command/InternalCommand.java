@@ -26,7 +26,9 @@ public class InternalCommand extends GemsCommand {
                 .handler(context -> {
                     CommandSender sender = context.getSender();
                     GemsEconomy.inst().reloadLanguages();
-                    GemsEconomy.lang().sendComponent(sender, "msg_reloaded_lang");
+                    GemsEconomy.lang().sendComponent(sender, "msg_reloaded_lang",
+                            "plugin", GemsEconomy.inst().getDescription().getName(),
+                            "version", GemsEconomy.inst().getDescription().getVersion());
                 })
                 .build();
 
