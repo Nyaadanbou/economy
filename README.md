@@ -1,6 +1,7 @@
 # GemsEconomy
-This is my public spigot plugin GemsEconomy.
-If you are looking for the source for the expansion.
-Go here: https://github.com/Xanium1/GemsEconomy-Expansion
 
-Spigot link: https://www.spigotmc.org/resources/gemseconomy.19655/
+A hard fork of the original GemsEconomy plugin, specially made for [Mewcraft](https://mewcraft.cc) server.
+
+GemsEconomy expansion: https://github.com/Xanium1/GemsEconomy-Expansion
+
+Original spigot link: https://www.spigotmc.org/resources/gemseconomy.19655/
