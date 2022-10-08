@@ -33,27 +33,23 @@ public class BalanceTopCommand extends GemsCommand {
                 .argument(IntegerArgument.optional("page"))
                 .handler(context -> {
                     CommandSender sender = context.getSender();
-
+                    Currency currency = context.getOrDefault("currency", GemsEconomy.inst().getCurrencyManager().getDefaultCurrency());
+                    if (currency == null) { // No default currency is set
+                        GemsEconomy.lang().sendComponent(sender, "err_no_default_currency");
+                        return;
+                    }
                     if (!GemsEconomy.inst().getDataStore().isTopSupported()) {
                         GemsEconomy.lang().sendComponent(sender, "err_balance_top_no_support");
                         return;
                     }
-
-                    Optional<Currency> currency = context.getOptional("currency");
+                    if (!sender.hasPermission("gemseconomy.command.baltop." + currency.getSingular())) {
+                        GemsEconomy.lang().sendComponent(sender, "err_balance_top_no_permission");
+                        return;
+                    }
                     @SuppressWarnings("ConstantConditions")
                     int page = Math.min(Math.max(context.getOrDefault("page", 1), 1), 100);
                     int offset = 10 * (page - 1);
-                    if (currency.isEmpty()) {
-                        Currency defaultCurrency = GemsEconomy.inst().getCurrencyManager().getDefaultCurrency();
-                        if (defaultCurrency == null) {
-                            // No default currency is set
-                            GemsEconomy.lang().sendComponent(sender, "err_no_default_currency");
-                            return;
-                        }
-                        sendBalanceTop(sender, defaultCurrency, offset, page);
-                    } else {
-                        sendBalanceTop(sender, currency.get(), offset, page);
-                    }
+                    sendBalanceTop(sender, currency, offset, page);
                 })
                 .build();
 
