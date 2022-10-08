@@ -39,7 +39,11 @@ public class PayCommand extends GemsCommand {
                     double amount = context.get("amount");
                     Currency currency = context.getOrDefault("currency", GemsEconomy.inst().getCurrencyManager().getDefaultCurrency());
                     if (currency != null) {
-                        selector.getPlayers().forEach(p -> pay(sender, p, amount, currency));
+                        if (selector.getPlayers().size() > 0) {
+                            selector.getPlayers().forEach(p -> pay(sender, p, amount, currency));
+                        } else {
+                            GemsEconomy.lang().sendComponent(sender, "err_player_is_null");
+                        }
                     } else {
                         GemsEconomy.lang().sendComponent(sender, "err_no_default_currency");
                     }
