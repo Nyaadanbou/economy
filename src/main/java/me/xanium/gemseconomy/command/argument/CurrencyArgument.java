@@ -74,12 +74,11 @@ public class CurrencyArgument extends CommandArgument<CommandSender, Currency> {
             // gemseconomy.currency.<singular>.completion
             // to see corresponding tab completions
             CommandSender sender = commandContext.getSender();
-            String permission = "gemseconomy.currency";
             List<String> suggestions = new ArrayList<>();
             List<Currency> currencies = GemsEconomy.inst().getCurrencyManager().getCurrencies();
             for (Currency currency : currencies) {
                 String singular = currency.getSingular();
-                if (sender.hasPermission(permission + "." + singular + ".completion")) {
+                if (sender.hasPermission("gemseconomy.currency.completion." + singular)) {
                     suggestions.add(singular);
                 }
             }

@@ -77,7 +77,7 @@ public class BalanceCommand extends GemsCommand {
         } else {
             GemsEconomy.lang().sendComponent(sender, "msg_balance_multiple", "account", account.getNickname());
             for (Currency currency : GemsEconomy.inst().getCurrencyManager().getCurrencies()) {
-                if (sender.hasPermission("gemseconomy.currency." + currency.getSingular() + ".view")) {
+                if (sender.hasPermission("gemseconomy.currency.balance." + currency.getSingular())) {
                     double balance = account.getBalance(currency);
                     GemsEconomy.lang().sendComponent(sender, GemsEconomy.lang()
                             .component(sender, "msg_balance_list")
