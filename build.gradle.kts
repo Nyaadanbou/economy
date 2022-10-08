@@ -9,7 +9,7 @@ plugins {
 }
 
 group = "me.xanium.gemseconomy"
-version = "1.2-SNAPSHOT".decorateVersion()
+version = "1.3-SNAPSHOT".decorateVersion()
 description = "A multi-currency economy plugin for spigot servers"
 
 repositories {
@@ -50,8 +50,6 @@ dependencies {
     val cloudVersion = "1.7.1"
     implementation("cloud.commandframework", "cloud-paper", cloudVersion)
     implementation("cloud.commandframework", "cloud-minecraft-extras", cloudVersion)
-
-    annotationProcessor("cloud.commandframework:cloud-annotations:1.7.1")
 }
 
 indra {
@@ -63,7 +61,6 @@ bukkit {
     name = project.name
     apiVersion = "1.17"
     authors = listOf("Xanium", "Nailm")
-    depend = listOf("CommandAPI")
     softDepend = listOf("Vault")
     load = STARTUP
     loadBefore = listOf("ItemFrameShops")
