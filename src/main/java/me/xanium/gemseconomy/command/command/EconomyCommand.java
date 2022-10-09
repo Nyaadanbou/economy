@@ -136,7 +136,7 @@ public class EconomyCommand extends GemsCommand {
                     GemsEconomy.lang().sendComponent(target, GemsEconomy.lang()
                             .component(target, "msg_received_currency")
                             .replaceText(GemsMessages.AMOUNT_REPLACEMENT.apply(currency, amount))
-                            .replaceText(GemsMessages.ACCOUNT_REPLACEMENT.apply(GemsEconomy.lang().toLegacy(target, "msg_console_name")))
+                            .replaceText(GemsMessages.ACCOUNT_REPLACEMENT.apply(GemsEconomy.lang().legacy(target, "msg_console_name")))
                     );
                 }
             }

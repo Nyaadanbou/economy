@@ -61,7 +61,7 @@ public class CurrencyArgument extends CommandArgument<CommandSender, Currency> {
             }
 
             return ArgumentParseResult.failure(new IllegalArgumentException(
-                    GemsEconomy.lang().toLegacy(sender, "err_unknown_currency")
+                    GemsEconomy.lang().legacy(sender, "err_unknown_currency")
             ));
         }
 

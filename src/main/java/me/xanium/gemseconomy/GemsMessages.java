@@ -7,7 +7,6 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextReplacementConfig;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
-import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -59,14 +58,6 @@ public class GemsMessages {
         return raw(null, key, subst);
     }
 
-    public String legacy(CommandSender sender, String key, String... subst) {
-        return ChatColor.translateAlternateColorCodes('&', raw(sender, key, subst));
-    }
-
-    public String legacy(String key, String... subst) {
-        return legacy(null, key, subst);
-    }
-
     public Component component(CommandSender sender, String key, String... subst) {
         return MiniMessage.miniMessage().deserialize(raw(sender, key, subst));
     }
@@ -75,12 +66,12 @@ public class GemsMessages {
         return component(null, key, subst);
     }
 
-    public String toLegacy(CommandSender sender, String key, String... subst) {
+    public String legacy(CommandSender sender, String key, String... subst) {
         return LegacyComponentSerializer.legacySection().serialize(component(sender, key, subst));
     }
 
-    public String toLegacy(String key, String... subst) {
-        return toLegacy(null, key, subst);
+    public String legacy(String key, String... subst) {
+        return legacy(null, key, subst);
     }
 
     public void sendComponent(CommandSender sender, String key, String... subst) {
@@ -103,11 +94,6 @@ public class GemsMessages {
     public void sendActionBar(CommandSender sender, Component component) {
         Audience audience = GemsEconomy.inst().getAdventure().sender(sender);
         audience.sendActionBar(component);
-    }
-
-    public void sendLegacy(CommandSender sender, String key, String... subst) {
-        String legacy = legacy(sender, key, subst);
-        sender.sendMessage(legacy);
     }
 
     public void sendRaw(CommandSender sender, String key, String... subst) {

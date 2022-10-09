@@ -59,7 +59,7 @@ public class AccountArgument extends CommandArgument<CommandSender, Account> {
             // Prevent players from creating trash accounts
             if (!sender.hasPermission("gemseconomy.account.internal") && Bukkit.getOfflinePlayerIfCached(input) == null) {
                 return ArgumentParseResult.failure(
-                        new IllegalArgumentException(GemsEconomy.lang().toLegacy(sender, "err_player_is_null"))
+                        new IllegalArgumentException(GemsEconomy.lang().legacy(sender, "err_player_is_null"))
                 );
             }
 
@@ -70,7 +70,7 @@ public class AccountArgument extends CommandArgument<CommandSender, Account> {
             }
 
             return ArgumentParseResult.failure(
-                    new IllegalArgumentException(GemsEconomy.lang().toLegacy(sender, "err_player_is_null"))
+                    new IllegalArgumentException(GemsEconomy.lang().legacy(sender, "err_player_is_null"))
             );
         }
 

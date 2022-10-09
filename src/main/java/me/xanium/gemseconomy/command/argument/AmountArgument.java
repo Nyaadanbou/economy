@@ -79,7 +79,7 @@ public class AmountArgument extends CommandArgument<CommandSender, Double> {
             }
 
             return ArgumentParseResult.failure(new IllegalArgumentException(
-                    GemsEconomy.lang().toLegacy(sender, "err_no_default_currency")
+                    GemsEconomy.lang().legacy(sender, "err_no_default_currency")
             ));
         }
 
@@ -99,7 +99,7 @@ public class AmountArgument extends CommandArgument<CommandSender, Double> {
                     validateInput(sender, amount);
                 } catch (NumberFormatException ex) {
                     return ArgumentParseResult.failure(new IllegalArgumentException(
-                            GemsEconomy.lang().toLegacy(sender, "err_invalid_amount")
+                            GemsEconomy.lang().legacy(sender, "err_invalid_amount")
                     ));
                 }
             } else {
@@ -108,7 +108,7 @@ public class AmountArgument extends CommandArgument<CommandSender, Double> {
                     validateInput(sender, amount);
                 } catch (NumberFormatException ex) {
                     return ArgumentParseResult.failure(new IllegalArgumentException(
-                            GemsEconomy.lang().toLegacy(sender, "err_invalid_amount")
+                            GemsEconomy.lang().legacy(sender, "err_invalid_amount")
                     ));
                 }
             }
