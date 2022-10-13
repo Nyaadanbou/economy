@@ -36,13 +36,15 @@ public class EconomyCommand extends GemsCommand {
                 .argument(AccountArgument.of("account"))
                 .argument(AmountArgument.of("amount"))
                 .argument(CurrencyArgument.of("currency"))
+                .flag(manager.flagBuilder("silent"))
                 .handler(context -> {
                     CommandSender sender = context.getSender();
                     Account account = context.get("account");
                     double amount = context.get("amount");
                     Currency currency = context.get("currency");
+                    boolean silent = context.flags().hasFlag("silent");
 
-                    changeBalance(sender, account, amount, currency, false);
+                    changeBalance(sender, account, amount, currency, false, silent);
                 })
                 .build();
 
@@ -57,7 +59,7 @@ public class EconomyCommand extends GemsCommand {
                     double amount = context.get("amount");
                     Currency currency = context.get("currency");
 
-                    changeBalance(sender, account, amount, currency, true);
+                    changeBalance(sender, account, amount, currency, true, true);
                 })
                 .build();
 
@@ -109,7 +111,7 @@ public class EconomyCommand extends GemsCommand {
     }
 
     @NonnullByDefault
-    private void changeBalance(CommandSender sender, Account account, double amount, Currency currency, boolean withdraw) {
+    private void changeBalance(CommandSender sender, Account account, double amount, Currency currency, boolean withdraw, boolean silent) {
         if (withdraw) {
             if (account.withdraw(currency, amount)) {
                 GemsEconomy.lang().sendComponent(sender, GemsEconomy.lang()
@@ -132,7 +134,7 @@ public class EconomyCommand extends GemsCommand {
                         .replaceText(GemsMessages.ACCOUNT_REPLACEMENT.apply(account.getNickname()))
                 );
                 Player target = Bukkit.getPlayer(account.getUuid());
-                if (target != null) { // Send message if target player is online
+                if (target != null && !silent) { // Send message if target player is online
                     GemsEconomy.lang().sendComponent(target, GemsEconomy.lang()
                             .component(target, "msg_received_currency")
                             .replaceText(GemsMessages.AMOUNT_REPLACEMENT.apply(currency, amount))
