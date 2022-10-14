@@ -69,8 +69,26 @@ public class CurrencyManager {
         return currency;
     }
 
+    /**
+     * <p>Remove specified currency.
+     *
+     * <p><b>This will also remove the currency from all accounts!!!</b>
+     *
+     * @param currency the currency to remove
+     */
     public void remove(Currency currency) {
+        // Remove this currency from all accounts
+        GemsEconomy.inst()
+                .getAccountManager()
+                .getAllAccounts()
+                .stream()
+                .filter(account -> account.getBalances().containsKey(currency))
+                .forEach(account -> account.getBalances().remove(currency));
+
+        // Remove this currency from this manager
         currencies.remove(currency);
+
+        // Remove this currency from data storage
         plugin.getDataStore().deleteCurrency(currency);
     }
 

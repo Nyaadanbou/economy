@@ -264,9 +264,6 @@ public class CurrencyCommand extends GemsCommand {
                 .handler(context -> {
                     CommandSender sender = context.getSender();
                     Currency currency = context.get("currency");
-                    GemsEconomy.inst().getAccountManager().getAccounts().stream()
-                            .filter(account -> account.getBalances().containsKey(currency))
-                            .forEach(account -> account.getBalances().remove(currency));
                     GemsEconomy.inst().getCurrencyManager().remove(currency);
                     GemsEconomy.lang().sendComponent(sender, GemsEconomy.lang()
                             .component(sender, "msg_deleted_currency")
