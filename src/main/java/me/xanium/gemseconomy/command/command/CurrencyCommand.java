@@ -272,6 +272,27 @@ public class CurrencyCommand extends GemsCommand {
                 })
                 .build();
 
+        Command<CommandSender> clearBalance = builder.literal("clear")
+                .argument(CurrencyArgument.of("currency"))
+                .handler(context -> {
+                    CommandSender sender = context.getSender();
+                    Currency currency = context.get("currency");
+                    GemsEconomy.inst()
+                            .getAccountManager()
+                            .getAllAccounts()
+                            .stream()
+                            .filter(account -> account.getBalances().containsKey(currency))
+                            .forEach(account -> {
+                                account.getBalances().put(currency, 0D);
+                                GemsEconomy.inst().getDataStore().saveAccount(account);
+                            });
+                    GemsEconomy.lang().sendComponent(sender, GemsEconomy.lang()
+                            .component(sender, "msg_cleared_balance")
+                            .replaceText(GemsMessages.CURRENCY_REPLACEMENT.apply(currency.getDisplayName()))
+                    );
+                })
+                .build();
+
         Command<CommandSender> setCurrencyRate = builder.literal("setrate")
                 .argument(CurrencyArgument.of("currency"))
                 .argument(DoubleArgument
@@ -486,6 +507,7 @@ public class CurrencyCommand extends GemsCommand {
                 toggleCurrencyPayable,
                 toggleCurrencyDecimals,
                 deleteCurrency,
+                clearBalance,
                 setCurrencyRate,
                 convertStorageMethod,
                 switchBackendStorage
