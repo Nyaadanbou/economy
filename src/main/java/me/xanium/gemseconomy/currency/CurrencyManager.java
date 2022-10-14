@@ -36,7 +36,7 @@ public class CurrencyManager {
     }
 
     public @Nullable Currency getCurrency(UUID uuid) {
-        for (Currency currency : getCurrencies()) {
+        for (Currency currency : currencies) {
             if (!currency.getUuid().equals(uuid)) continue;
             return currency;
         }
