@@ -1,17 +1,17 @@
 package me.xanium.gemseconomy.currency;
 
-import com.google.common.collect.Lists;
 import me.xanium.gemseconomy.GemsEconomy;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
 public class CurrencyManager {
 
     private final GemsEconomy plugin;
-    private final List<Currency> currencies = Lists.newArrayList();
+    private final List<Currency> currencies = new ArrayList<>();
 
     public CurrencyManager(GemsEconomy plugin) {
         this.plugin = plugin;
@@ -100,8 +100,9 @@ public class CurrencyManager {
     }
 
     public void add(Currency currency) {
-        if (currencies.contains(currency)) return;
-        currencies.add(currency);
+        if (!currencies.contains(currency)) {
+            currencies.add(currency);
+        }
     }
 
     public @NotNull List<Currency> getCurrencies() {

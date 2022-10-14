@@ -313,7 +313,10 @@ public class MySQLStorage extends DataStorage {
                     cache.put(rs.getString("nickname"), bal.doubleValue());
                 }
 
-                LinkedHashMap<String, Double> sorted = cache.entrySet().stream().sorted(Map.Entry.comparingByValue(Comparator.reverseOrder())).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (e1, e2) -> e1, LinkedHashMap::new));
+                LinkedHashMap<String, Double> sorted = cache.entrySet()
+                        .stream()
+                        .sorted(Map.Entry.comparingByValue(Comparator.reverseOrder()))
+                        .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (e1, e2) -> e1, LinkedHashMap::new));
                 CachedTopList topList = new CachedTopList(currency, amount, offset, System.currentTimeMillis());
                 LinkedList<CachedTopListEntry> list = new LinkedList<>();
                 for (String name : sorted.keySet()) {
