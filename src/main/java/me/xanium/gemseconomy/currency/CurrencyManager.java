@@ -51,6 +51,13 @@ public class CurrencyManager {
         return null;
     }
 
+    /**
+     * Creates a new currency and saves it to the data storage.
+     *
+     * @param singular the singular form of the new currency
+     * @param plural   the plural form of the new currency
+     * @return the new currency, or <code>null</code> if already existed
+     */
     public @Nullable Currency createNewCurrency(String singular, String plural) {
         if (currencyExist(singular) || currencyExist(plural)) {
             return null;
