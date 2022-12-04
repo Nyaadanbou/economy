@@ -2,6 +2,7 @@ import net.minecrell.pluginyml.bukkit.BukkitPluginDescription.PluginLoadOrder.ST
 
 plugins {
     `java-library`
+    `maven-publish`
     id("com.github.johnrengelman.shadow") version "7.1.2"
     id("net.minecrell.plugin-yml.bukkit") version "0.5.2"
     id("net.kyori.indra") version "2.1.1"
@@ -9,7 +10,7 @@ plugins {
 }
 
 group = "me.xanium.gemseconomy"
-version = "1.3-SNAPSHOT".decorateVersion()
+version = "1.3".decorateVersion()
 description = "A multi-currency economy plugin for spigot servers"
 
 repositories {
@@ -67,15 +68,17 @@ bukkit {
 }
 
 tasks {
+    jar {
+        enabled = false
+    }
     build {
         dependsOn(shadowJar)
     }
     shadowJar {
         minimize()
         archiveFileName.set("${project.name}-${project.version}.jar")
+        archiveClassifier.set("")
         sequenceOf(
-//            "org.slf4j",
-//            "org.jetbrains",
             "net.kyori",
             "com.zaxxer",
             "cloud.commandframework",
@@ -97,6 +100,16 @@ tasks {
                 workingDir("build/libs")
                 commandLine("scp", jar.get().archiveFileName.get(), "dev:data/dev/plugins")
             }
+        }
+    }
+}
+
+publishing {
+    publications {
+        create<MavenPublication>("maven") {
+            artifact(tasks["javadocJar"])
+            artifact(tasks["sourcesJar"])
+            artifact(tasks["shadowJar"])
         }
     }
 }
