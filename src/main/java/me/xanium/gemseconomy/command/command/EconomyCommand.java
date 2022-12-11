@@ -81,7 +81,7 @@ public class EconomyCommand extends GemsCommand {
         Command<CommandSender> cache = builder
                 .literal("cache")
                 .handler(context -> {
-                    for (Account a : GemsEconomy.inst().getAccountManager().getAccounts()) {
+                    for (Account a : GemsEconomy.getInstance().getAccountManager().getAccounts()) {
                         UtilServer.consoleLog("Account: " + a.getNickname() + " cached");
                     }
                 })
@@ -93,10 +93,10 @@ public class EconomyCommand extends GemsCommand {
                 .senderType(ConsoleCommandSender.class)
                 .handler(context -> {
                     CommandSender sender = context.getSender();
-                    GemsEconomy.inst().setDebug(!GemsEconomy.inst().isDebug());
+                    GemsEconomy.getInstance().setDebug(!GemsEconomy.getInstance().isDebug());
                     GemsEconomy.lang().sendComponent(sender, GemsEconomy.lang()
                             .component(sender, "msg_debug_status")
-                            .replaceText(GemsMessages.STATUS_REPLACEMENT.apply(GemsEconomy.inst().isDebug()))
+                            .replaceText(GemsMessages.STATUS_REPLACEMENT.apply(GemsEconomy.getInstance().isDebug()))
                     );
                 })
                 .build();

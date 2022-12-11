@@ -22,7 +22,7 @@ import org.bukkit.event.player.PlayerQuitEvent;
 
 public class EconomyListener implements Listener {
 
-    private final GemsEconomy plugin = GemsEconomy.inst();
+    private final GemsEconomy plugin = GemsEconomy.getInstance();
 
     @EventHandler(priority = EventPriority.LOWEST)
     public void onLogin(PlayerLoginEvent event) {

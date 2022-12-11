@@ -56,7 +56,7 @@ public class UpdateForwarder implements PluginMessageListener {
                 Currency currency = plugin.getCurrencyManager().getCurrency(uuid);
                 if (currency != null) {
                     plugin.getDataStore().updateCurrencyLocally(currency);
-                    if (GemsEconomy.inst().isDebug()) {
+                    if (GemsEconomy.getInstance().isDebug()) {
                         UtilServer.consoleLog(CHANNEL_NAME + " - Currency " + name + " updated.");
                     }
                 }
@@ -90,12 +90,12 @@ public class UpdateForwarder implements PluginMessageListener {
 
         Player player = Iterables.getFirst(Bukkit.getOnlinePlayers(), null);
         if (player == null) {
-            if (GemsEconomy.inst().isDebug()) {
+            if (GemsEconomy.getInstance().isDebug()) {
                 UtilServer.consoleLog(CHANNEL_NAME + " - No players online. Don't send update message.");
             }
             return;
         }
-        player.sendPluginMessage(GemsEconomy.inst(), "BungeeCord", out.toByteArray());
+        player.sendPluginMessage(GemsEconomy.getInstance(), "BungeeCord", out.toByteArray());
     }
 
 }

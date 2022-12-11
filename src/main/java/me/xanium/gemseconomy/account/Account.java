@@ -53,7 +53,7 @@ public class Account {
             GemsPostTransactionEvent post = new GemsPostTransactionEvent(currency, this, amount, TransactionType.WITHDRAW);
             SchedulerUtils.run(() -> Bukkit.getPluginManager().callEvent(post));
 
-            GemsEconomy.inst().getEconomyLogger().log("[WITHDRAW] Account: " + getDisplayName() + " were withdrawn: " + currency.format(amount) + " and now has " + currency.format(cappedAmount));
+            GemsEconomy.getInstance().getEconomyLogger().log("[WITHDRAW] Account: " + getDisplayName() + " were withdrawn: " + currency.format(amount) + " and now has " + currency.format(cappedAmount));
             return true;
         }
         return false;
@@ -73,7 +73,7 @@ public class Account {
             GemsPostTransactionEvent post = new GemsPostTransactionEvent(currency, this, amount, TransactionType.DEPOSIT);
             SchedulerUtils.run(() -> Bukkit.getPluginManager().callEvent(post));
 
-            GemsEconomy.inst().getEconomyLogger().log("[DEPOSIT] Account: " + getDisplayName() + " were deposited: " + currency.format(amount) + " and now has " + currency.format(cappedAmount));
+            GemsEconomy.getInstance().getEconomyLogger().log("[DEPOSIT] Account: " + getDisplayName() + " were deposited: " + currency.format(amount) + " and now has " + currency.format(cappedAmount));
             return true;
         }
         return false;
@@ -94,8 +94,8 @@ public class Account {
 
             modifyBalance(exchanged, cappedRemoved, false);
             modifyBalance(received, cappedAdded, false);
-            GemsEconomy.inst().getDataStore().saveAccount(this);
-            GemsEconomy.inst().getEconomyLogger().log("[CONVERSION - Custom Amount] Account: " + getDisplayName() + " converted " + exchanged.format(exchangeAmount) + " to " + received.format(receiveAmount));
+            GemsEconomy.getInstance().getDataStore().saveAccount(this);
+            GemsEconomy.getInstance().getEconomyLogger().log("[CONVERSION - Custom Amount] Account: " + getDisplayName() + " converted " + exchanged.format(exchangeAmount) + " to " + received.format(receiveAmount));
             return true;
         }
         double rate;
@@ -120,7 +120,7 @@ public class Account {
             cappedRemoved = Math.min(removed, exchanged.getMaxBalance());
             cappedAdded = Math.min(added, received.getMaxBalance());
 
-            if (GemsEconomy.inst().isDebug()) {
+            if (GemsEconomy.getInstance().isDebug()) {
                 UtilServer.consoleLog("Rate: " + rate);
                 UtilServer.consoleLog("Finalized amount: " + finalAmount);
                 UtilServer.consoleLog("Amount to remove: " + exchanged.format(cappedRemoved) + " (before capping: " + removed + ")");
@@ -130,8 +130,8 @@ public class Account {
             if (hasEnough(exchanged, exchangeAmount)) {
                 this.modifyBalance(exchanged, cappedRemoved, false);
                 this.modifyBalance(received, cappedAdded, false);
-                GemsEconomy.inst().getDataStore().saveAccount(this);
-                GemsEconomy.inst().getEconomyLogger().log("[CONVERSION - Preset Rate] Account: " + getDisplayName() + " converted " + exchanged.format(cappedRemoved) + " (Rate: " + rate + ") to " + received.format(cappedAdded));
+                GemsEconomy.getInstance().getDataStore().saveAccount(this);
+                GemsEconomy.getInstance().getEconomyLogger().log("[CONVERSION - Preset Rate] Account: " + getDisplayName() + " converted " + exchanged.format(cappedRemoved) + " (Rate: " + rate + ") to " + received.format(cappedAdded));
                 return true;
             }
         } else {
@@ -142,7 +142,7 @@ public class Account {
             cappedRemoved = Math.min(removed, exchanged.getMaxBalance());
             cappedAdded = Math.min(added, received.getMaxBalance());
 
-            if (GemsEconomy.inst().isDebug()) {
+            if (GemsEconomy.getInstance().isDebug()) {
                 UtilServer.consoleLog("Rate: " + rate);
                 UtilServer.consoleLog("Finalized amount: " + finalAmount);
                 UtilServer.consoleLog("Amount to remove: " + exchanged.format(cappedRemoved) + " (before capping: " + removed + ")");
@@ -152,8 +152,8 @@ public class Account {
             if (hasEnough(exchanged, finalAmount)) {
                 this.modifyBalance(exchanged, cappedRemoved, false);
                 this.modifyBalance(received, cappedAdded, false);
-                GemsEconomy.inst().getDataStore().saveAccount(this);
-                GemsEconomy.inst().getEconomyLogger().log("[CONVERSION - Preset Rate] Account: " + getDisplayName() + " converted " + exchanged.format(cappedRemoved) + " (Rate: " + rate + ") to " + received.format(cappedAdded));
+                GemsEconomy.getInstance().getDataStore().saveAccount(this);
+                GemsEconomy.getInstance().getEconomyLogger().log("[CONVERSION - Preset Rate] Account: " + getDisplayName() + " converted " + exchanged.format(cappedRemoved) + " (Rate: " + rate + ") to " + received.format(cappedAdded));
                 return true;
             }
 
@@ -174,8 +174,8 @@ public class Account {
         GemsPostTransactionEvent post = new GemsPostTransactionEvent(currency, this, cappedAmount, TransactionType.SET);
         SchedulerUtils.run(() -> Bukkit.getPluginManager().callEvent(post));
 
-        GemsEconomy.inst().getEconomyLogger().log("[BALANCE SET] Account: " + getDisplayName() + " were set to: " + currency.format(cappedAmount));
-        GemsEconomy.inst().getDataStore().saveAccount(this);
+        GemsEconomy.getInstance().getEconomyLogger().log("[BALANCE SET] Account: " + getDisplayName() + " were set to: " + currency.format(cappedAmount));
+        GemsEconomy.getInstance().getDataStore().saveAccount(this);
     }
 
     /**
@@ -193,7 +193,7 @@ public class Account {
         // cap should be done by other methods
         getBalances().put(currency, amount);
 
-        if (save) GemsEconomy.inst().getDataStore().saveAccount(this);
+        if (save) GemsEconomy.getInstance().getDataStore().saveAccount(this);
     }
 
     public double getBalance(Currency currency) {
@@ -229,7 +229,7 @@ public class Account {
     }
 
     public boolean hasEnough(double amount) {
-        return hasEnough(GemsEconomy.inst().getCurrencyManager().getDefaultCurrency(), amount);
+        return hasEnough(GemsEconomy.getInstance().getCurrencyManager().getDefaultCurrency(), amount);
     }
 
     public boolean hasEnough(Currency currency, double amount) {

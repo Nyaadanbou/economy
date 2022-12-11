@@ -25,7 +25,7 @@ public class UtilServer {
     }
 
     public static void consoleLog(String message) {
-        if (GemsEconomy.inst().isDebug()) {
+        if (GemsEconomy.getInstance().isDebug()) {
             StackWalker walker = StackWalker.getInstance();
             Optional<String> walk = walker.walk(frameStream -> frameStream
                     .skip(1)

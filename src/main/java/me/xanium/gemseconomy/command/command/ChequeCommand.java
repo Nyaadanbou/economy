@@ -33,22 +33,22 @@ public class ChequeCommand extends GemsCommand {
                 .senderType(Player.class)
                 .handler(context -> {
                     Player player = (Player) context.getSender();
-                    if (!GemsEconomy.inst().isChequesEnabled()) {
+                    if (!GemsEconomy.getInstance().isChequesEnabled()) {
                         GemsEconomy.lang().sendComponent(player, "err_cheque_no_support");
                         return;
                     }
 
                     ItemStack item = player.getInventory().getItemInMainHand();
-                    if (item.getType().equals(Material.matchMaterial(GemsEconomy.inst().getConfig().getString("cheque.material", "paper")))) {
-                        if (GemsEconomy.inst().getChequeManager().isValid(item)) {
-                            double value = GemsEconomy.inst().getChequeManager().getValue(item);
+                    if (item.getType().equals(Material.matchMaterial(GemsEconomy.getInstance().getConfig().getString("cheque.material", "paper")))) {
+                        if (GemsEconomy.getInstance().getChequeManager().isValid(item)) {
+                            double value = GemsEconomy.getInstance().getChequeManager().getValue(item);
                             if (item.getAmount() > 1) {
                                 player.getInventory().getItemInMainHand().setAmount(player.getInventory().getItemInMainHand().getAmount() - 1);
                             } else {
                                 player.getInventory().remove(item);
                             }
-                            Account user = GemsEconomy.inst().getAccountManager().getAccount(player);
-                            Currency currency = GemsEconomy.inst().getChequeManager().getCurrency(item);
+                            Account user = GemsEconomy.getInstance().getAccountManager().getAccount(player);
+                            Currency currency = GemsEconomy.getInstance().getChequeManager().getCurrency(item);
                             user.deposit(currency, value);
                             GemsEconomy.lang().sendComponent(player, "msg_cheque_redeemed");
                         } else {
@@ -67,19 +67,19 @@ public class ChequeCommand extends GemsCommand {
                 .senderType(Player.class)
                 .handler(context -> {
                     Player player = (Player) context.getSender();
-                    if (!GemsEconomy.inst().isChequesEnabled()) {
+                    if (!GemsEconomy.getInstance().isChequesEnabled()) {
                         GemsEconomy.lang().sendComponent(player, "err_cheque_no_support");
                         return;
                     }
 
                     int amount = context.get("amount");
-                    Currency currency = context.getOrDefault("currency", GemsEconomy.inst().getCurrencyManager().getDefaultCurrency());
+                    Currency currency = context.getOrDefault("currency", GemsEconomy.getInstance().getCurrencyManager().getDefaultCurrency());
                     if (currency == null) {
                         GemsEconomy.lang().sendComponent(player, "err_no_default_currency");
                         return;
                     }
 
-                    Account account = GemsEconomy.inst().getAccountManager().getAccount(player);
+                    Account account = GemsEconomy.getInstance().getAccountManager().getAccount(player);
                     if (account == null) {
                         GemsEconomy.lang().sendComponent(player, "err_account_missing");
                         return;
@@ -97,7 +97,7 @@ public class ChequeCommand extends GemsCommand {
     @NonnullByDefault
     private void makeCheque(Player player, Account user, double amount, Currency currency) {
         if (user.hasEnough(currency, amount)) {
-            ItemStack cheque = GemsEconomy.inst().getChequeManager().write(player.getName(), currency, amount);
+            ItemStack cheque = GemsEconomy.getInstance().getChequeManager().write(player.getName(), currency, amount);
             if (cheque != null) {
                 user.withdraw(currency, amount);
                 player.getInventory().addItem(cheque);

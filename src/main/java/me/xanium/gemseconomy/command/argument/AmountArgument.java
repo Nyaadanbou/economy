@@ -71,7 +71,7 @@ public class AmountArgument extends CommandArgument<CommandSender, Double> {
                 inputQueue.remove();
                 return parseAmount(sender, input, currency);
             } else { // Else, fallback to the default Currency
-                Currency currency = GemsEconomy.inst().getCurrencyManager().getDefaultCurrency();
+                Currency currency = GemsEconomy.getInstance().getCurrencyManager().getDefaultCurrency();
                 if (currency != null) {
                     inputQueue.remove();
                     return parseAmount(sender, input, currency);

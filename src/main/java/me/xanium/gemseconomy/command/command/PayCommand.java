@@ -37,7 +37,7 @@ public class PayCommand extends GemsCommand {
                     Player sender = (Player) context.getSender();
                     MultiplePlayerSelector selector = context.get("player");
                     double amount = context.get("amount");
-                    Currency currency = context.getOrDefault("currency", GemsEconomy.inst().getCurrencyManager().getDefaultCurrency());
+                    Currency currency = context.getOrDefault("currency", GemsEconomy.getInstance().getCurrencyManager().getDefaultCurrency());
                     if (currency != null) {
                         if (selector.getPlayers().size() > 0) {
                             selector.getPlayers().forEach(p -> pay(sender, p, amount, currency));
@@ -73,14 +73,14 @@ public class PayCommand extends GemsCommand {
         }
 
         // Check target account
-        Account targetAccount = GemsEconomy.inst().getAccountManager().getAccount(targetPlayer);
+        Account targetAccount = GemsEconomy.getInstance().getAccountManager().getAccount(targetPlayer);
         if (targetAccount == null) {
             GemsEconomy.lang().sendComponent(sender, "err_player_is_null");
             return;
         }
 
         // Check if sender account missing
-        Account self = GemsEconomy.inst().getAccountManager().getAccount(sender);
+        Account self = GemsEconomy.getInstance().getAccountManager().getAccount(sender);
         if (self == null) {
             GemsEconomy.lang().sendComponent(sender, "err_account_missing");
             return;
@@ -130,7 +130,7 @@ public class PayCommand extends GemsCommand {
 
         self.modifyBalance(currency, cappedAccBal, true);
         targetAccount.modifyBalance(currency, cappedTarBal, true);
-        GemsEconomy.inst().getEconomyLogger().log("[PAYMENT] " + self.getDisplayName() + " (New bal: " + currency.format(cappedAccBal) + ") -> paid " + targetAccount.getDisplayName() + " (New bal: " + currency.format(cappedTarBal) + ") - An amount of " + currency.format(amount));
+        GemsEconomy.getInstance().getEconomyLogger().log("[PAYMENT] " + self.getDisplayName() + " (New bal: " + currency.format(cappedAccBal) + ") -> paid " + targetAccount.getDisplayName() + " (New bal: " + currency.format(cappedTarBal) + ") - An amount of " + currency.format(amount));
 
         GemsEconomy.lang().sendComponent(targetPlayer, GemsEconomy.lang()
                 .component(targetPlayer, "msg_received_currency")

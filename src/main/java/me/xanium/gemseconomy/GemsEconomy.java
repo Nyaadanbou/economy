@@ -53,7 +53,7 @@ public class GemsEconomy extends JavaPlugin {
     private boolean cheques = false;
     private boolean disabling = false;
 
-    public static GemsEconomy inst() {
+    public static GemsEconomy getInstance() {
         return instance;
     }
 

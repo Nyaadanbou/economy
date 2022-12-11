@@ -136,7 +136,7 @@ public class GemsCommands extends PaperCommandManager<CommandSender> {
                         }
                 )
                 .withCommandExecutionHandler()
-                .apply(this, sender -> GemsEconomy.inst().getAdventure().sender(sender));
+                .apply(this, sender -> GemsEconomy.getInstance().getAdventure().sender(sender));
 
         // ---- Register all commands ----
         Stream.of(

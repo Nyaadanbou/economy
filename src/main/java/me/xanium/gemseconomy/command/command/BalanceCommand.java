@@ -33,7 +33,7 @@ public class BalanceCommand extends GemsCommand {
                     Optional<Account> account = context.getOptional("account");
                     if (sender instanceof Player player) {
                         if (account.isEmpty()) { // Player did not specify account, so view the account of their own
-                            Account ownAccount = GemsEconomy.inst().getAccountManager().getAccount(player);
+                            Account ownAccount = GemsEconomy.getInstance().getAccountManager().getAccount(player);
                             if (ownAccount == null) { // Double check in case the player's account is not loaded yet
                                 GemsEconomy.lang().sendComponent(sender, "err_account_missing");
                                 return;
@@ -61,11 +61,11 @@ public class BalanceCommand extends GemsCommand {
 
     @NonnullByDefault
     private void sendBalance(CommandSender sender, Account account) {
-        int currencies = GemsEconomy.inst().getCurrencyManager().getCurrencies().size();
+        int currencies = GemsEconomy.getInstance().getCurrencyManager().getCurrencies().size();
         if (currencies == 0) {
             GemsEconomy.lang().sendComponent(sender, "err_no_default_currency");
         } else if (currencies == 1) {
-            Currency currency = GemsEconomy.inst().getCurrencyManager().getDefaultCurrency();
+            Currency currency = GemsEconomy.getInstance().getCurrencyManager().getDefaultCurrency();
             if (currency == null) {
                 GemsEconomy.lang().sendComponent(sender, "err_balance_none", "account", account.getNickname());
                 return;
@@ -78,7 +78,7 @@ public class BalanceCommand extends GemsCommand {
             GemsEconomy.lang().sendComponent(sender, balanceMessage);
         } else {
             GemsEconomy.lang().sendComponent(sender, "msg_balance_multiple", "account", account.getNickname());
-            for (Currency currency : GemsEconomy.inst().getCurrencyManager().getCurrencies()) {
+            for (Currency currency : GemsEconomy.getInstance().getCurrencyManager().getCurrencies()) {
                 if (sender.hasPermission("gemseconomy.currency.balance." + currency.getSingular())) {
                     double balance = account.getBalance(currency);
                     GemsEconomy.lang().sendComponent(sender, GemsEconomy.lang()

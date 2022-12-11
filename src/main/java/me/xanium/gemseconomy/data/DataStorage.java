@@ -20,7 +20,7 @@ import java.util.UUID;
 
 public abstract class DataStorage {
 
-    public final GemsEconomy plugin = GemsEconomy.inst();
+    public final GemsEconomy plugin = GemsEconomy.getInstance();
 
     private final StorageType storageType;
     private final boolean topSupported;

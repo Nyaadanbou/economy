@@ -13,7 +13,6 @@ import me.xanium.gemseconomy.currency.Currency;
 import org.bukkit.command.CommandSender;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class BalanceTopCommand extends GemsCommand {
@@ -33,12 +32,12 @@ public class BalanceTopCommand extends GemsCommand {
                 .argument(IntegerArgument.optional("page"))
                 .handler(context -> {
                     CommandSender sender = context.getSender();
-                    Currency currency = context.getOrDefault("currency", GemsEconomy.inst().getCurrencyManager().getDefaultCurrency());
+                    Currency currency = context.getOrDefault("currency", GemsEconomy.getInstance().getCurrencyManager().getDefaultCurrency());
                     if (currency == null) { // No default currency is set
                         GemsEconomy.lang().sendComponent(sender, "err_no_default_currency");
                         return;
                     }
-                    if (!GemsEconomy.inst().getDataStore().isTopSupported()) {
+                    if (!GemsEconomy.getInstance().getDataStore().isTopSupported()) {
                         GemsEconomy.lang().sendComponent(sender, "err_balance_top_no_support");
                         return;
                     }
@@ -58,7 +57,7 @@ public class BalanceTopCommand extends GemsCommand {
 
     @NonnullByDefault
     private void sendBalanceTop(CommandSender sender, Currency currency, int offset, int pageNum) {
-        GemsEconomy.inst().getDataStore().getTopList(currency, offset, ACCOUNTS_PER_PAGE, cachedTopListEntries -> {
+        GemsEconomy.getInstance().getDataStore().getTopList(currency, offset, ACCOUNTS_PER_PAGE, cachedTopListEntries -> {
 
             GemsEconomy.lang().sendComponent(sender, GemsEconomy.lang()
                     .component(sender, "msg_balance_top_header")

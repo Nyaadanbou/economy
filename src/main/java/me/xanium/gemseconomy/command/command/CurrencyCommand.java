@@ -48,7 +48,7 @@ public class CurrencyCommand extends GemsCommand {
                     String singular = context.get("singular");
                     String plural = context.get("plural");
 
-                    Currency currency = GemsEconomy.inst().getCurrencyManager().createNewCurrency(singular, plural);
+                    Currency currency = GemsEconomy.getInstance().getCurrencyManager().createNewCurrency(singular, plural);
                     if (currency != null) {
                         GemsEconomy.lang().sendComponent(sender, GemsEconomy.lang()
                                 .component(sender, "msg_created_currency")
@@ -64,8 +64,8 @@ public class CurrencyCommand extends GemsCommand {
                 .literal("list")
                 .handler(context -> {
                     CommandSender sender = context.getSender();
-                    GemsEconomy.lang().sendComponent(sender, "msg_currency_list_header", "size", Integer.toString(GemsEconomy.inst().getCurrencyManager().getCurrencies().size()));
-                    for (Currency currency : GemsEconomy.inst().getCurrencyManager().getCurrencies()) {
+                    GemsEconomy.lang().sendComponent(sender, "msg_currency_list_header", "size", Integer.toString(GemsEconomy.getInstance().getCurrencyManager().getCurrencies().size()));
+                    for (Currency currency : GemsEconomy.getInstance().getCurrencyManager().getCurrencies()) {
                         GemsEconomy.lang().sendComponent(sender, GemsEconomy.lang()
                                 .component(sender, "msg_currency_list_entry")
                                 .replaceText(GemsMessages.CURRENCY_REPLACEMENT.apply(currency.getDisplayName()))
@@ -125,7 +125,7 @@ public class CurrencyCommand extends GemsCommand {
                     Currency currency = context.get("currency");
                     double amount = context.get("amount");
                     currency.setDefaultBalance(amount);
-                    GemsEconomy.inst().getDataStore().saveCurrency(currency);
+                    GemsEconomy.getInstance().getDataStore().saveCurrency(currency);
                     GemsEconomy.lang().sendComponent(sender, GemsEconomy.lang()
                             .component(sender, "msg_set_currency_default_balance")
                             .replaceText(GemsMessages.CURRENCY_REPLACEMENT.apply(currency.getDisplayName()))
@@ -146,7 +146,7 @@ public class CurrencyCommand extends GemsCommand {
                     Currency currency = context.get("currency");
                     double amount = context.get("amount");
                     currency.setMaxBalance(amount);
-                    GemsEconomy.inst().getDataStore().saveCurrency(currency);
+                    GemsEconomy.getInstance().getDataStore().saveCurrency(currency);
                     GemsEconomy.lang().sendComponent(sender, GemsEconomy.lang()
                             .component(sender, "msg_set_currency_maximum_balance")
                             .replaceText(GemsMessages.CURRENCY_REPLACEMENT.apply(currency.getDisplayName()))
@@ -167,7 +167,7 @@ public class CurrencyCommand extends GemsCommand {
                     Currency currency = context.get("currency");
                     TextColor chatColor = context.get("color");
                     currency.setColor(chatColor);
-                    GemsEconomy.inst().getDataStore().saveCurrency(currency);
+                    GemsEconomy.getInstance().getDataStore().saveCurrency(currency);
                     GemsEconomy.lang().sendComponent(sender, GemsEconomy.lang()
                             .component(sender, "msg_set_currency_color")
                             .replaceText(GemsMessages.CURRENCY_REPLACEMENT.apply(currency.getDisplayName()))
@@ -188,14 +188,14 @@ public class CurrencyCommand extends GemsCommand {
                     String symbol = context.get("symbol");
                     if (symbol.equalsIgnoreCase("remove")) {
                         currency.setSymbol(null);
-                        GemsEconomy.inst().getDataStore().saveCurrency(currency);
+                        GemsEconomy.getInstance().getDataStore().saveCurrency(currency);
                         GemsEconomy.lang().sendComponent(sender, GemsEconomy.lang()
                                 .component(sender, "msg_removed_currency_symbol")
                                 .replaceText(GemsMessages.CURRENCY_REPLACEMENT.apply(currency.getDisplayName()))
                         );
                     } else if (symbol.length() == 1) {
                         currency.setSymbol(symbol);
-                        GemsEconomy.inst().getDataStore().saveCurrency(currency);
+                        GemsEconomy.getInstance().getDataStore().saveCurrency(currency);
                         GemsEconomy.lang().sendComponent(sender, GemsEconomy.lang()
                                 .component(sender, "msg_set_currency_symbol")
                                 .replaceText(GemsMessages.CURRENCY_REPLACEMENT.apply(currency.getDisplayName()))
@@ -215,13 +215,13 @@ public class CurrencyCommand extends GemsCommand {
                 .handler(context -> {
                     CommandSender sender = context.getSender();
                     Currency currency = context.get("currency");
-                    Currency defaultCurrency = GemsEconomy.inst().getCurrencyManager().getDefaultCurrency();
+                    Currency defaultCurrency = GemsEconomy.getInstance().getCurrencyManager().getDefaultCurrency();
                     if (defaultCurrency != null) {
                         defaultCurrency.setDefaultCurrency(false);
-                        GemsEconomy.inst().getDataStore().saveCurrency(defaultCurrency);
+                        GemsEconomy.getInstance().getDataStore().saveCurrency(defaultCurrency);
                     }
                     currency.setDefaultCurrency(true);
-                    GemsEconomy.inst().getDataStore().saveCurrency(currency);
+                    GemsEconomy.getInstance().getDataStore().saveCurrency(currency);
                     GemsEconomy.lang().sendComponent(sender, GemsEconomy.lang()
                             .component(sender, "msg_set_default_currency")
                             .replaceText(GemsMessages.CURRENCY_REPLACEMENT.apply(currency.getDisplayName()))
@@ -235,7 +235,7 @@ public class CurrencyCommand extends GemsCommand {
                     CommandSender sender = context.getSender();
                     Currency currency = context.get("currency");
                     currency.setPayable(!currency.isPayable());
-                    GemsEconomy.inst().getDataStore().saveCurrency(currency);
+                    GemsEconomy.getInstance().getDataStore().saveCurrency(currency);
                     GemsEconomy.lang().sendComponent(sender, GemsEconomy.lang()
                             .component(sender, "msg_toggled_currency_payable")
                             .replaceText(GemsMessages.CURRENCY_REPLACEMENT.apply(currency.getDisplayName()))
@@ -250,7 +250,7 @@ public class CurrencyCommand extends GemsCommand {
                     CommandSender sender = context.getSender();
                     Currency currency = context.get("currency");
                     currency.setDecimalSupported(!currency.isDecimalSupported());
-                    GemsEconomy.inst().getDataStore().saveCurrency(currency);
+                    GemsEconomy.getInstance().getDataStore().saveCurrency(currency);
                     GemsEconomy.lang().sendComponent(sender, GemsEconomy.lang()
                             .component(sender, "msg_toggled_currency_decimal_support")
                             .replaceText(GemsMessages.CURRENCY_REPLACEMENT.apply(currency.getDisplayName()))
@@ -264,7 +264,7 @@ public class CurrencyCommand extends GemsCommand {
                 .handler(context -> {
                     CommandSender sender = context.getSender();
                     Currency currency = context.get("currency");
-                    GemsEconomy.inst().getCurrencyManager().remove(currency);
+                    GemsEconomy.getInstance().getCurrencyManager().remove(currency);
                     GemsEconomy.lang().sendComponent(sender, GemsEconomy.lang()
                             .component(sender, "msg_deleted_currency")
                             .replaceText(GemsMessages.CURRENCY_REPLACEMENT.apply(currency.getDisplayName()))
@@ -277,14 +277,14 @@ public class CurrencyCommand extends GemsCommand {
                 .handler(context -> {
                     CommandSender sender = context.getSender();
                     Currency currency = context.get("currency");
-                    GemsEconomy.inst()
+                    GemsEconomy.getInstance()
                             .getAccountManager()
                             .getAllAccounts()
                             .stream()
                             .filter(account -> account.getBalances().containsKey(currency))
                             .forEach(account -> {
                                 account.getBalances().put(currency, 0D);
-                                GemsEconomy.inst().getDataStore().saveAccount(account);
+                                GemsEconomy.getInstance().getDataStore().saveAccount(account);
                             });
                     GemsEconomy.lang().sendComponent(sender, GemsEconomy.lang()
                             .component(sender, "msg_cleared_balance")
@@ -304,7 +304,7 @@ public class CurrencyCommand extends GemsCommand {
                     Currency currency = context.get("currency");
                     double rate = context.get("rate");
                     currency.setExchangeRate(rate);
-                    GemsEconomy.inst().getDataStore().saveCurrency(currency);
+                    GemsEconomy.getInstance().getDataStore().saveCurrency(currency);
                     GemsEconomy.lang().sendComponent(sender, GemsEconomy.lang()
                             .component(sender, "msg_set_exchange_rate")
                             .replaceText(GemsMessages.CURRENCY_REPLACEMENT.apply(currency.getDisplayName()))
@@ -322,7 +322,7 @@ public class CurrencyCommand extends GemsCommand {
                 .handler(context -> {
                     CommandSender sender = context.getSender();
                     StorageType method = context.get("method");
-                    DataStorage current = GemsEconomy.inst().getDataStore();
+                    DataStorage current = GemsEconomy.getInstance().getDataStore();
                     DataStorage given = DataStorage.getMethod(method);
 
                     if (current == null) {
@@ -336,16 +336,16 @@ public class CurrencyCommand extends GemsCommand {
                             return;
                         }
 
-                        GemsEconomy.inst().getConfig().set("storage", given.getStorageType());
-                        GemsEconomy.inst().saveConfig();
+                        GemsEconomy.getInstance().getConfig().set("storage", given.getStorageType());
+                        GemsEconomy.getInstance().saveConfig();
 
                         GemsEconomy.lang().sendComponent(sender, "msg_loading_data");
-                        GemsEconomy.inst().getAccountManager().getAccounts().clear();
+                        GemsEconomy.getInstance().getAccountManager().getAccounts().clear();
 
-                        ArrayList<Account> offline = new ArrayList<>(GemsEconomy.inst().getDataStore().getOfflineAccounts());
+                        ArrayList<Account> offline = new ArrayList<>(GemsEconomy.getInstance().getDataStore().getOfflineAccounts());
                         GemsEconomy.lang().sendComponent(sender, "msg_stored_account", "size", Integer.toString(offline.size()));
                         UtilServer.consoleLog("Stored Accounts: " + offline.size());
-                        if (GemsEconomy.inst().isDebug()) {
+                        if (GemsEconomy.getInstance().isDebug()) {
                             for (Account account : offline) {
                                 UtilServer.consoleLog("Account: " + account.getNickname() + " (" + account.getUuid().toString() + ")");
                                 for (Currency currency : account.getBalances().keySet()) {
@@ -354,11 +354,11 @@ public class CurrencyCommand extends GemsCommand {
                             }
                         }
 
-                        ArrayList<Currency> currencies = new ArrayList<>(GemsEconomy.inst().getCurrencyManager().getCurrencies());
-                        GemsEconomy.inst().getCurrencyManager().getCurrencies().clear();
+                        ArrayList<Currency> currencies = new ArrayList<>(GemsEconomy.getInstance().getCurrencyManager().getCurrencies());
+                        GemsEconomy.getInstance().getCurrencyManager().getCurrencies().clear();
                         GemsEconomy.lang().sendComponent(sender, "msg_stored_currency");
 
-                        if (GemsEconomy.inst().isDebug()) {
+                        if (GemsEconomy.getInstance().isDebug()) {
                             for (Currency c : currencies) {
                                 UtilServer.consoleLog("Currency: " + c.getSingular() + " (" + c.getPlural() + "): " + c.format(1000000));
                             }
@@ -372,19 +372,19 @@ public class CurrencyCommand extends GemsCommand {
 
                         if (given.getStorageType() == StorageType.YAML) {
                             SchedulerUtils.run(() -> {
-                                File data = new File(GemsEconomy.inst().getDataFolder() + File.separator + "data.yml");
+                                File data = new File(GemsEconomy.getInstance().getDataFolder() + File.separator + "data.yml");
                                 if (data.exists()) {
                                     data.delete();
                                 }
                             });
                         }
 
-                        if (GemsEconomy.inst().getDataStore() != null) {
-                            GemsEconomy.inst().getDataStore().close();
+                        if (GemsEconomy.getInstance().getDataStore() != null) {
+                            GemsEconomy.getInstance().getDataStore().close();
                             GemsEconomy.lang().sendComponent(sender, "msg_storage_is_closed");
                         }
 
-                        GemsEconomy.inst().initializeDataStore(given.getStorageType(), false);
+                        GemsEconomy.getInstance().initializeDataStore(given.getStorageType(), false);
                         try {
                             Thread.sleep(2000);
                         } catch (InterruptedException ex) {
@@ -393,7 +393,7 @@ public class CurrencyCommand extends GemsCommand {
 
                         GemsEconomy.lang().sendComponent(sender, "msg_storage_is_initialised", "storage", given.getStorageType().toString());
 
-                        if (GemsEconomy.inst().getDataStore().getStorageType() != null) {
+                        if (GemsEconomy.getInstance().getDataStore().getStorageType() != null) {
                             for (Currency c : currencies) {
                                 Currency newCurrency = new Currency(c.getUuid(), c.getSingular(), c.getPlural());
                                 newCurrency.setExchangeRate(c.getExchangeRate());
@@ -403,10 +403,10 @@ public class CurrencyCommand extends GemsCommand {
                                 newCurrency.setDecimalSupported(c.isDecimalSupported());
                                 newCurrency.setPayable(c.isPayable());
                                 newCurrency.setDefaultBalance(c.getDefaultBalance());
-                                GemsEconomy.inst().getDataStore().saveCurrency(newCurrency);
+                                GemsEconomy.getInstance().getDataStore().saveCurrency(newCurrency);
                             }
                             GemsEconomy.lang().sendComponent(sender, "msg_saved_currencies_to_storage");
-                            GemsEconomy.inst().getDataStore().loadCurrencies();
+                            GemsEconomy.getInstance().getDataStore().loadCurrencies();
                             GemsEconomy.lang().sendComponent(sender, "msg_loaded_all_currencies");
 
                             try {
@@ -416,7 +416,7 @@ public class CurrencyCommand extends GemsCommand {
                             }
 
                             for (Account a : offline) {
-                                GemsEconomy.inst().getDataStore().saveAccount(a);
+                                GemsEconomy.getInstance().getDataStore().saveAccount(a);
                             }
                             GemsEconomy.lang().sendComponent(sender, "msg_all_accounts_saved_to_storage");
 
@@ -427,7 +427,7 @@ public class CurrencyCommand extends GemsCommand {
                             }
 
                             for (Player players : Bukkit.getOnlinePlayers()) {
-                                GemsEconomy.inst().getDataStore().loadAccount(players.getUniqueId(), account -> GemsEconomy.inst().getAccountManager().addAccount(account));
+                                GemsEconomy.getInstance().getDataStore().loadAccount(players.getUniqueId(), account -> GemsEconomy.getInstance().getAccountManager().addAccount(account));
                             }
                             GemsEconomy.lang().sendComponent(sender, "msg_loaded_all_accounts_for_online");
                             GemsEconomy.lang().sendComponent(sender, "msg_data_storage_conversion_is_done");
@@ -445,7 +445,7 @@ public class CurrencyCommand extends GemsCommand {
                 .handler(context -> {
                     CommandSender sender = context.getSender();
                     StorageType method = context.get("method");
-                    DataStorage current = GemsEconomy.inst().getDataStore();
+                    DataStorage current = GemsEconomy.getInstance().getDataStore();
                     DataStorage given = DataStorage.getMethod(method);
 
                     if (current == null) {
@@ -459,16 +459,16 @@ public class CurrencyCommand extends GemsCommand {
                             return;
                         }
 
-                        GemsEconomy.inst().getConfig().set("storage", given.getStorageType());
-                        GemsEconomy.inst().saveConfig();
+                        GemsEconomy.getInstance().getConfig().set("storage", given.getStorageType());
+                        GemsEconomy.getInstance().saveConfig();
 
                         GemsEconomy.lang().sendComponent(sender, "msg_saving_data_and_closing");
 
-                        if (GemsEconomy.inst().getDataStore() != null) {
-                            GemsEconomy.inst().getDataStore().close();
+                        if (GemsEconomy.getInstance().getDataStore() != null) {
+                            GemsEconomy.getInstance().getDataStore().close();
 
-                            GemsEconomy.inst().getAccountManager().getAccounts().clear();
-                            GemsEconomy.inst().getCurrencyManager().getCurrencies().clear();
+                            GemsEconomy.getInstance().getAccountManager().getAccounts().clear();
+                            GemsEconomy.getInstance().getCurrencyManager().getCurrencies().clear();
 
                             GemsEconomy.lang().sendComponent(sender, "msg_shutdown_and_booting");
                         }
@@ -480,7 +480,7 @@ public class CurrencyCommand extends GemsCommand {
                         );
 
 
-                        GemsEconomy.inst().initializeDataStore(given.getStorageType(), true);
+                        GemsEconomy.getInstance().initializeDataStore(given.getStorageType(), true);
                         try {
                             Thread.sleep(1000);
                         } catch (InterruptedException ex) {
@@ -488,7 +488,7 @@ public class CurrencyCommand extends GemsCommand {
                         }
 
                         for (Player players : Bukkit.getOnlinePlayers()) {
-                            GemsEconomy.inst().getDataStore().loadAccount(players.getUniqueId(), account -> GemsEconomy.inst().getAccountManager().addAccount(account));
+                            GemsEconomy.getInstance().getDataStore().loadAccount(players.getUniqueId(), account -> GemsEconomy.getInstance().getAccountManager().addAccount(account));
                         }
                         GemsEconomy.lang().sendComponent(sender, "msg_loaded_all_accounts_for_online");
                     }

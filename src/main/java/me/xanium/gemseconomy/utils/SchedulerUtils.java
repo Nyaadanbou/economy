@@ -13,11 +13,11 @@ import java.util.concurrent.Callable;
 public class SchedulerUtils {
 
     public static void runLater(long delay, Runnable runnable) {
-        Bukkit.getScheduler().runTaskLater(GemsEconomy.inst(), runnable, delay);
+        Bukkit.getScheduler().runTaskLater(GemsEconomy.getInstance(), runnable, delay);
     }
 
     public static void runLaterAsync(long delay, Runnable runnable) {
-        Bukkit.getScheduler().runTaskLaterAsynchronously(GemsEconomy.inst(), runnable, delay);
+        Bukkit.getScheduler().runTaskLaterAsynchronously(GemsEconomy.getInstance(), runnable, delay);
     }
 
     /**
@@ -26,7 +26,7 @@ public class SchedulerUtils {
      * @param runnable - Task to perform.
      */
     public static void runAsync(Runnable runnable) {
-        Bukkit.getScheduler().runTaskAsynchronously(GemsEconomy.inst(), runnable);
+        Bukkit.getScheduler().runTaskAsynchronously(GemsEconomy.getInstance(), runnable);
     }
 
     /**
@@ -35,7 +35,7 @@ public class SchedulerUtils {
      * @param runnable - Task to perform
      */
     public static void run(Runnable runnable) {
-        Bukkit.getScheduler().runTask(GemsEconomy.inst(), runnable);
+        Bukkit.getScheduler().runTask(GemsEconomy.getInstance(), runnable);
     }
 
     public static void runAtInterval(long interval, Runnable... tasks) {
@@ -56,7 +56,7 @@ public class SchedulerUtils {
                 tasks[index].run();
                 index++;
             }
-        }.runTaskTimer(GemsEconomy.inst(), delay, interval);
+        }.runTaskTimer(GemsEconomy.getInstance(), delay, interval);
     }
 
     public static void repeat(int repetitions, long interval, Runnable task, Runnable onComplete) {
@@ -78,7 +78,7 @@ public class SchedulerUtils {
 
                 task.run();
             }
-        }.runTaskTimer(GemsEconomy.inst(), 0L, interval);
+        }.runTaskTimer(GemsEconomy.getInstance(), 0L, interval);
     }
 
     public static void repeatWhile(long interval, Callable<Boolean> predicate, Runnable task, Runnable onComplete) {
@@ -101,7 +101,7 @@ public class SchedulerUtils {
                     e.printStackTrace();
                 }
             }
-        }.runTaskTimer(GemsEconomy.inst(), 0L, interval);
+        }.runTaskTimer(GemsEconomy.getInstance(), 0L, interval);
     }
 
     public interface Task {
@@ -186,7 +186,7 @@ public class SchedulerUtils {
                         e.printStackTrace();
                     }
                 }
-            }.runTaskTimer(GemsEconomy.inst(), 0L, 1L));
+            }.runTaskTimer(GemsEconomy.getInstance(), 0L, 1L));
             return this;
         }
 

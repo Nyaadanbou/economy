@@ -41,7 +41,7 @@ public class ExchangeCommand extends GemsCommand {
                     Currency toReceive = context.get("currency2");
                     double toReceiveAmount = context.get("amount2");
 
-                    Account account = GemsEconomy.inst().getAccountManager().getAccount(sender.getName());
+                    Account account = GemsEconomy.getInstance().getAccountManager().getAccount(sender.getName());
                     if (account != null) {
                         if (account.convert(toExchange, toExchangeAmount, toReceive, toReceiveAmount)) {
                             GemsEconomy.lang().sendComponent(sender, GemsEconomy.lang()

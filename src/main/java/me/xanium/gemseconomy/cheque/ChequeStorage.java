@@ -11,7 +11,7 @@ public class ChequeStorage {
     private String currency;
     private double value;
 
-    public static final NamespacedKey key = new NamespacedKey(GemsEconomy.inst(), "cheque");
+    public static final NamespacedKey key = new NamespacedKey(GemsEconomy.getInstance(), "cheque");
 
     public static ChequeStorage read(ItemStack itemStack) {
         return itemStack.getItemMeta().getPersistentDataContainer().get(key, ChequeStorageType.INSTANCE);

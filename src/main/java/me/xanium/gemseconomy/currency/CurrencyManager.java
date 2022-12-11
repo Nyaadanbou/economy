@@ -85,7 +85,7 @@ public class CurrencyManager {
      */
     public void remove(Currency currency) {
         // Remove this currency from all accounts
-        GemsEconomy.inst()
+        GemsEconomy.getInstance()
                 .getAccountManager()
                 .getAllAccounts()
                 .stream()

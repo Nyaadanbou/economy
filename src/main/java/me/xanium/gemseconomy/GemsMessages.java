@@ -75,24 +75,24 @@ public class GemsMessages {
     }
 
     public void sendComponent(CommandSender sender, String key, String... subst) {
-        Audience audience = GemsEconomy.inst().getAdventure().sender(sender);
+        Audience audience = GemsEconomy.getInstance().getAdventure().sender(sender);
         Component component = component(sender, key, subst);
         audience.sendMessage(component);
     }
 
     public void sendComponent(CommandSender sender, Component component) {
-        Audience audience = GemsEconomy.inst().getAdventure().sender(sender);
+        Audience audience = GemsEconomy.getInstance().getAdventure().sender(sender);
         audience.sendMessage(component);
     }
 
     public void sendActionBar(CommandSender sender, String key, String... subst) {
-        Audience audience = GemsEconomy.inst().getAdventure().sender(sender);
+        Audience audience = GemsEconomy.getInstance().getAdventure().sender(sender);
         Component component = component(sender, key, subst);
         audience.sendActionBar(component);
     }
 
     public void sendActionBar(CommandSender sender, Component component) {
-        Audience audience = GemsEconomy.inst().getAdventure().sender(sender);
+        Audience audience = GemsEconomy.getInstance().getAdventure().sender(sender);
         audience.sendActionBar(component);
     }
 
