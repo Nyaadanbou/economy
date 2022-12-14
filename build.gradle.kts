@@ -10,7 +10,7 @@ plugins {
 }
 
 group = "me.xanium.gemseconomy"
-version = "1.3".decorateVersion()
+version = "1.3.1".decorateVersion()
 description = "A multi-currency economy plugin for spigot servers"
 
 repositories {

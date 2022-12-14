@@ -72,7 +72,7 @@ public class ChequeCommand extends GemsCommand {
                         return;
                     }
 
-                    int amount = context.get("amount");
+                    double amount = context.get("amount");
                     Currency currency = context.getOrDefault("currency", GemsEconomy.getInstance().getCurrencyManager().getDefaultCurrency());
                     if (currency == null) {
                         GemsEconomy.lang().sendComponent(player, "err_no_default_currency");
