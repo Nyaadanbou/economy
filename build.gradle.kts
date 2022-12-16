@@ -13,6 +13,9 @@ group = "me.xanium.gemseconomy"
 version = "1.3.1".decorateVersion()
 description = "A multi-currency economy plugin for spigot servers"
 
+fun lastCommitHash(): String = indraGit.commit()?.name?.substring(0, 7) ?: error("Could not determine commit hash")
+fun String.decorateVersion(): String = if (endsWith("-SNAPSHOT")) "$this+${lastCommitHash()}" else this
+
 repositories {
     mavenLocal()
     mavenCentral()
@@ -36,7 +39,8 @@ repositories {
 dependencies {
     // API
     compileOnly("io.papermc.paper", "paper-api", "1.17.1-R0.1-SNAPSHOT")
-    compileOnly("org.jetbrains", "annotations", "23.0.0")
+    compileOnly("org.jetbrains", "annotations", "23.1.0")
+    compileOnly("com.zaxxer", "HikariCP", "5.0.1")
 
     // Plugin libraries
     compileOnly("me.lucko", "helper", "5.6.10")
@@ -47,7 +51,6 @@ dependencies {
     implementation("net.kyori", "adventure-platform-bukkit", "4.1.2")
     implementation("net.kyori", "adventure-text-minimessage", "4.11.0")
     implementation("de.themoep.utils", "lang-bukkit", "1.3-SNAPSHOT")
-    implementation("com.zaxxer", "HikariCP", "5.0.1")
     val cloudVersion = "1.7.1"
     implementation("cloud.commandframework", "cloud-paper", cloudVersion)
     implementation("cloud.commandframework", "cloud-minecraft-extras", cloudVersion)
@@ -60,11 +63,13 @@ indra {
 bukkit {
     main = "me.xanium.gemseconomy.GemsEconomy"
     name = project.name
+    version = "${project.version}"
     apiVersion = "1.17"
     authors = listOf("Xanium", "Nailm")
     softDepend = listOf("Vault")
     load = STARTUP
     loadBefore = listOf("ItemFrameShops")
+    libraries = listOf("com.zaxxer:HikariCP:5.0.1")
 }
 
 tasks {
@@ -80,25 +85,29 @@ tasks {
         archiveClassifier.set("")
         sequenceOf(
             "net.kyori",
-            "com.zaxxer",
             "cloud.commandframework",
-            "io.leangen.geantyref"
+            "io.leangen.geantyref",
+            "de.themoep.utils",
+            "org.apiguardian",
+            "org.checkerframework",
+            "org.intellij",
+            "org.jetbrains",
+            "org.slf4j"
         ).forEach {
             relocate(it, "me.xanium.gemseconomy.lib.$it")
         }
     }
-    processResources {
-        val tokens = mapOf(
-            "project.version" to project.version
-        )
-        inputs.properties(tokens)
-    }
-    task("deploy") {
+//    processResources {
+//        val tokens = mapOf(
+//            "project.version" to project.version
+//        )
+//        inputs.properties(tokens)
+//    }
+    task("deployToServer") {
         dependsOn(build)
         doLast {
             exec {
-                workingDir("build/libs")
-                commandLine("scp", jar.get().archiveFileName.get(), "dev:data/dev/plugins")
+                commandLine("rsync", "${shadowJar.get().archiveFile.get()}", "dev:data/dev/jar")
             }
         }
     }
@@ -113,6 +122,3 @@ publishing {
         }
     }
 }
-
-fun lastCommitHash(): String = indraGit.commit()?.name?.substring(0, 7) ?: error("Could not determine commit hash")
-fun String.decorateVersion(): String = if (endsWith("-SNAPSHOT")) "$this+${lastCommitHash()}" else this
