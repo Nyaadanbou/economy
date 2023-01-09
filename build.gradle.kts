@@ -10,7 +10,7 @@ plugins {
 }
 
 group = "me.xanium.gemseconomy"
-version = "1.3.1".decorateVersion()
+version = "1.3.2".decorateVersion()
 description = "A multi-currency economy plugin for spigot servers"
 
 fun lastCommitHash(): String = indraGit.commit()?.name?.substring(0, 7) ?: error("Could not determine commit hash")
@@ -47,11 +47,11 @@ dependencies {
     compileOnly("com.github.MilkBowl", "VaultAPI", "1.7")
 
     // Libraries that needs to be shaded
-    implementation("net.kyori", "adventure-api", "4.11.0")
+    implementation("net.kyori", "adventure-api", "4.12.0")
+    implementation("net.kyori", "adventure-text-minimessage", "4.12.0")
     implementation("net.kyori", "adventure-platform-bukkit", "4.1.2")
-    implementation("net.kyori", "adventure-text-minimessage", "4.11.0")
     implementation("de.themoep.utils", "lang-bukkit", "1.3-SNAPSHOT")
-    val cloudVersion = "1.7.1"
+    val cloudVersion = "1.8.0"
     implementation("cloud.commandframework", "cloud-paper", cloudVersion)
     implementation("cloud.commandframework", "cloud-minecraft-extras", cloudVersion)
 }
