@@ -2,7 +2,6 @@ package me.xanium.gemseconomy;
 
 import de.themoep.utils.lang.bukkit.LanguageManager;
 import me.xanium.gemseconomy.currency.Currency;
-import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextReplacementConfig;
 import net.kyori.adventure.text.minimessage.MiniMessage;
@@ -75,30 +74,19 @@ public class GemsMessages {
     }
 
     public void sendComponent(CommandSender sender, String key, String... subst) {
-        Audience audience = GemsEconomy.getInstance().getAudiences().sender(sender);
-        Component component = component(sender, key, subst);
-        audience.sendMessage(component);
+        GemsEconomy.getInstance().getAudiences().sender(sender).sendMessage(component(sender, key, subst));
     }
 
     public void sendComponent(CommandSender sender, Component component) {
-        Audience audience = GemsEconomy.getInstance().getAudiences().sender(sender);
-        audience.sendMessage(component);
+        GemsEconomy.getInstance().getAudiences().sender(sender).sendMessage(component);
     }
 
     public void sendActionBar(CommandSender sender, String key, String... subst) {
-        Audience audience = GemsEconomy.getInstance().getAudiences().sender(sender);
-        Component component = component(sender, key, subst);
-        audience.sendActionBar(component);
+        GemsEconomy.getInstance().getAudiences().sender(sender).sendActionBar(component(sender, key, subst));
     }
 
     public void sendActionBar(CommandSender sender, Component component) {
-        Audience audience = GemsEconomy.getInstance().getAudiences().sender(sender);
-        audience.sendActionBar(component);
-    }
-
-    public void sendRaw(CommandSender sender, String key, String... subst) {
-        String raw = raw(sender, key, subst);
-        sender.sendMessage(raw);
+        GemsEconomy.getInstance().getAudiences().sender(sender).sendActionBar(component);
     }
 
 }

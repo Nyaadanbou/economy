@@ -27,21 +27,11 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
-import java.sql.Connection;
-import java.sql.DatabaseMetaData;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.UUID;
+import java.sql.*;
+import java.util.*;
 import java.util.stream.Collectors;
+
+import static java.util.Objects.requireNonNullElse;
 
 @SuppressWarnings({"SqlDialectInspection", "SqlNoDataSourceInspection"})
 public class MySQLStorage extends DataStorage {
@@ -190,7 +180,7 @@ public class MySQLStorage extends DataStorage {
                 boolean decimals = set.getInt("decimals_supported") == 1;
                 boolean isDefault = set.getInt("is_default") == 1;
                 boolean payable = set.getInt("payable") == 1;
-                TextColor color = Objects.requireNonNullElse(TextColor.fromHexString(set.getString("color")), NamedTextColor.WHITE);
+                TextColor color = requireNonNullElse(TextColor.fromHexString(set.getString("color")), NamedTextColor.WHITE);
                 double exchangeRate = set.getDouble("exchange_rate");
 
                 Currency currency = new Currency(uuid, singular, plural);
@@ -226,7 +216,7 @@ public class MySQLStorage extends DataStorage {
                 boolean decimals = set.getInt("decimals_supported") == 1;
                 boolean isDefault = set.getInt("is_default") == 1;
                 boolean payable = set.getInt("payable") == 1;
-                TextColor color = Objects.requireNonNullElse(TextColor.fromHexString(set.getString("color")), NamedTextColor.WHITE);
+                TextColor color = requireNonNullElse(TextColor.fromHexString(set.getString("color")), NamedTextColor.WHITE);
                 double exchangeRate = set.getDouble("exchange_rate");
 
                 currency.setDefaultBalance(defaultBalance);

@@ -19,7 +19,8 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
+
+import static java.util.Objects.requireNonNull;
 
 @SuppressWarnings("deprecation")
 public class ChequeManager {
@@ -42,7 +43,7 @@ public class ChequeManager {
         if (!currency.isPayable()) return null;
 
         List<String> formatLore = new ArrayList<>();
-        for (String baseLore : Objects.requireNonNull(chequeBaseItem.getItemMeta().getLore())) {
+        for (String baseLore : requireNonNull(chequeBaseItem.getItemMeta().getLore())) {
             formatLore.add(baseLore
                     .replace("{value}", currency.format(amount))
                     .replace("{account}", creatorName)
