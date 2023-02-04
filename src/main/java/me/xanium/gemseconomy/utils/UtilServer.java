@@ -18,7 +18,7 @@ import java.util.Optional;
 public class UtilServer {
 
     private static final String Console_Prefix = "§2[GemsEconomy] §f";
-    private static final String Error_Prefix = "§c[G-Eco-Error] §f";
+    private static final String Error_Prefix = "§c[GemsEconomy] §f";
 
     private static Server getServer() {
         return Bukkit.getServer();

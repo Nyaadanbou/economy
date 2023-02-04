@@ -269,7 +269,7 @@ public class CurrencyCommand extends GemsCommand {
                     Currency currency = context.get("currency");
                     GemsEconomy.getInstance()
                             .getAccountManager()
-                            .getAllAccounts()
+                            .getOfflineAccounts()
                             .stream()
                             .filter(account -> account.getBalances().containsKey(currency))
                             .forEach(account -> {

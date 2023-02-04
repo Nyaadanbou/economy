@@ -29,17 +29,12 @@ public class EconomyListener implements Listener {
         Player player = event.getPlayer();
         if (event.getResult() != PlayerLoginEvent.Result.ALLOWED) return;
         SchedulerUtils.runAsync(() -> {
-            Account account = plugin.getAccountManager().getAccount(player.getUniqueId());
-            if (account == null) {
-                plugin.getAccountManager().createAccount(player.getUniqueId());
-            } else {
-                plugin.getAccountManager().addAccount(account);
-                String name = player.getName();
-                if (account.getNickname() == null || !account.getNickname().equalsIgnoreCase(name)) {
-                    account.setNickname(name);
-                    UtilServer.consoleLog("Account name changes detected, updating: " + name);
-                    plugin.getDataStore().saveAccount(account);
-                }
+            Account account = plugin.getAccountManager().getAccount(player);
+            String name = player.getName();
+            if (account.getNickname() == null || !account.getNickname().equalsIgnoreCase(name)) {
+                account.setNickname(name);
+                UtilServer.consoleLog("Account name changes detected, updating: " + name);
+                plugin.getDataStore().saveAccount(account);
             }
         });
     }
@@ -47,13 +42,12 @@ public class EconomyListener implements Listener {
     @EventHandler
     public void onQuit(PlayerQuitEvent event) {
         Player player = event.getPlayer();
-        plugin.getAccountManager().removeAccount(player.getUniqueId());
+        plugin.getAccountManager().flushAccount(player.getUniqueId());
     }
 
     @EventHandler(priority = EventPriority.LOW)
     public void onJoin(PlayerJoinEvent event) {
         Player player = event.getPlayer();
-
         SchedulerUtils.runLater(40L, () -> {
             if (plugin.getCurrencyManager().getDefaultCurrency() == null && (player.isOp() || player.hasPermission("gemseconomy.command.currency"))) {
                 GemsEconomy.lang().sendComponent(player, "err_ask_to_setup_currency");

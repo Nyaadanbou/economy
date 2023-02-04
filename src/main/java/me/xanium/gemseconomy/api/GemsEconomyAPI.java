@@ -33,16 +33,12 @@ public class GemsEconomyAPI {
     }
 
     public Account pullAccount(UUID uuid) {
-        Account acc = plugin.getAccountManager().getAccount(uuid);
-        if (acc == null)
-            plugin.getAccountManager().createAccount(uuid);
-        acc = plugin.getAccountManager().getAccount(uuid);
-        return acc;
+        return plugin.getAccountManager().getAccount(uuid);
     }
 
     /**
-     * @param uuid   - The users unique ID.
-     * @param amount - An amount of the default currency.
+     * @param uuid   - the user's unique ID
+     * @param amount - an amount of the default Currency
      */
     public void deposit(UUID uuid, double amount) {
         Account acc = pullAccount(uuid);
@@ -50,10 +46,9 @@ public class GemsEconomyAPI {
     }
 
     /**
-     * @param uuid     - The users unique ID.
-     * @param amount   - An amount of a currency, if the currency is null, the
-     *                 default will be used.
-     * @param currency - A specified currency.
+     * @param uuid     - the user's unique ID
+     * @param amount   - an amount of a Currency, if the Currency is null, the default will be used
+     * @param currency - a specified Currency
      */
     public void deposit(UUID uuid, double amount, Currency currency) {
         Account acc = pullAccount(uuid);
@@ -65,8 +60,8 @@ public class GemsEconomyAPI {
     }
 
     /**
-     * @param uuid   - The users unique ID.
-     * @param amount - An amount of the default currency.
+     * @param uuid   - the user's unique ID
+     * @param amount - an amount of the default Currency
      */
     public void withdraw(UUID uuid, double amount) {
         Account acc = pullAccount(uuid);
@@ -74,9 +69,9 @@ public class GemsEconomyAPI {
     }
 
     /**
-     * @param uuid     - The users unique ID.
-     * @param amount   - An amount of the currency.
-     * @param currency - The currency you withdraw from.
+     * @param uuid     - the user's unique ID
+     * @param amount   - an amount of the currency
+     * @param currency - the Currency you withdraw from
      */
     public void withdraw(UUID uuid, double amount, Currency currency) {
         Account acc = pullAccount(uuid);
@@ -88,8 +83,9 @@ public class GemsEconomyAPI {
     }
 
     /**
-     * @param uuid - The users unique ID.
-     * @return - The default currency balance of the user.
+     * @param uuid - the user's unique ID
+     *
+     * @return - the default Currency balance of the user
      */
     public double getBalance(UUID uuid) {
         Account acc = pullAccount(uuid);
@@ -97,9 +93,10 @@ public class GemsEconomyAPI {
     }
 
     /**
-     * @param uuid     - The users unique ID.
-     * @param currency - An amount of the default currency.
-     * @return - The balance of the specified currency.
+     * @param uuid     - the user's unique ID
+     * @param currency - an amount of the default Currency
+     *
+     * @return - the balance of the specified Currency
      */
     public double getBalance(UUID uuid, Currency currency) {
         Account acc = pullAccount(uuid);
@@ -111,8 +108,9 @@ public class GemsEconomyAPI {
     }
 
     /**
-     * @param name - Currency singular or plural.
-     * @return - Currency Object.
+     * @param name - currency singular or plural
+     *
+     * @return - Currency object
      */
     public Currency getCurrency(String name) {
         if (plugin.getCurrencyManager().getCurrency(name) != null) {

@@ -9,108 +9,117 @@
 package me.xanium.gemseconomy.account;
 
 import me.xanium.gemseconomy.GemsEconomy;
-import me.xanium.gemseconomy.utils.OfflineModeProfiles;
-import me.xanium.gemseconomy.utils.UtilServer;
-import org.bukkit.Bukkit;
+import me.xanium.gemseconomy.data.DataStorage;
 import org.bukkit.entity.Player;
+import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.UUID;
 
 public class AccountManager {
 
-    private final GemsEconomy plugin;
-    private final List<Account> accounts;
+    private final @NonNull GemsEconomy plugin;
+    private final @NonNull List<Account> accounts; // A collection of accounts loaded in memory
 
-    public AccountManager(GemsEconomy plugin) {
+    public AccountManager(@NonNull GemsEconomy plugin) {
         this.plugin = plugin;
         this.accounts = new ArrayList<>();
     }
 
-    public void createAccount(String nickname) {
-        // no more async
-        // we need to check the other plugins
-        // in case other plugins call it sync
+    // TODO verify whether we really need this
+    // /**
+    //  * Creates, and loads an account into the memory.
+    //  * <p>
+    //  * If the account with the specific name is already loaded, this method will simply do nothing.
+    //  *
+    //  * @param nickname the nickname of this account
+    //  */
+    // public synchronized void createAccount(@NonNull String nickname) {
+    //     @Nullable Account account = getAccount(nickname);
+    //
+    //     if (account == null) {
+    //         // Get the UUID of the name by using the Mojang offline player method
+    //         // so that we can ensure same nicknames always point to the same UUID.
+    //         account = new Account(OfflineModeProfiles.getUniqueId(nickname), nickname);
+    //         cacheAccount(account);
+    //
+    //         switch (plugin.getDataStore().getStorageType()) {
+    //             case MYSQL -> plugin.getDataStore().createAccount(account);
+    //         }
+    //     }
+    // }
 
-        Account account = getAccount(nickname);
-
-        if (account == null) {
-            // get the UUID of the name by using Mojang offline player way
-            // so that we can ensure same nicknames always point to the same UUID
-            account = new Account(OfflineModeProfiles.getUniqueId(nickname), nickname);
-
-            account.setCanReceiveCurrency(true);
-            addAccount(account);
-
-            switch (plugin.getDataStore().getStorageType()) {
-                case MYSQL -> plugin.getDataStore().createAccount(account);
-            }
-
-            UtilServer.consoleLog("New account created for: " + account.getDisplayName());
-        }
-    }
-
-    public synchronized void createAccount(UUID uuid) {
-        Account account = getAccount(uuid);
-        String playerName = Bukkit.getOfflinePlayer(uuid).getName();
-
-        if (playerName == null || playerName.isEmpty())
-            playerName = "Unknown";
-        if (account == null) {
-            account = new Account(uuid, playerName);
-            account.setCanReceiveCurrency(true);
-            addAccount(account);
-
-            switch (plugin.getDataStore().getStorageType()) {
-                case MYSQL -> plugin.getDataStore().createAccount(account);
-            }
-
-            UtilServer.consoleLog("New account created for: " + account.getDisplayName() + "[" + account.getUuid().toString() + "]");
-        }
-    }
-
-    public Account getAccount(Player player) {
+    public synchronized @NonNull Account getAccount(@NonNull Player player) {
         return getAccount(player.getUniqueId());
     }
 
-    public Account getAccount(String name) {
+    public synchronized @NonNull Account getAccount(@NonNull UUID uuid) {
         for (Account account : this.accounts) {
-            if (account.getNickname() == null || !account.getNickname().equalsIgnoreCase(name))
-                continue;
-            return account;
+            if (account.getUuid().equals(uuid))
+                return account;
         }
-        return plugin.getDataStore().loadAccount(name);
+        Account account = plugin.getDataStore().loadAccount(uuid);
+        this.cacheAccount(account);
+        return account;
     }
 
-    public Account getAccount(UUID uuid) {
-        for (Account account : this.accounts) { // TODO This throws CME randomly
-            if (!account.getUuid().equals(uuid)) continue;
-            return account;
+    public synchronized @Nullable Account getAccount(@NonNull String name) {
+        for (Account account : this.accounts) {
+            if (name.equalsIgnoreCase(account.getNickname()))
+                return account;
         }
-        return plugin.getDataStore().loadAccount(uuid);
+        Account account = plugin.getDataStore().loadAccount(name);
+        if (account == null)
+            return null;
+        else
+            this.cacheAccount(account);
+        return account;
     }
 
-    public void removeAccount(UUID uuid) {
-        for (int i = 0; i < this.accounts.size(); i++) {
-            Account a = getAccounts().get(i);
-            if (a.getUuid().equals(uuid)) {
-                accounts.remove(i);
+    /**
+     * Loads an account into the memory.
+     *
+     * @param account the account to be loaded into memory
+     */
+    public synchronized void cacheAccount(@NonNull Account account) {
+        if (!this.accounts.contains(account))
+            this.accounts.add(account);
+    }
+
+    /**
+     * Unloads the account from memory.
+     *
+     * @param uuid the account uuid
+     */
+    public synchronized void flushAccount(@NonNull UUID uuid) {
+        ListIterator<Account> iterator = this.accounts.listIterator();
+        while (iterator.hasNext()) {
+            Account next = iterator.next();
+            if (next.getUuid().equals(uuid)) {
+                iterator.remove();
                 break;
             }
         }
     }
 
-    public void addAccount(Account account) {
-        if (this.accounts.contains(account)) return;
-        this.accounts.add(account);
-    }
-
-    public List<Account> getAccounts() {
+    /**
+     * Returns all the accounts that are currently loaded in memory.
+     *
+     * @return all the accounts loaded in memory
+     */
+    public synchronized @NonNull List<Account> getCachedAccounts() {
         return accounts;
     }
 
-    public List<Account> getAllAccounts() {
+    /**
+     * @return all the accounts in the database
+     *
+     * @see DataStorage#getOfflineAccounts()
+     */
+    public synchronized @NonNull List<Account> getOfflineAccounts() {
         return plugin.getDataStore().getOfflineAccounts();
     }
 

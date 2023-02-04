@@ -27,16 +27,17 @@ public class Account {
     private final UUID uuid;
     private String nickname;
     private final Map<Currency, Double> balances;
-    private boolean canReceiveCurrency = true;
+    private boolean canReceiveCurrency;
 
     public Account(UUID uuid, String nickname) {
         this.uuid = uuid;
         this.nickname = nickname;
         this.balances = new HashMap<>();
+        this.canReceiveCurrency = true;
     }
 
     public boolean isOverflow(Currency currency, double amount) {
-        return getBalances().get(currency) + amount > currency.getMaxBalance();
+        return this.balances.get(currency) + amount > currency.getMaxBalance();
     }
 
     public boolean withdraw(Currency currency, double amount) {
@@ -60,7 +61,7 @@ public class Account {
     }
 
     public boolean deposit(Currency currency, double amount) {
-        if (canReceiveCurrency()) {
+        if (this.canReceiveCurrency) {
             GemsPreTransactionEvent pre = new GemsPreTransactionEvent(currency, this, amount, TransactionType.DEPOSIT);
             SchedulerUtils.run(() -> Bukkit.getPluginManager().callEvent(pre));
             if (pre.isCancelled()) return false;
@@ -162,14 +163,13 @@ public class Account {
     }
 
     public void setBalance(Currency currency, double amount) {
-        // cap the amount
         double cappedAmount = Math.min(amount, currency.getMaxBalance());
 
         GemsPreTransactionEvent pre = new GemsPreTransactionEvent(currency, this, amount, TransactionType.SET);
         SchedulerUtils.run(() -> Bukkit.getPluginManager().callEvent(pre));
         if (pre.isCancelled()) return;
 
-        getBalances().put(currency, cappedAmount);
+        this.modifyBalance(currency, cappedAmount, false);
 
         GemsPostTransactionEvent post = new GemsPostTransactionEvent(currency, this, cappedAmount, TransactionType.SET);
         SchedulerUtils.run(() -> Bukkit.getPluginManager().callEvent(post));
@@ -179,41 +179,33 @@ public class Account {
     }
 
     /**
-     * DO NOT USE UNLESS YOU HAVE VIEWED WHAT THIS DOES!
-     * <p>
-     * This directly modifies the account balance for a currency, with the
-     * option of saving.
+     * Directly modifies the account balance for a currency, with the option of saving.
      *
-     * @param currency - Currency to modify
-     * @param amount   - Amount of cash to modify.
-     * @param save     - Save the account or not. Should be done async!
+     * @param currency - the Currency to modify with
+     * @param amount   - the amount of cash to set to
+     * @param save     - true to save the Account; false to not (should be done async)
      */
     public void modifyBalance(Currency currency, double amount, boolean save) {
-        // we don't do cap amount in this method
-        // cap should be done by other methods
-        getBalances().put(currency, amount);
-
-        if (save) GemsEconomy.getInstance().getDataStore().saveAccount(this);
+        // We don't cap amount in this method - it's others job
+        this.balances.put(currency, amount);
+        if (save)
+            GemsEconomy.getInstance().getDataStore().saveAccount(this);
     }
 
     public double getBalance(Currency currency) {
-        if (getBalances().containsKey(currency)) {
-            return getBalances().get(currency);
-        }
-        return currency.getDefaultBalance();
+        return this.balances.computeIfAbsent(currency, Currency::getDefaultBalance);
     }
 
     public double getBalance(String identifier) {
-        for (Currency currency : getBalances().keySet()) {
-            if (currency.getSingular().equalsIgnoreCase(identifier) || currency.getPlural().equalsIgnoreCase(identifier)) {
-                return getBalances().get(currency);
-            }
+        for (Currency currency : this.balances.keySet()) {
+            if (currency.getSingular().equalsIgnoreCase(identifier) || currency.getPlural().equalsIgnoreCase(identifier))
+                return this.balances.get(currency);
         }
         return 0; // Do not edit this
     }
 
     public String getDisplayName() {
-        return getNickname() != null ? getNickname() : getUuid().toString();
+        return this.nickname != null ? this.nickname : this.uuid.toString();
     }
 
     public String getNickname() {
@@ -252,9 +244,7 @@ public class Account {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-
         Account account = (Account) o;
-
         return uuid.equals(account.uuid);
     }
 
@@ -262,5 +252,6 @@ public class Account {
     public int hashCode() {
         return uuid.hashCode();
     }
+
 }
 

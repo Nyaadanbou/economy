@@ -204,11 +204,11 @@ public class GemsEconomy extends JavaPlugin {
 
     private void initializeDataStore(StorageType strategy, boolean load) {
         DataStorage.getMethods().add(new MySQLStorage(
-            getConfig().getString("mysql.host"),
-            getConfig().getInt("mysql.port"),
-            getConfig().getString("mysql.database"),
-            getConfig().getString("mysql.username"),
-            getConfig().getString("mysql.password")
+            requireNonNull(getConfig().getString("mysql.host")),
+            getConfig().getInt("mysql.port", 3306),
+            requireNonNull(getConfig().getString("mysql.database")),
+            requireNonNull(getConfig().getString("mysql.username")),
+            requireNonNull(getConfig().getString("mysql.password"))
         ));
 
         if (strategy != null) {
