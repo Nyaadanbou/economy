@@ -14,19 +14,19 @@ import org.bukkit.entity.Player;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.ListIterator;
+import java.util.Collection;
+import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class AccountManager {
 
     private final @NonNull GemsEconomy plugin;
-    private final @NonNull List<Account> accounts; // A collection of accounts loaded in memory
+    private final @NonNull Map<UUID, Account> accounts; // A collection of accounts loaded in memory
 
     public AccountManager(@NonNull GemsEconomy plugin) {
         this.plugin = plugin;
-        this.accounts = new ArrayList<>();
+        this.accounts = new ConcurrentHashMap<>();
     }
 
     // TODO verify whether we really need this
@@ -52,22 +52,20 @@ public class AccountManager {
     //     }
     // }
 
-    public synchronized @NonNull Account getAccount(@NonNull Player player) {
+    public @NonNull Account getAccount(@NonNull Player player) {
         return getAccount(player.getUniqueId());
     }
 
-    public synchronized @NonNull Account getAccount(@NonNull UUID uuid) {
-        for (Account account : this.accounts) {
-            if (account.getUuid().equals(uuid))
-                return account;
-        }
+    public @NonNull Account getAccount(@NonNull UUID uuid) {
+        if (accounts.containsKey(uuid))
+            return accounts.get(uuid);
         Account account = plugin.getDataStore().loadAccount(uuid);
         this.cacheAccount(account);
         return account;
     }
 
-    public synchronized @Nullable Account getAccount(@NonNull String name) {
-        for (Account account : this.accounts) {
+    public @Nullable Account getAccount(@NonNull String name) {
+        for (final Account account : accounts.values()) {
             if (name.equalsIgnoreCase(account.getNickname()))
                 return account;
         }
@@ -81,12 +79,13 @@ public class AccountManager {
 
     /**
      * Loads an account into the memory.
+     * <p>
+     * If the account is already cached, this method will simply do nothing.
      *
      * @param account the account to be loaded into memory
      */
-    public synchronized void cacheAccount(@NonNull Account account) {
-        if (!this.accounts.contains(account))
-            this.accounts.add(account);
+    public void cacheAccount(@NonNull Account account) {
+        accounts.putIfAbsent(account.getUuid(), account);
     }
 
     /**
@@ -94,15 +93,8 @@ public class AccountManager {
      *
      * @param uuid the account uuid
      */
-    public synchronized void flushAccount(@NonNull UUID uuid) {
-        ListIterator<Account> iterator = this.accounts.listIterator();
-        while (iterator.hasNext()) {
-            Account next = iterator.next();
-            if (next.getUuid().equals(uuid)) {
-                iterator.remove();
-                break;
-            }
-        }
+    public void flushAccount(@NonNull UUID uuid) {
+        accounts.remove(uuid);
     }
 
     /**
@@ -110,8 +102,8 @@ public class AccountManager {
      *
      * @return all the accounts loaded in memory
      */
-    public synchronized @NonNull List<Account> getCachedAccounts() {
-        return accounts;
+    public @NonNull Collection<Account> getCachedAccounts() {
+        return accounts.values();
     }
 
     /**
@@ -119,7 +111,7 @@ public class AccountManager {
      *
      * @see DataStorage#getOfflineAccounts()
      */
-    public synchronized @NonNull List<Account> getOfflineAccounts() {
+    public @NonNull Collection<Account> getOfflineAccounts() {
         return plugin.getDataStore().getOfflineAccounts();
     }
 

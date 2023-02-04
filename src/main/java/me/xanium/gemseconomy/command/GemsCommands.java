@@ -15,14 +15,7 @@ import cloud.commandframework.minecraft.extras.MinecraftExceptionHandler;
 import cloud.commandframework.paper.PaperCommandManager;
 import io.leangen.geantyref.TypeToken;
 import me.xanium.gemseconomy.GemsEconomy;
-import me.xanium.gemseconomy.command.command.BalanceCommand;
-import me.xanium.gemseconomy.command.command.BalanceTopCommand;
-import me.xanium.gemseconomy.command.command.ChequeCommand;
-import me.xanium.gemseconomy.command.command.CurrencyCommand;
-import me.xanium.gemseconomy.command.command.EconomyCommand;
-import me.xanium.gemseconomy.command.command.ExchangeCommand;
-import me.xanium.gemseconomy.command.command.InternalCommand;
-import me.xanium.gemseconomy.command.command.PayCommand;
+import me.xanium.gemseconomy.command.command.*;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.util.ComponentMessageThrowable;
@@ -41,17 +34,15 @@ public class GemsCommands extends PaperCommandManager<CommandSender> {
     public static final CloudKey<GemsEconomy> PLUGIN = SimpleCloudKey.of("gemseconomy:plugin", TypeToken.get(GemsEconomy.class));
     private static final Component NULL = Component.text("null");
     private static final Pattern SYNTAX_HIGHLIGHT_PATTERN = Pattern.compile("[^\\s\\w\\-]");
-    private final GemsEconomy plugin;
     private final Map<String, CommandFlag.Builder<?>> flagRegistry = new HashMap<>();
 
     public GemsCommands(GemsEconomy plugin) throws Exception {
         super(
-                plugin,
-                AsynchronousCommandExecutionCoordinator.<CommandSender>newBuilder().build(),
-                Function.identity(),
-                Function.identity()
+            plugin,
+            AsynchronousCommandExecutionCoordinator.<CommandSender>builder().build(),
+            Function.identity(),
+            Function.identity()
         );
-        this.plugin = plugin;
 
         // ---- Register Brigadier ----
         if (hasCapability(CloudBukkitCapabilities.NATIVE_BRIGADIER)) {
@@ -74,80 +65,79 @@ public class GemsCommands extends PaperCommandManager<CommandSender> {
 
         // ---- Change default exception messages ----
         new MinecraftExceptionHandler<CommandSender>()
-                .withHandler(
-                        MinecraftExceptionHandler.ExceptionType.INVALID_SYNTAX,
-                        e -> {
-                            final InvalidSyntaxException exception = (InvalidSyntaxException) e;
-                            final Component correctSyntaxMessage = Component
-                                    .text("/%s".formatted(exception.getCorrectSyntax()))
-                                    .color(NamedTextColor.GRAY)
-                                    .replaceText(config -> {
-                                        config.match(SYNTAX_HIGHLIGHT_PATTERN);
-                                        config.replacement(builder -> builder.color(NamedTextColor.WHITE));
-                                    });
-                            return GemsEconomy.lang()
-                                    .component("err_invalid_syntax")
-                                    .replaceText(config -> {
-                                        config.matchLiteral("{syntax}");
-                                        config.replacement(correctSyntaxMessage);
-                                    });
-                        }
-                )
-                .withHandler(
-                        MinecraftExceptionHandler.ExceptionType.INVALID_SENDER,
-                        e -> {
-                            final InvalidCommandSenderException exception = (InvalidCommandSenderException) e;
-                            final Component correctSenderType = Component
-                                    .text(exception.getRequiredSender().getSimpleName())
-                                    .color(NamedTextColor.GRAY);
-                            return GemsEconomy.lang()
-                                    .component("err_invalid_sender")
-                                    .replaceText(config -> {
-                                        config.matchLiteral("{type}");
-                                        config.replacement(correctSenderType);
-                                    });
-                        }
-                )
-                .withHandler(
-                        MinecraftExceptionHandler.ExceptionType.NO_PERMISSION,
-                        e -> {
-                            final NoPermissionException exception = (NoPermissionException) e;
-                            return GemsEconomy.lang()
-                                    .component("err_no_permission")
-                                    .replaceText(config -> {
-                                        config.matchLiteral("{permission}");
-                                        Component permission = Component
-                                                .text(exception.getMissingPermission())
-                                                .color(NamedTextColor.YELLOW);
-                                        config.replacement(permission);
-                                    });
-                        }
-                )
-                .withHandler(
-                        MinecraftExceptionHandler.ExceptionType.ARGUMENT_PARSING,
-                        e -> {
-                            final ArgumentParseException exception = (ArgumentParseException) e;
-                            return GemsEconomy.lang()
-                                    .component("err_argument_parsing")
-                                    .replaceText(config -> {
-                                        config.matchLiteral("{args}");
-                                        config.replacement(getMessage(exception.getCause()).colorIfAbsent(NamedTextColor.GRAY));
-                                    });
-                        }
-                )
-                .withCommandExecutionHandler()
-                .apply(this, sender -> GemsEconomy.getInstance().getAudiences().sender(sender));
+            .withHandler(
+                MinecraftExceptionHandler.ExceptionType.INVALID_SYNTAX,
+                e -> {
+                    final InvalidSyntaxException exception = (InvalidSyntaxException) e;
+                    final Component correctSyntaxMessage = Component
+                        .text("/%s".formatted(exception.getCorrectSyntax()))
+                        .color(NamedTextColor.GRAY)
+                        .replaceText(config -> {
+                            config.match(SYNTAX_HIGHLIGHT_PATTERN);
+                            config.replacement(builder -> builder.color(NamedTextColor.WHITE));
+                        });
+                    return GemsEconomy.lang()
+                        .component("err_invalid_syntax")
+                        .replaceText(config -> {
+                            config.matchLiteral("{syntax}");
+                            config.replacement(correctSyntaxMessage);
+                        });
+                }
+            )
+            .withHandler(
+                MinecraftExceptionHandler.ExceptionType.INVALID_SENDER,
+                e -> {
+                    final InvalidCommandSenderException exception = (InvalidCommandSenderException) e;
+                    final Component correctSenderType = Component
+                        .text(exception.getRequiredSender().getSimpleName())
+                        .color(NamedTextColor.GRAY);
+                    return GemsEconomy.lang()
+                        .component("err_invalid_sender")
+                        .replaceText(config -> {
+                            config.matchLiteral("{type}");
+                            config.replacement(correctSenderType);
+                        });
+                }
+            )
+            .withHandler(
+                MinecraftExceptionHandler.ExceptionType.NO_PERMISSION,
+                e -> {
+                    final NoPermissionException exception = (NoPermissionException) e;
+                    return GemsEconomy.lang()
+                        .component("err_no_permission")
+                        .replaceText(config -> {
+                            config.matchLiteral("{permission}");
+                            Component permission = Component
+                                .text(exception.getMissingPermission())
+                                .color(NamedTextColor.YELLOW);
+                            config.replacement(permission);
+                        });
+                }
+            )
+            .withHandler(
+                MinecraftExceptionHandler.ExceptionType.ARGUMENT_PARSING,
+                e -> {
+                    final ArgumentParseException exception = (ArgumentParseException) e;
+                    return GemsEconomy.lang()
+                        .component("err_argument_parsing")
+                        .replaceText(config -> {
+                            config.matchLiteral("{args}");
+                            config.replacement(getMessage(exception.getCause()).colorIfAbsent(NamedTextColor.GRAY));
+                        });
+                }
+            )
+            .withCommandExecutionHandler()
+            .apply(this, sender -> GemsEconomy.getInstance().getAudiences().sender(sender));
 
         // ---- Register all commands ----
         Stream.of(
-                new InternalCommand(plugin, this),
-                new BalanceCommand(plugin, this),
-                new BalanceTopCommand(plugin, this),
-                new ChequeCommand(plugin, this),
-                new CurrencyCommand(plugin, this),
-                new EconomyCommand(plugin, this),
-                new ExchangeCommand(plugin, this),
-                new PayCommand(plugin, this)
+            new InternalCommand(plugin, this),
+            new BalanceCommand(plugin, this),
+            new BalanceTopCommand(plugin, this),
+            new ChequeCommand(plugin, this),
+            new CurrencyCommand(plugin, this),
+            new EconomyCommand(plugin, this),
+            new PayCommand(plugin, this)
         ).forEach(GemsCommand::register);
     }
 
