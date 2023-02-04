@@ -34,7 +34,7 @@ public class GemsEconomy extends JavaPlugin {
 
     private GemsConfig config;
     private GemsMessages messages;
-    private BukkitAudiences adventure;
+    private BukkitAudiences audiences;
     private GemsEconomyAPI api;
     private DataStorage dataStorage = null;
     private AccountManager accountManager;
@@ -82,7 +82,7 @@ public class GemsEconomy extends JavaPlugin {
     public void onEnable() {
         instance = this;
 
-        adventure = BukkitAudiences.create(this);
+        audiences = BukkitAudiences.create(this);
         messages = new GemsMessages(this);
         accountManager = new AccountManager(this);
         currencyManager = new CurrencyManager(this);
@@ -123,9 +123,9 @@ public class GemsEconomy extends JavaPlugin {
     public void onDisable() {
         disabling = true;
 
-        if (adventure != null) {
-            adventure.close();
-            adventure = null;
+        if (audiences != null) {
+            audiences.close();
+            audiences = null;
         }
 
         if (isVault()) getVaultHandler().unhook();
@@ -182,8 +182,8 @@ public class GemsEconomy extends JavaPlugin {
         // TODO support reloading data storage
     }
 
-    public BukkitAudiences getAdventure() {
-        return adventure;
+    public BukkitAudiences getAudiences() {
+        return audiences;
     }
 
     public DataStorage getDataStore() {
