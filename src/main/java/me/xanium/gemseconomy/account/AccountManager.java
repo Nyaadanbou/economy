@@ -44,7 +44,6 @@ public class AccountManager {
             addAccount(account);
 
             switch (plugin.getDataStore().getStorageType()) {
-                case YAML -> plugin.getDataStore().saveAccount(account);
                 case MYSQL -> plugin.getDataStore().createAccount(account);
             }
 
@@ -64,7 +63,6 @@ public class AccountManager {
             addAccount(account);
 
             switch (plugin.getDataStore().getStorageType()) {
-                case YAML -> plugin.getDataStore().saveAccount(account);
                 case MYSQL -> plugin.getDataStore().createAccount(account);
             }
 

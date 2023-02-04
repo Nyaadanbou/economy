@@ -17,7 +17,6 @@ import me.xanium.gemseconomy.currency.CurrencyManager;
 import me.xanium.gemseconomy.data.DataStorage;
 import me.xanium.gemseconomy.data.MySQLStorage;
 import me.xanium.gemseconomy.data.StorageType;
-import me.xanium.gemseconomy.data.YamlStorage;
 import me.xanium.gemseconomy.file.GemsConfig;
 import me.xanium.gemseconomy.listeners.EconomyListener;
 import me.xanium.gemseconomy.logging.EconomyLogger;
@@ -26,7 +25,6 @@ import me.xanium.gemseconomy.vault.VaultHandler;
 import net.kyori.adventure.platform.bukkit.BukkitAudiences;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import java.io.File;
 import java.util.Objects;
 import java.util.logging.Level;
 
@@ -138,8 +136,6 @@ public class GemsEconomy extends JavaPlugin {
     }
 
     public void initializeDataStore(StorageType strategy, boolean load) {
-
-        DataStorage.getMethods().add(new YamlStorage(new File(getDataFolder(), "data.yml")));
         DataStorage.getMethods().add(new MySQLStorage(
                 getConfig().getString("mysql.host"),
                 getConfig().getInt("mysql.port"),

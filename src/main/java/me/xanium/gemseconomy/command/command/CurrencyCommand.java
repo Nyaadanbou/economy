@@ -2,29 +2,19 @@ package me.xanium.gemseconomy.command.command;
 
 import cloud.commandframework.Command;
 import cloud.commandframework.arguments.standard.DoubleArgument;
-import cloud.commandframework.arguments.standard.EnumArgument;
 import cloud.commandframework.arguments.standard.StringArgument;
 import me.xanium.gemseconomy.GemsEconomy;
 import me.xanium.gemseconomy.GemsMessages;
-import me.xanium.gemseconomy.account.Account;
 import me.xanium.gemseconomy.command.GemsCommand;
 import me.xanium.gemseconomy.command.GemsCommands;
 import me.xanium.gemseconomy.command.argument.AmountArgument;
 import me.xanium.gemseconomy.command.argument.CurrencyArgument;
 import me.xanium.gemseconomy.command.argument.TextColorArgument;
 import me.xanium.gemseconomy.currency.Currency;
-import me.xanium.gemseconomy.data.DataStorage;
-import me.xanium.gemseconomy.data.StorageType;
-import me.xanium.gemseconomy.utils.SchedulerUtils;
-import me.xanium.gemseconomy.utils.UtilServer;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextColor;
-import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
 
-import java.io.File;
-import java.util.ArrayList;
 import java.util.List;
 
 public class CurrencyCommand extends GemsCommand {
@@ -295,10 +285,7 @@ public class CurrencyCommand extends GemsCommand {
 
         Command<CommandSender> setCurrencyRate = builder.literal("setrate")
                 .argument(CurrencyArgument.of("currency"))
-                .argument(DoubleArgument
-                        .<CommandSender>newBuilder("rate")
-                        .withMin(0)
-                        .build())
+                .argument(DoubleArgument.<CommandSender>builder("rate").withMin(0).build())
                 .handler(context -> {
                     CommandSender sender = context.getSender();
                     Currency currency = context.get("currency");
@@ -316,185 +303,6 @@ public class CurrencyCommand extends GemsCommand {
                 })
                 .build();
 
-        Command<CommandSender> convertStorageMethod = builder
-                .literal("convert")
-                .argument(EnumArgument.of(StorageType.class, "method"))
-                .handler(context -> {
-                    CommandSender sender = context.getSender();
-                    StorageType method = context.get("method");
-                    DataStorage current = GemsEconomy.getInstance().getDataStore();
-                    DataStorage given = DataStorage.getMethod(method);
-
-                    if (current == null) {
-                        GemsEconomy.lang().sendComponent(sender, "err_data_storage_is_null");
-                        return;
-                    }
-
-                    if (given != null) {
-                        if (current.getStorageType() == given.getStorageType()) {
-                            GemsEconomy.lang().sendComponent(sender, "err_convert_to_same_storage");
-                            return;
-                        }
-
-                        GemsEconomy.getInstance().getConfig().set("storage", given.getStorageType());
-                        GemsEconomy.getInstance().saveConfig();
-
-                        GemsEconomy.lang().sendComponent(sender, "msg_loading_data");
-                        GemsEconomy.getInstance().getAccountManager().getAccounts().clear();
-
-                        ArrayList<Account> offline = new ArrayList<>(GemsEconomy.getInstance().getDataStore().getOfflineAccounts());
-                        GemsEconomy.lang().sendComponent(sender, "msg_stored_account", "size", Integer.toString(offline.size()));
-                        UtilServer.consoleLog("Stored Accounts: " + offline.size());
-                        if (GemsEconomy.getInstance().isDebug()) {
-                            for (Account account : offline) {
-                                UtilServer.consoleLog("Account: " + account.getNickname() + " (" + account.getUuid().toString() + ")");
-                                for (Currency currency : account.getBalances().keySet()) {
-                                    UtilServer.consoleLog("Balance: " + currency.format(account.getBalance(currency)));
-                                }
-                            }
-                        }
-
-                        ArrayList<Currency> currencies = new ArrayList<>(GemsEconomy.getInstance().getCurrencyManager().getCurrencies());
-                        GemsEconomy.getInstance().getCurrencyManager().getCurrencies().clear();
-                        GemsEconomy.lang().sendComponent(sender, "msg_stored_currency");
-
-                        if (GemsEconomy.getInstance().isDebug()) {
-                            for (Currency c : currencies) {
-                                UtilServer.consoleLog("Currency: " + c.getSingular() + " (" + c.getPlural() + "): " + c.format(1000000));
-                            }
-                        }
-
-                        GemsEconomy.lang().sendComponent(sender,
-                                "msg_switched_storage",
-                                "from", current.getStorageType().toString(),
-                                "to", given.getStorageType().toString()
-                        );
-
-                        if (given.getStorageType() == StorageType.YAML) {
-                            SchedulerUtils.run(() -> {
-                                File data = new File(GemsEconomy.getInstance().getDataFolder() + File.separator + "data.yml");
-                                if (data.exists()) {
-                                    data.delete();
-                                }
-                            });
-                        }
-
-                        if (GemsEconomy.getInstance().getDataStore() != null) {
-                            GemsEconomy.getInstance().getDataStore().close();
-                            GemsEconomy.lang().sendComponent(sender, "msg_storage_is_closed");
-                        }
-
-                        GemsEconomy.getInstance().initializeDataStore(given.getStorageType(), false);
-                        try {
-                            Thread.sleep(2000);
-                        } catch (InterruptedException ex) {
-                            ex.printStackTrace();
-                        }
-
-                        GemsEconomy.lang().sendComponent(sender, "msg_storage_is_initialised", "storage", given.getStorageType().toString());
-
-                        if (GemsEconomy.getInstance().getDataStore().getStorageType() != null) {
-                            for (Currency c : currencies) {
-                                Currency newCurrency = new Currency(c.getUuid(), c.getSingular(), c.getPlural());
-                                newCurrency.setExchangeRate(c.getExchangeRate());
-                                newCurrency.setDefaultCurrency(c.isDefaultCurrency());
-                                newCurrency.setSymbol(c.getSymbol());
-                                newCurrency.setColor(c.getColor());
-                                newCurrency.setDecimalSupported(c.isDecimalSupported());
-                                newCurrency.setPayable(c.isPayable());
-                                newCurrency.setDefaultBalance(c.getDefaultBalance());
-                                GemsEconomy.getInstance().getDataStore().saveCurrency(newCurrency);
-                            }
-                            GemsEconomy.lang().sendComponent(sender, "msg_saved_currencies_to_storage");
-                            GemsEconomy.getInstance().getDataStore().loadCurrencies();
-                            GemsEconomy.lang().sendComponent(sender, "msg_loaded_all_currencies");
-
-                            try {
-                                Thread.sleep(2000);
-                            } catch (InterruptedException ex) {
-                                ex.printStackTrace();
-                            }
-
-                            for (Account a : offline) {
-                                GemsEconomy.getInstance().getDataStore().saveAccount(a);
-                            }
-                            GemsEconomy.lang().sendComponent(sender, "msg_all_accounts_saved_to_storage");
-
-                            try {
-                                Thread.sleep(2000);
-                            } catch (InterruptedException ex) {
-                                ex.printStackTrace();
-                            }
-
-                            for (Player players : Bukkit.getOnlinePlayers()) {
-                                GemsEconomy.getInstance().getDataStore().loadAccount(players.getUniqueId(), account -> GemsEconomy.getInstance().getAccountManager().addAccount(account));
-                            }
-                            GemsEconomy.lang().sendComponent(sender, "msg_loaded_all_accounts_for_online");
-                            GemsEconomy.lang().sendComponent(sender, "msg_data_storage_conversion_is_done");
-                        }
-                    } else {
-                        GemsEconomy.lang().sendComponent(sender, "err_data_storage_method_not_found");
-                    }
-
-                })
-                .build();
-
-        Command<CommandSender> switchBackendStorage = builder
-                .literal("backend")
-                .argument(EnumArgument.of(StorageType.class, "method"))
-                .handler(context -> {
-                    CommandSender sender = context.getSender();
-                    StorageType method = context.get("method");
-                    DataStorage current = GemsEconomy.getInstance().getDataStore();
-                    DataStorage given = DataStorage.getMethod(method);
-
-                    if (current == null) {
-                        GemsEconomy.lang().sendComponent(sender, "err_data_storage_is_null");
-                        return;
-                    }
-
-                    if (given != null) {
-                        if (current.getStorageType() == given.getStorageType()) {
-                            GemsEconomy.lang().sendComponent(sender, "err_convert_to_same_storage");
-                            return;
-                        }
-
-                        GemsEconomy.getInstance().getConfig().set("storage", given.getStorageType());
-                        GemsEconomy.getInstance().saveConfig();
-
-                        GemsEconomy.lang().sendComponent(sender, "msg_saving_data_and_closing");
-
-                        if (GemsEconomy.getInstance().getDataStore() != null) {
-                            GemsEconomy.getInstance().getDataStore().close();
-
-                            GemsEconomy.getInstance().getAccountManager().getAccounts().clear();
-                            GemsEconomy.getInstance().getCurrencyManager().getCurrencies().clear();
-
-                            GemsEconomy.lang().sendComponent(sender, "msg_shutdown_and_booting");
-                        }
-
-                        GemsEconomy.lang().sendComponent(sender,
-                                "msg_switched_storage",
-                                "from", current.getStorageType().toString(),
-                                "to", given.getStorageType().toString()
-                        );
-
-
-                        GemsEconomy.getInstance().initializeDataStore(given.getStorageType(), true);
-                        try {
-                            Thread.sleep(1000);
-                        } catch (InterruptedException ex) {
-                            ex.printStackTrace();
-                        }
-
-                        for (Player players : Bukkit.getOnlinePlayers()) {
-                            GemsEconomy.getInstance().getDataStore().loadAccount(players.getUniqueId(), account -> GemsEconomy.getInstance().getAccountManager().addAccount(account));
-                        }
-                        GemsEconomy.lang().sendComponent(sender, "msg_loaded_all_accounts_for_online");
-                    }
-                })
-                .build();
-
         manager.register(List.of(
                 createCurrency,
                 listCurrency,
@@ -508,9 +316,7 @@ public class CurrencyCommand extends GemsCommand {
                 toggleCurrencyDecimals,
                 deleteCurrency,
                 clearBalance,
-                setCurrencyRate,
-                convertStorageMethod,
-                switchBackendStorage
+                setCurrencyRate
         ));
     }
 
