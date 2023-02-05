@@ -10,7 +10,7 @@ plugins {
 }
 
 group = "me.xanium.gemseconomy"
-version = "1.3.2".decorateVersion()
+version = "1.3.3".decorateVersion()
 description = "A multi-currency economy plugin for spigot servers"
 
 fun lastCommitHash(): String = indraGit.commit()?.name?.substring(0, 7) ?: error("Could not determine commit hash")
@@ -37,14 +37,15 @@ repositories {
 }
 
 dependencies {
-    // API
+    // Server API
     compileOnly("io.papermc.paper", "paper-api", "1.17.1-R0.1-SNAPSHOT")
-    compileOnly("org.jetbrains", "annotations", "23.1.0")
+
+    // Will be downloaded upon plugin startup
     compileOnly("com.zaxxer", "HikariCP", "5.0.1")
 
-    // Plugin libraries
-    compileOnly("me.lucko", "helper", "5.6.10")
-    compileOnly("com.github.MilkBowl", "VaultAPI", "1.7")
+    // 3rd party plugins
+    compileOnly("me.lucko", "helper", "5.6.13")
+    compileOnly("com.github.MilkBowl", "VaultAPI", "1.7") { isTransitive = false }
 
     // Libraries that needs to be shaded
     implementation("net.kyori", "adventure-api", "4.12.0")
@@ -90,19 +91,13 @@ tasks {
             "de.themoep.utils",
             "org.apiguardian",
             "org.checkerframework",
-            "org.intellij",
             "org.jetbrains",
+            "org.intellij",
             "org.slf4j"
         ).forEach {
             relocate(it, "me.xanium.gemseconomy.lib.$it")
         }
     }
-//    processResources {
-//        val tokens = mapOf(
-//            "project.version" to project.version
-//        )
-//        inputs.properties(tokens)
-//    }
     task("deployToServer") {
         dependsOn(build)
         doLast {
