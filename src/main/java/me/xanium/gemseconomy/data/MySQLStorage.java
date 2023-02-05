@@ -10,12 +10,13 @@ package me.xanium.gemseconomy.data;
 
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
+import me.lucko.helper.Schedulers;
 import me.xanium.gemseconomy.GemsEconomy;
 import me.xanium.gemseconomy.account.Account;
+import me.xanium.gemseconomy.bungee.UpdateType;
 import me.xanium.gemseconomy.currency.CachedTopList;
 import me.xanium.gemseconomy.currency.CachedTopListEntry;
 import me.xanium.gemseconomy.currency.Currency;
-import me.xanium.gemseconomy.utils.SchedulerUtils;
 import me.xanium.gemseconomy.utils.UtilServer;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextColor;
@@ -264,7 +265,7 @@ public final class MySQLStorage extends DataStorage {
             e.printStackTrace();
         }
 
-        plugin.getUpdateForwarder().sendUpdateMessage("currency", currency.getUuid().toString());
+        plugin.getUpdateForwarder().sendUpdateMessage(UpdateType.CURRENCY, currency.getUuid().toString());
     }
 
     @Override
@@ -290,14 +291,14 @@ public final class MySQLStorage extends DataStorage {
                     searchResults.add(cache.getResults().get(i));
                     collected++;
                 }
-                SchedulerUtils.run(() -> action.accept(searchResults));
+                Schedulers.sync().run(() -> action.accept(searchResults));
                 return;
             }
         }
 
         JSONParser parser = new JSONParser();
 
-        SchedulerUtils.runAsync(() -> {
+        Schedulers.async().run(() -> {
             LinkedHashMap<String, Double> cache = new LinkedHashMap<>();
             try (Connection connection = getHikari().getConnection()) {
                 PreparedStatement statement = connection.prepareStatement("SELECT * FROM " + this.accountsTable);
@@ -333,7 +334,7 @@ public final class MySQLStorage extends DataStorage {
                     searchResults.add(list.get(i));
                     collected++;
                 }
-                SchedulerUtils.run(() -> action.accept(searchResults));
+                Schedulers.sync().run(() -> action.accept(searchResults));
             } catch (SQLException | ParseException ex) {
                 ex.printStackTrace();
             }
@@ -447,7 +448,7 @@ public final class MySQLStorage extends DataStorage {
             e.printStackTrace();
         }
 
-        plugin.getUpdateForwarder().sendUpdateMessage("account", account.getUuid().toString());
+        plugin.getUpdateForwarder().sendUpdateMessage(UpdateType.ACCOUNT, account.getUuid().toString());
 
         UtilServer.consoleLog("Account created and saved: " + account.getNickname() + " [" + account.getUuid() + "]");
     }
@@ -473,7 +474,7 @@ public final class MySQLStorage extends DataStorage {
             e.printStackTrace();
         }
 
-        plugin.getUpdateForwarder().sendUpdateMessage("account", account.getUuid().toString());
+        plugin.getUpdateForwarder().sendUpdateMessage(UpdateType.ACCOUNT, account.getUuid().toString());
 
         UtilServer.consoleLog("Account saved: " + account.getNickname() + " [" + account.getUuid() + "]");
     }

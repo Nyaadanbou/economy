@@ -3,6 +3,7 @@ package me.xanium.gemseconomy.command.command;
 import cloud.commandframework.Command;
 import cloud.commandframework.bukkit.arguments.selector.MultiplePlayerSelector;
 import cloud.commandframework.bukkit.parsers.selector.MultiplePlayerSelectorArgument;
+import me.lucko.helper.Schedulers;
 import me.lucko.helper.utils.annotation.NonnullByDefault;
 import me.xanium.gemseconomy.GemsEconomy;
 import me.xanium.gemseconomy.GemsMessages;
@@ -13,7 +14,6 @@ import me.xanium.gemseconomy.command.argument.AmountArgument;
 import me.xanium.gemseconomy.command.argument.CurrencyArgument;
 import me.xanium.gemseconomy.currency.Currency;
 import me.xanium.gemseconomy.event.GemsPayEvent;
-import me.xanium.gemseconomy.utils.SchedulerUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -114,7 +114,7 @@ public class PayCommand extends GemsCommand {
         }
 
         GemsPayEvent event = new GemsPayEvent(currency, selfAccount, targetAccount, amount);
-        SchedulerUtils.run(() -> Bukkit.getPluginManager().callEvent(event));
+        Schedulers.sync().run(() -> Bukkit.getPluginManager().callEvent(event));
         if (event.isCancelled()) return;
 
         double accBal = selfAccount.getBalance(currency) - amount;

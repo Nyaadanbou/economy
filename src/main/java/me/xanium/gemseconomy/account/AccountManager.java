@@ -11,10 +11,10 @@ package me.xanium.gemseconomy.account;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
+import me.lucko.helper.profiles.OfflineModeProfiles;
 import me.xanium.gemseconomy.GemsEconomy;
 import me.xanium.gemseconomy.currency.Currency;
 import me.xanium.gemseconomy.data.DataStorage;
-import me.xanium.gemseconomy.utils.OfflineModeProfiles;
 import me.xanium.gemseconomy.utils.UtilTowny;
 import org.bukkit.OfflinePlayer;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -33,7 +33,7 @@ public class AccountManager {
         this.plugin = plugin;
         this.accounts = CacheBuilder
             .newBuilder()
-            .expireAfterAccess(10, TimeUnit.MINUTES)
+            .expireAfterAccess(1, TimeUnit.MINUTES)
             .build(new CacheLoader<>() {
                 @Override public @Nullable Account load(@NonNull final UUID uuid) {
                     return plugin.getDataStore().loadAccount(uuid);
@@ -107,7 +107,7 @@ public class AccountManager {
     }
 
     /**
-     * Creates, save, and caches an Account.
+     * Creates, saves, and caches an Account.
      * <p>
      * If the Account with the specific uuid is already loaded in memory or exists in database, this method will simply
      * do nothing.
@@ -208,7 +208,7 @@ public class AccountManager {
             if (name.equalsIgnoreCase(account.getNickname()))
                 return account;
         }
-        @Nullable Account account = plugin.getDataStore().loadAccount(name);
+        Account account = plugin.getDataStore().loadAccount(name);
         if (account == null)
             return null;
         else
@@ -221,23 +221,32 @@ public class AccountManager {
      * <p>
      * If the Account is already cached, this method will override the original.
      *
-     * @param account the account to be loaded into memory
+     * @param account the Account to be loaded into memory
      */
     public void cacheAccount(@NonNull Account account) {
         accounts.put(account.getUuid(), account);
     }
 
     /**
-     * Discards the Account from memory.
+     * Loads a new object for the specific Account from database.
      *
-     * @param uuid the account uuid
+     * @param uuid the uuid of the Account
+     */
+    public void refreshAccount(@NonNull UUID uuid) {
+        accounts.refresh(uuid);
+    }
+
+    /**
+     * Discards the Account object from memory.
+     *
+     * @param uuid the uuid of the Account
      */
     public void flushAccount(@NonNull UUID uuid) {
         accounts.invalidate(uuid);
     }
 
     /**
-     * Discards all Accounts from memory.
+     * Discards all Account objects from memory.
      */
     public void flushAccounts() {
         accounts.invalidateAll();

@@ -8,9 +8,9 @@
 
 package me.xanium.gemseconomy.listeners;
 
+import me.lucko.helper.Schedulers;
 import me.xanium.gemseconomy.GemsEconomy;
 import me.xanium.gemseconomy.account.Account;
-import me.xanium.gemseconomy.utils.SchedulerUtils;
 import me.xanium.gemseconomy.utils.UtilServer;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -29,7 +29,7 @@ public class EconomyListener implements Listener {
     public void onLogin(PlayerLoginEvent event) {
         Player player = event.getPlayer();
         if (event.getResult() != PlayerLoginEvent.Result.ALLOWED) return;
-        SchedulerUtils.runAsync(() -> {
+        Schedulers.async().run(() -> {
             // Create a new Account if it did not exist
             if (!plugin.getAccountManager().hasAccount(player))
                 plugin.getAccountManager().createAccount(player);
