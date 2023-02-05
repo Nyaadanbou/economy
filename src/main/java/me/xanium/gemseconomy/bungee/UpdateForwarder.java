@@ -18,6 +18,8 @@ import java.util.UUID;
 @SuppressWarnings("UnstableApiUsage")
 public class UpdateForwarder implements PluginMessageListener {
 
+    // TODO replace it with redis as it doesn't work well if servers are empty
+
     private static final String CHANNEL_NAME = "GemsEconomy";
 
     /**
