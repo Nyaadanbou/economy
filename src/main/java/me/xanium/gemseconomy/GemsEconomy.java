@@ -26,7 +26,6 @@ import net.kyori.adventure.platform.bukkit.BukkitAudiences;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
-import java.util.function.Predicate;
 import java.util.logging.Level;
 
 import static java.util.Objects.requireNonNull;
@@ -93,7 +92,7 @@ public class GemsEconomy extends JavaPlugin {
 
         initializeDataStore(StorageType.valueOf(requireNonNull(getConfig().getString("storage")).toUpperCase()));
 
-        if (currencyManager.getCurrencies().stream().dropWhile(Predicate.not(Currency::isDefaultCurrency)).findAny().isEmpty()) {
+        if (currencyManager.getCurrencies().stream().noneMatch(Currency::isDefaultCurrency)) {
             getServer().getPluginManager().disablePlugin(this);
             throw new IllegalStateException("No default currency is provided");
         }
