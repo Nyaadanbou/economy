@@ -94,7 +94,7 @@ public class CurrencyManager {
     }
 
     /**
-     * Clears the balance of specific currency for all Accounts, i.e. set balance to 0.
+     * Clears the balance of specific currency for <b>ALL</b> Accounts, i.e. set balance to 0.
      *
      * @param currency the currency to clear balance
      */
@@ -109,7 +109,7 @@ public class CurrencyManager {
     /**
      * Removes specified currency.
      * <p>
-     * <b>This will also remove the currency from all accounts!!!</b>
+     * This will also remove the currency from <b>ALL</b> Accounts!</b>
      *
      * @param currency the currency to remove
      */
