@@ -204,17 +204,17 @@ public class CurrencyCommand extends GemsCommand {
                 .argument(CurrencyArgument.of("currency"))
                 .handler(context -> {
                     CommandSender sender = context.getSender();
-                    Currency currency = context.get("currency");
-                    Currency defaultCurrency = GemsEconomy.getInstance().getCurrencyManager().getDefaultCurrency();
-                    if (defaultCurrency != null) {
-                        defaultCurrency.setDefaultCurrency(false);
-                        GemsEconomy.getInstance().getDataStore().saveCurrency(defaultCurrency);
-                    }
-                    currency.setDefaultCurrency(true);
-                    GemsEconomy.getInstance().getDataStore().saveCurrency(currency);
+                    Currency newDefault = context.get("currency");
+
+                    Currency oldDefault = GemsEconomy.getInstance().getCurrencyManager().getDefaultCurrency();
+                    oldDefault.setDefaultCurrency(false);
+                    GemsEconomy.getInstance().getDataStore().saveCurrency(oldDefault);
+
+                    newDefault.setDefaultCurrency(true);
+                    GemsEconomy.getInstance().getDataStore().saveCurrency(newDefault);
                     GemsEconomy.lang().sendComponent(sender, GemsEconomy.lang()
                             .component(sender, "msg_set_default_currency")
-                            .replaceText(GemsMessages.CURRENCY_REPLACEMENT.apply(currency.getDisplayName()))
+                            .replaceText(GemsMessages.CURRENCY_REPLACEMENT.apply(newDefault.getDisplayName()))
                     );
                 })
                 .build();

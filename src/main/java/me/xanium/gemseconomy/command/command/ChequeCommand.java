@@ -17,6 +17,8 @@ import org.bukkit.inventory.ItemStack;
 
 import java.util.List;
 
+import static java.util.Objects.requireNonNull;
+
 public class ChequeCommand extends GemsCommand {
     public ChequeCommand(GemsEconomy plugin, GemsCommands manager) {
         super(plugin, manager);
@@ -25,72 +27,70 @@ public class ChequeCommand extends GemsCommand {
     @Override
     public void register() {
         Command.Builder<CommandSender> builder = manager
-                .commandBuilder("cheque")
-                .permission("gemseconomy.command.cheque");
+            .commandBuilder("cheque")
+            .permission("gemseconomy.command.cheque");
 
         Command<CommandSender> redeem = builder
-                .literal("redeem")
-                .senderType(Player.class)
-                .handler(context -> {
-                    Player player = (Player) context.getSender();
-                    if (!GemsEconomy.getInstance().isChequesEnabled()) {
-                        GemsEconomy.lang().sendComponent(player, "err_cheque_no_support");
-                        return;
-                    }
+            .literal("redeem")
+            .senderType(Player.class)
+            .handler(context -> {
+                Player player = (Player) context.getSender();
+                if (!GemsEconomy.getInstance().isChequesEnabled()) {
+                    GemsEconomy.lang().sendComponent(player, "err_cheque_no_support");
+                    return;
+                }
 
-                    ItemStack item = player.getInventory().getItemInMainHand();
-                    if (item.getType().equals(Material.matchMaterial(GemsEconomy.getInstance().getConfig().getString("cheque.material", "paper")))) {
-                        if (GemsEconomy.getInstance().getChequeManager().isValid(item)) {
-                            double value = GemsEconomy.getInstance().getChequeManager().getValue(item);
-                            if (item.getAmount() > 1) {
-                                player.getInventory().getItemInMainHand().setAmount(player.getInventory().getItemInMainHand().getAmount() - 1);
-                            } else {
-                                player.getInventory().remove(item);
-                            }
-                            Account user = GemsEconomy.getInstance().getAccountManager().getAccount(player);
-                            Currency currency = GemsEconomy.getInstance().getChequeManager().getCurrency(item);
-                            user.deposit(currency, value);
-                            GemsEconomy.lang().sendComponent(player, "msg_cheque_redeemed");
+                ItemStack item = player.getInventory().getItemInMainHand();
+                if (item.getType().equals(Material.matchMaterial(GemsEconomy.getInstance().getConfig().getString("cheque.material", "paper")))) {
+                    if (GemsEconomy.getInstance().getChequeManager().isValid(item)) {
+                        if (item.getAmount() > 1) {
+                            player.getInventory().getItemInMainHand().setAmount(player.getInventory().getItemInMainHand().getAmount() - 1);
                         } else {
+                            player.getInventory().remove(item);
+                        }
+                        Account account = requireNonNull(GemsEconomy.getInstance().getAccountManager().fetchAccount(player));
+                        Currency currency = GemsEconomy.getInstance().getChequeManager().getCurrency(item);
+                        if (currency == null) {
                             GemsEconomy.lang().sendComponent(player, "err_cheque_invalid");
+                        } else {
+                            account.deposit(currency, GemsEconomy.getInstance().getChequeManager().getValue(item));
+                            GemsEconomy.lang().sendComponent(player, "msg_cheque_redeemed");
                         }
                     } else {
                         GemsEconomy.lang().sendComponent(player, "err_cheque_invalid");
                     }
-                })
-                .build();
+                } else {
+                    GemsEconomy.lang().sendComponent(player, "err_cheque_invalid");
+                }
+            })
+            .build();
 
         Command<CommandSender> write = builder
-                .literal("write")
-                .argument(AmountArgument.of("amount"))
-                .argument(CurrencyArgument.optional("currency"))
-                .senderType(Player.class)
-                .handler(context -> {
-                    Player player = (Player) context.getSender();
-                    if (!GemsEconomy.getInstance().isChequesEnabled()) {
-                        GemsEconomy.lang().sendComponent(player, "err_cheque_no_support");
-                        return;
-                    }
+            .literal("write")
+            .argument(AmountArgument.of("amount"))
+            .argument(CurrencyArgument.optional("currency"))
+            .senderType(Player.class)
+            .handler(context -> {
+                Player player = (Player) context.getSender();
+                if (!GemsEconomy.getInstance().isChequesEnabled()) {
+                    GemsEconomy.lang().sendComponent(player, "err_cheque_no_support");
+                    return;
+                }
 
-                    double amount = context.get("amount");
-                    Currency currency = context.getOrDefault("currency", GemsEconomy.getInstance().getCurrencyManager().getDefaultCurrency());
-                    if (currency == null) {
-                        GemsEconomy.lang().sendComponent(player, "err_no_default_currency");
-                        return;
-                    }
+                double amount = context.get("amount");
+                Account account = GemsEconomy.getInstance().getAccountManager().fetchAccount(player);
+                Currency currency = context.getOrDefault("currency", GemsEconomy.getInstance().getCurrencyManager().getDefaultCurrency());
+                if (account == null) {
+                    GemsEconomy.lang().sendComponent(player, "err_account_missing");
+                    return;
+                }
 
-                    Account account = GemsEconomy.getInstance().getAccountManager().getAccount(player);
-                    if (account == null) {
-                        GemsEconomy.lang().sendComponent(player, "err_account_missing");
-                        return;
-                    }
-
-                    makeCheque(player, account, amount, currency);
-                })
-                .build();
+                makeCheque(player, account, amount, currency);
+            })
+            .build();
 
         manager.register(List.of(
-                redeem, write
+            redeem, write
         ));
     }
 
@@ -107,8 +107,8 @@ public class ChequeCommand extends GemsCommand {
             }
         } else {
             GemsEconomy.lang().sendComponent(player, GemsEconomy.lang()
-                    .component(player, "err_insufficient_funds")
-                    .replaceText(GemsMessages.CURRENCY_REPLACEMENT.apply(currency.getDisplayName()))
+                .component(player, "err_insufficient_funds")
+                .replaceText(GemsMessages.CURRENCY_REPLACEMENT.apply(currency.getDisplayName()))
             );
         }
     }

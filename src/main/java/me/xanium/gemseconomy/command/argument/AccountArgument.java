@@ -63,7 +63,7 @@ public class AccountArgument extends CommandArgument<CommandSender, Account> {
                 );
             }
 
-            Account target = GemsEconomy.getInstance().getAccountManager().getAccount(input);
+            Account target = GemsEconomy.getInstance().getAccountManager().fetchAccount(input);
             if (target != null) {
                 inputQueue.remove();
                 return ArgumentParseResult.success(target);

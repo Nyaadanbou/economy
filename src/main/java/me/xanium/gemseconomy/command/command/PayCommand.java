@@ -38,14 +38,10 @@ public class PayCommand extends GemsCommand {
                     MultiplePlayerSelector selector = context.get("player");
                     double amount = context.get("amount");
                     Currency currency = context.getOrDefault("currency", GemsEconomy.getInstance().getCurrencyManager().getDefaultCurrency());
-                    if (currency != null) {
-                        if (selector.getPlayers().size() > 0) {
-                            selector.getPlayers().forEach(p -> pay(sender, p, amount, currency));
-                        } else {
-                            GemsEconomy.lang().sendComponent(sender, "err_player_is_null");
-                        }
+                    if (selector.getPlayers().size() > 0) {
+                        selector.getPlayers().forEach(p -> pay(sender, p, amount, currency));
                     } else {
-                        GemsEconomy.lang().sendComponent(sender, "err_no_default_currency");
+                        GemsEconomy.lang().sendComponent(sender, "err_player_is_null");
                     }
                 })
                 .build();
@@ -73,21 +69,21 @@ public class PayCommand extends GemsCommand {
         }
 
         // Check target account
-        Account targetAccount = GemsEconomy.getInstance().getAccountManager().getAccount(targetPlayer);
+        Account targetAccount = GemsEconomy.getInstance().getAccountManager().fetchAccount(targetPlayer);
         if (targetAccount == null) {
             GemsEconomy.lang().sendComponent(sender, "err_player_is_null");
             return;
         }
 
         // Check if sender account missing
-        Account self = GemsEconomy.getInstance().getAccountManager().getAccount(sender);
-        if (self == null) {
+        Account selfAccount = GemsEconomy.getInstance().getAccountManager().fetchAccount(sender);
+        if (selfAccount == null) {
             GemsEconomy.lang().sendComponent(sender, "err_account_missing");
             return;
         }
 
         // Check self pay
-        if (targetAccount.getUuid().equals(self.getUuid())) {
+        if (targetAccount.getUuid().equals(selfAccount.getUuid())) {
             GemsEconomy.lang().sendComponent(sender, "err_cannot_pay_yourself");
             return;
         }
@@ -99,7 +95,7 @@ public class PayCommand extends GemsCommand {
         }
 
         // Check insufficient funds
-        if (!self.hasEnough(currency, amount)) {
+        if (!selfAccount.hasEnough(currency, amount)) {
             GemsEconomy.lang().sendComponent(sender, GemsEconomy.lang()
                     .component(sender, "err_insufficient_funds")
                     .replaceText(GemsMessages.CURRENCY_REPLACEMENT.apply(currency.getDisplayName()))
@@ -117,24 +113,24 @@ public class PayCommand extends GemsCommand {
             return;
         }
 
-        GemsPayEvent event = new GemsPayEvent(currency, self, targetAccount, amount);
+        GemsPayEvent event = new GemsPayEvent(currency, selfAccount, targetAccount, amount);
         SchedulerUtils.run(() -> Bukkit.getPluginManager().callEvent(event));
         if (event.isCancelled()) return;
 
-        double accBal = self.getBalance(currency) - amount;
+        double accBal = selfAccount.getBalance(currency) - amount;
         double tarBal = targetAccount.getBalance(currency) + amount;
 
         // cap the amount
         double cappedAccBal = Math.min(accBal, currency.getMaxBalance());
         double cappedTarBal = Math.min(tarBal, currency.getMaxBalance());
 
-        self.modifyBalance(currency, cappedAccBal, true);
+        selfAccount.modifyBalance(currency, cappedAccBal, true);
         targetAccount.modifyBalance(currency, cappedTarBal, true);
-        GemsEconomy.getInstance().getEconomyLogger().log("[PAYMENT] " + self.getDisplayName() + " (New bal: " + currency.format(cappedAccBal) + ") -> paid " + targetAccount.getDisplayName() + " (New bal: " + currency.format(cappedTarBal) + ") - An amount of " + currency.format(amount));
+        GemsEconomy.getInstance().getEconomyLogger().log("[PAYMENT] " + selfAccount.getDisplayName() + " (New bal: " + currency.format(cappedAccBal) + ") -> paid " + targetAccount.getDisplayName() + " (New bal: " + currency.format(cappedTarBal) + ") - An amount of " + currency.format(amount));
 
         GemsEconomy.lang().sendComponent(targetPlayer, GemsEconomy.lang()
                 .component(targetPlayer, "msg_received_currency")
-                .replaceText(GemsMessages.ACCOUNT_REPLACEMENT.apply(self.getNickname()))
+                .replaceText(GemsMessages.ACCOUNT_REPLACEMENT.apply(selfAccount.getNickname()))
                 .replaceText(GemsMessages.AMOUNT_REPLACEMENT.apply(currency, amount))
         );
         GemsEconomy.lang().sendComponent(sender, GemsEconomy.lang()

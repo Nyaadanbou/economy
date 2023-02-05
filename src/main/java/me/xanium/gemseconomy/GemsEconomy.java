@@ -13,6 +13,7 @@ import me.xanium.gemseconomy.api.GemsEconomyAPI;
 import me.xanium.gemseconomy.bungee.UpdateForwarder;
 import me.xanium.gemseconomy.cheque.ChequeManager;
 import me.xanium.gemseconomy.command.GemsCommands;
+import me.xanium.gemseconomy.currency.Currency;
 import me.xanium.gemseconomy.currency.CurrencyManager;
 import me.xanium.gemseconomy.data.DataStorage;
 import me.xanium.gemseconomy.data.MySQLStorage;
@@ -23,14 +24,16 @@ import me.xanium.gemseconomy.utils.UtilServer;
 import me.xanium.gemseconomy.vault.VaultHandler;
 import net.kyori.adventure.platform.bukkit.BukkitAudiences;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
+import java.util.function.Predicate;
 import java.util.logging.Level;
 
 import static java.util.Objects.requireNonNull;
 
 public class GemsEconomy extends JavaPlugin {
 
-    private static GemsEconomy instance;
+    private static GemsEconomy INSTANCE;
 
     private GemsMessages messages;
     private BukkitAudiences audiences;
@@ -50,19 +53,19 @@ public class GemsEconomy extends JavaPlugin {
     private boolean disabling = false;
 
     public static GemsEconomy getInstance() {
-        return instance;
+        return INSTANCE;
     }
 
     public static GemsMessages lang() {
-        return instance.messages;
+        return INSTANCE.messages;
     }
 
     @SuppressWarnings("unused")
     public static GemsEconomyAPI getAPI() {
-        if (instance.api == null) {
-            instance.api = new GemsEconomyAPI();
+        if (INSTANCE.api == null) {
+            INSTANCE.api = new GemsEconomyAPI();
         }
-        return instance.api;
+        return INSTANCE.api;
     }
 
     @Override
@@ -79,7 +82,7 @@ public class GemsEconomy extends JavaPlugin {
 
     @Override
     public void onEnable() {
-        instance = this;
+        INSTANCE = this;
 
         audiences = BukkitAudiences.create(this);
         messages = new GemsMessages(this);
@@ -88,7 +91,12 @@ public class GemsEconomy extends JavaPlugin {
         economyLogger = new EconomyLogger(this);
         updateForwarder = new UpdateForwarder(this);
 
-        initializeDataStore(StorageType.valueOf(requireNonNull(getConfig().getString("storage")).trim().toUpperCase()), true);
+        initializeDataStore(StorageType.valueOf(requireNonNull(getConfig().getString("storage")).toUpperCase()));
+
+        if (currencyManager.getCurrencies().stream().dropWhile(Predicate.not(Currency::isDefaultCurrency)).findAny().isEmpty()) {
+            getServer().getPluginManager().disablePlugin(this);
+            throw new IllegalStateException("No default currency is provided");
+        }
 
         getServer().getPluginManager().registerEvents(new EconomyListener(), this);
 
@@ -99,8 +107,8 @@ public class GemsEconomy extends JavaPlugin {
             UtilServer.consoleLog("Vault link is disabled.");
         }
 
-        this.getServer().getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");
-        this.getServer().getMessenger().registerIncomingPluginChannel(this, "BungeeCord", updateForwarder);
+        getServer().getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");
+        getServer().getMessenger().registerIncomingPluginChannel(this, "BungeeCord", updateForwarder);
 
         if (isLogging()) {
             getEconomyLogger().save();
@@ -114,7 +122,7 @@ public class GemsEconomy extends JavaPlugin {
             new GemsCommands(this);
         } catch (Exception e) {
             getLogger().log(Level.SEVERE, "Failed to initialize commands", e);
-            this.setEnabled(false);
+            setEnabled(false);
         }
     }
 
@@ -127,11 +135,11 @@ public class GemsEconomy extends JavaPlugin {
             audiences = null;
         }
 
-        if (isVault()) getVaultHandler().unhook();
+        if (isVault())
+            getVaultHandler().unhook();
 
-        if (getDataStore() != null) {
+        if (getDataStore() != null)
             getDataStore().close();
-        }
     }
 
     public void reloadLanguages() {
@@ -202,7 +210,7 @@ public class GemsEconomy extends JavaPlugin {
         return cheques;
     }
 
-    private void initializeDataStore(StorageType strategy, boolean load) {
+    private void initializeDataStore(@Nullable StorageType strategy) {
         DataStorage.getMethods().add(new MySQLStorage(
             requireNonNull(getConfig().getString("mysql.host")),
             getConfig().getInt("mysql.port", 3306),
@@ -224,11 +232,9 @@ public class GemsEconomy extends JavaPlugin {
             UtilServer.consoleLog("Initializing data store \"" + getDataStore().getStorageType() + "\"...");
             getDataStore().initialize();
 
-            if (load) {
-                UtilServer.consoleLog("Loading currencies...");
-                getDataStore().loadCurrencies();
-                UtilServer.consoleLog("Loaded " + getCurrencyManager().getCurrencies().size() + " currencies!");
-            }
+            UtilServer.consoleLog("Loading currencies...");
+            getDataStore().loadCurrencies();
+            UtilServer.consoleLog("Loaded " + getCurrencyManager().getCurrencies().size() + " currencies!");
         } catch (Throwable e) {
             UtilServer.consoleLog("§cCannot load initial data from data storage.");
             UtilServer.consoleLog("§cCheck your files, then try again.");

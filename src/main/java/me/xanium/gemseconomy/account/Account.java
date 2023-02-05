@@ -15,6 +15,9 @@ import me.xanium.gemseconomy.event.GemsPreTransactionEvent;
 import me.xanium.gemseconomy.utils.SchedulerUtils;
 import me.xanium.gemseconomy.utils.TransactionType;
 import org.bukkit.Bukkit;
+import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
+import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -22,19 +25,17 @@ import java.util.UUID;
 
 public class Account {
 
-    private final UUID uuid;
-    private String nickname;
-    private final Map<Currency, Double> balances;
-    private boolean canReceiveCurrency;
+    private @NonNull final UUID uuid;
+    private @MonotonicNonNull String nickname;
+    private @NonNull final Map<Currency, Double> balances = new HashMap<>();
+    private boolean canReceiveCurrency = true;
 
-    public Account(UUID uuid, String nickname) {
+    public Account(@NonNull UUID uuid, @Nullable String nickname) {
         this.uuid = uuid;
         this.nickname = nickname;
-        this.balances = new HashMap<>();
-        this.canReceiveCurrency = true;
     }
 
-    public synchronized boolean withdraw(Currency currency, double amount) {
+    public synchronized boolean withdraw(@NonNull Currency currency, double amount) {
         if (hasEnough(currency, amount)) {
             GemsPreTransactionEvent pre = new GemsPreTransactionEvent(currency, this, amount, TransactionType.WITHDRAW);
             SchedulerUtils.run(() -> Bukkit.getPluginManager().callEvent(pre));
@@ -54,7 +55,7 @@ public class Account {
         return false;
     }
 
-    public synchronized boolean deposit(Currency currency, double amount) {
+    public synchronized boolean deposit(@NonNull Currency currency, double amount) {
         if (this.canReceiveCurrency) {
             GemsPreTransactionEvent pre = new GemsPreTransactionEvent(currency, this, amount, TransactionType.DEPOSIT);
             SchedulerUtils.run(() -> Bukkit.getPluginManager().callEvent(pre));
@@ -74,7 +75,7 @@ public class Account {
         return false;
     }
 
-    public synchronized void setBalance(Currency currency, double amount) {
+    public synchronized void setBalance(@NonNull Currency currency, double amount) {
         double cappedAmount = Math.min(amount, currency.getMaxBalance());
 
         GemsPreTransactionEvent pre = new GemsPreTransactionEvent(currency, this, amount, TransactionType.SET);
@@ -97,18 +98,18 @@ public class Account {
      * @param amount   - the amount of cash to set to
      * @param save     - true to save the Account; false to not (should be done async)
      */
-    public synchronized void modifyBalance(Currency currency, double amount, boolean save) {
+    public synchronized void modifyBalance(@NonNull Currency currency, double amount, boolean save) {
         // We don't cap amount in this method - it's others job
         this.balances.put(currency, amount);
         if (save)
             GemsEconomy.getInstance().getDataStore().saveAccount(this);
     }
 
-    public double getBalance(Currency currency) {
+    public double getBalance(@NonNull Currency currency) {
         return this.balances.computeIfAbsent(currency, Currency::getDefaultBalance);
     }
 
-    public double getBalance(String identifier) {
+    public double getBalance(@NonNull String identifier) {
         for (Currency currency : this.balances.keySet()) {
             if (currency.getSingular().equalsIgnoreCase(identifier) || currency.getPlural().equalsIgnoreCase(identifier))
                 return this.balances.get(currency);
@@ -116,23 +117,23 @@ public class Account {
         return 0; // Do not edit this
     }
 
-    public Map<Currency, Double> getBalances() {
+    public @NonNull Map<Currency, Double> getBalances() {
         return balances;
     }
 
-    public String getDisplayName() {
+    public @NonNull String getDisplayName() {
         return this.nickname != null ? this.nickname : this.uuid.toString();
     }
 
-    public String getNickname() {
+    public @MonotonicNonNull String getNickname() {
         return nickname;
     }
 
-    public UUID getUuid() {
+    public @NonNull UUID getUuid() {
         return uuid;
     }
 
-    public boolean isOverflow(Currency currency, double amount) {
+    public boolean isOverflow(@NonNull Currency currency, double amount) {
         return this.balances.get(currency) + amount > currency.getMaxBalance();
     }
 
@@ -140,7 +141,7 @@ public class Account {
         return hasEnough(GemsEconomy.getInstance().getCurrencyManager().getDefaultCurrency(), amount);
     }
 
-    public boolean hasEnough(Currency currency, double amount) {
+    public boolean hasEnough(@NonNull Currency currency, double amount) {
         return getBalance(currency) >= amount;
     }
 
@@ -152,7 +153,7 @@ public class Account {
         this.canReceiveCurrency = canReceiveCurrency;
     }
 
-    public void setNickname(String nickname) {
+    public void setNickname(@NonNull String nickname) {
         this.nickname = nickname;
     }
 

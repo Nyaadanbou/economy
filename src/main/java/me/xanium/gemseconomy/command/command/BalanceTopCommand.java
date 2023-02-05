@@ -33,10 +33,6 @@ public class BalanceTopCommand extends GemsCommand {
             .handler(context -> {
                 CommandSender sender = context.getSender();
                 Currency currency = context.getOrDefault("currency", GemsEconomy.getInstance().getCurrencyManager().getDefaultCurrency());
-                if (currency == null) { // No default currency is set
-                    GemsEconomy.lang().sendComponent(sender, "err_no_default_currency");
-                    return;
-                }
                 if (!GemsEconomy.getInstance().getDataStore().isTopSupported()) {
                     GemsEconomy.lang().sendComponent(sender, "err_balance_top_no_support");
                     return;

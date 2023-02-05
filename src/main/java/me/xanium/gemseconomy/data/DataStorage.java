@@ -38,13 +38,13 @@ public abstract class DataStorage {
     }
 
     /**
-     * Gets an instance of the given storage method.
+     * Gets an instance of given storage method.
      *
      * @param method a method
      *
-     * @return an instance of the given storage method
+     * @return an instance of given storage method
      */
-    public static @Nullable DataStorage getMethod(@NonNull StorageType method) {
+    public static @Nullable DataStorage getMethod(final @NonNull StorageType method) {
         for (DataStorage store : getMethods()) {
             if (store.getStorageType() == method) {
                 return store;
@@ -73,70 +73,69 @@ public abstract class DataStorage {
     public abstract void close();
 
     /**
+     * Gets the balance top list of given currency, then performs an action to the fetched top list.
+     *
+     * @param currency the Currency from which the top list is derived
+     * @param start    the start index of the top list
+     * @param amount   the amount of Account to fetch
+     * @param action   the action applied to the top list
+     */
+    @Contract(pure = true)
+    public abstract void getTopList(final @NonNull Currency currency, int start, int amount, final @NonNull Consumer<LinkedList<CachedTopListEntry>> action);
+
+    /**
      * Loads all currencies into memory from database.
      */
     public abstract void loadCurrencies();
 
     /**
-     * Updates the given Currency from database.
+     * Updates given Currency from database.
      * <p>
-     * This will load the Currency data from database, then modify the states of the given Currency so that its internal
+     * This will load the Currency data from database, then modify the states of given Currency so that its internal
      * states are synced with the data in database.
      *
      * @param currency the Currency to update
      */
     @Contract(pure = false)
-    public abstract void updateCurrencyLocally(@NonNull Currency currency);
+    public abstract void updateCurrencyLocally(final @NonNull Currency currency);
 
     /**
-     * Saves the given Currency to database.
+     * Saves given Currency to database.
      *
      * @param currency the Currency to save to database
      */
     @Contract(pure = true)
-    public abstract void saveCurrency(@NonNull Currency currency);
+    public abstract void saveCurrency(final @NonNull Currency currency);
 
     /**
-     * Deletes the given Currency from database.
+     * Deletes given Currency from database.
      *
      * @param currency the currency to delete from database
      */
     @Contract(pure = true)
-    public abstract void deleteCurrency(@NonNull Currency currency);
-
-    @Contract(pure = true)
-    public abstract void getTopList(@NonNull Currency currency, int offset, int amount, @NonNull Consumer<LinkedList<CachedTopListEntry>> action);
+    public abstract void deleteCurrency(final @NonNull Currency currency);
 
     /**
-     * Loads, and returns an Account with the given name from database.
+     * Loads, and returns an Account with given name from database.
      * <p>
-     * This method will return null if the given name doesn't exist in database, <b>except</b> for some special cases.
-     * Specifically, this should return a non-null Account for the following special cases:
-     * <ul>
-     *     <li>the names are Towny accounts, starting with "town-", "nation-" or "towny-"</li>
-     * </ul>
-     * <p>
-     * The uuids for these special Accounts should be "stable". That is, the same name always generates the Accounts
-     * with the same uuid. The algorithm used to generate the uuids is preferred using the one used to generate offline
-     * Minecraft accounts.
+     * This method will return null if given name doesn't exist in database.
      *
      * @param name the account name
      *
-     * @return an account with the given name
+     * @return an account with given name
      */
-    public abstract @Nullable Account loadAccount(@NonNull String name);
+    public abstract @Nullable Account loadAccount(final @NonNull String name);
 
     /**
      * Loads an account with the specific uuid from database, and returns it.
      * <p>
-     * This method will always return a non-null Account. Specifically, if the uuid does not map to an online Minecraft
-     * account, this will still create an offline Minecraft Account with the specific uuid.
+     * This method will return null if given uuid doesn't exist in database.
      *
      * @param uuid the account uuid
      *
      * @return an account with the specific uuid
      */
-    public abstract @NonNull Account loadAccount(@NonNull UUID uuid);
+    public abstract @Nullable Account loadAccount(final @NonNull UUID uuid);
 
     /**
      * Saves the specific Account to database.
@@ -144,10 +143,10 @@ public abstract class DataStorage {
      * @param account the Account to save to database
      */
     @Contract(pure = true)
-    public abstract void saveAccount(@NonNull Account account);
+    public abstract void saveAccount(final @NonNull Account account);
 
     /**
-     * Creates a new record of the given Account in database.
+     * Creates a new record of given Account in database.
      * <p>
      * The given Account should be a freshly created instance.
      *
@@ -155,16 +154,30 @@ public abstract class DataStorage {
      *
      * @see EconomyListener
      */
-    @Contract(pure = false)
-    public abstract void createAccount(@NonNull Account account);
+    @Contract(pure = true)
+    public abstract void createAccount(final @NonNull Account account);
 
     /**
-     * Deletes the given Account from database.
+     * Deletes given Account from database.
      *
      * @param account the account to delete from database
      */
     @Contract(pure = true)
-    public abstract void deleteAccount(@NonNull Account account);
+    public abstract void deleteAccount(final @NonNull Account account);
+
+    /**
+     * Deletes the Account with given uuid from database.
+     *
+     * @param uuid the account with given uuid to delete from database
+     */
+    public abstract void deleteAccount(final @NonNull UUID uuid);
+
+    /**
+     * Deletes the Account with given name from database.
+     *
+     * @param name the account with given name to delete from database
+     */
+    public abstract void deleteAccount(final @NonNull String name);
 
     /**
      * Loads, and returns all the accounts in database.
@@ -194,8 +207,8 @@ public abstract class DataStorage {
     /**
      * @see #loadAccount(UUID)
      */
-    public void loadAccount(@NonNull UUID uuid, @NonNull Consumer<Account> action) {
-        Account account = this.loadAccount(uuid);
+    public void loadAccount(final @NonNull UUID uuid, final @NonNull Consumer<Account> action) {
+        Account account = loadAccount(uuid);
         action.accept(account);
     }
 

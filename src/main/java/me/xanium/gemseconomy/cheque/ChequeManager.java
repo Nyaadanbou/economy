@@ -42,16 +42,16 @@ public class ChequeManager {
     public @Nullable ItemStack write(String creatorName, Currency currency, double amount) {
         if (!currency.isPayable()) return null;
 
-        List<String> formatLore = new ArrayList<>();
+        List<String> format = new ArrayList<>();
         for (String baseLore : requireNonNull(chequeBaseItem.getItemMeta().getLore())) {
-            formatLore.add(baseLore
-                    .replace("{value}", currency.format(amount))
-                    .replace("{account}", creatorName)
+            format.add(baseLore
+                .replace("{value}", currency.format(amount))
+                .replace("{account}", creatorName)
             );
         }
         ItemStack ret = chequeBaseItem.clone();
         ItemMeta meta = ret.getItemMeta();
-        meta.setLore(formatLore);
+        meta.setLore(format);
         ChequeStorage storage = new ChequeStorage(creatorName, currency.getPlural(), amount);
         meta.getPersistentDataContainer().set(ChequeStorage.key, ChequeStorageType.INSTANCE, storage);
         ret.setItemMeta(meta);
@@ -70,13 +70,14 @@ public class ChequeManager {
 
     /**
      * @param itemStack - The cheque item
+     *
      * @return Currency it represents
      */
     public @Nullable Currency getCurrency(ItemStack itemStack) {
         ChequeStorage storage = ChequeStorage.read(itemStack);
         return storage != null
-                ? plugin.getCurrencyManager().getCurrency(storage.getCurrency())
-                : plugin.getCurrencyManager().getDefaultCurrency();
+            ? plugin.getCurrencyManager().getCurrency(storage.getCurrency()) // Might be null if the currency is deleted from database
+            : plugin.getCurrencyManager().getDefaultCurrency(); // Should not be null as it was checked during plugin startup
     }
 
 }

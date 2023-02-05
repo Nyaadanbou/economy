@@ -13,19 +13,22 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
+import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
+import org.checkerframework.framework.qual.DefaultQualifier;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.text.NumberFormat;
 import java.util.UUID;
 
 @SuppressWarnings("unused")
+@DefaultQualifier(NonNull.class)
 public class Currency {
 
     private final UUID uuid;
     private String singular;
     private String plural;
-    private String symbol = null;
+    @Nullable private String symbol = null;
     private TextColor color = NamedTextColor.WHITE;
     private boolean decimalSupported = true;
     private boolean payable = true;

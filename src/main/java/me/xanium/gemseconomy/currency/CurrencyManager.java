@@ -1,13 +1,15 @@
 package me.xanium.gemseconomy.currency;
 
 import me.xanium.gemseconomy.GemsEconomy;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
+import org.checkerframework.framework.qual.DefaultQualifier;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+@DefaultQualifier(NonNull.class)
 public class CurrencyManager {
 
     private final GemsEconomy plugin;
@@ -37,25 +39,27 @@ public class CurrencyManager {
 
     public @Nullable Currency getCurrency(UUID uuid) {
         for (Currency currency : currencies) {
-            if (!currency.getUuid().equals(uuid)) continue;
+            if (!currency.getUuid().equals(uuid))
+                continue;
             return currency;
         }
         return null;
     }
 
-    public @Nullable Currency getDefaultCurrency() {
+    public @NonNull Currency getDefaultCurrency() {
         for (Currency currency : currencies) {
-            if (!currency.isDefaultCurrency()) continue;
-            return currency;
+            if (currency.isDefaultCurrency())
+                return currency;
         }
-        return null;
+        throw new IllegalStateException("No default currency is provided");
     }
 
     /**
-     * Creates a new currency and saves it to the data storage.
+     * Creates a new currency and saves it to database.
      *
      * @param singular the singular form of the new currency
      * @param plural   the plural form of the new currency
+     *
      * @return the new currency, or <code>null</code> if already existed
      */
     public @Nullable Currency createNewCurrency(String singular, String plural) {
@@ -78,19 +82,19 @@ public class CurrencyManager {
 
     /**
      * <p>Remove specified currency.
-     *
-     * <p><b>This will also remove the currency from all accounts!!!</b>
+     * <p>
+     * <b>This will also remove the currency from all accounts!!!</b>
      *
      * @param currency the currency to remove
      */
     public void remove(Currency currency) {
         // Remove this currency from all accounts
         GemsEconomy.getInstance()
-                .getAccountManager()
-                .getOfflineAccounts()
-                .stream()
-                .filter(account -> account.getBalances().containsKey(currency))
-                .forEach(account -> account.getBalances().remove(currency));
+            .getAccountManager()
+            .getOfflineAccounts()
+            .stream()
+            .filter(account -> account.getBalances().containsKey(currency))
+            .forEach(account -> account.getBalances().remove(currency));
 
         // Remove this currency from this manager
         currencies.remove(currency);
@@ -105,7 +109,7 @@ public class CurrencyManager {
         }
     }
 
-    public @NotNull List<Currency> getCurrencies() {
+    public List<Currency> getCurrencies() {
         return currencies;
     }
 

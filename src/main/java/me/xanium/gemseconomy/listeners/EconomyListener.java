@@ -20,6 +20,8 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerLoginEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
+import static java.util.Objects.requireNonNull;
+
 public class EconomyListener implements Listener {
 
     private final GemsEconomy plugin = GemsEconomy.getInstance();
@@ -29,31 +31,23 @@ public class EconomyListener implements Listener {
         Player player = event.getPlayer();
         if (event.getResult() != PlayerLoginEvent.Result.ALLOWED) return;
         SchedulerUtils.runAsync(() -> {
-            Account account = plugin.getAccountManager().getAccount(player);
+            // Create a new Account if it did not exist
+            if (!plugin.getAccountManager().hasAccount(player))
+                plugin.getAccountManager().createAccount(player);
+
+            Account nonNullAccount = requireNonNull(plugin.getAccountManager().fetchAccount(player));
             String name = player.getName();
-            if (account.getNickname() == null || !account.getNickname().equalsIgnoreCase(name)) {
-                account.setNickname(name);
+            if (!name.equals(nonNullAccount.getNickname())) {
+                nonNullAccount.setNickname(name);
                 UtilServer.consoleLog("Account name changes detected, updating: " + name);
-                plugin.getDataStore().saveAccount(account);
+                plugin.getDataStore().saveAccount(nonNullAccount);
             }
         });
     }
 
     @EventHandler
     public void onQuit(PlayerQuitEvent event) {
-        Player player = event.getPlayer();
-        plugin.getAccountManager().flushAccount(player.getUniqueId());
-    }
-
-    @EventHandler(priority = EventPriority.LOW)
-    public void onJoin(PlayerJoinEvent event) {
-        Player player = event.getPlayer();
-        SchedulerUtils.runLater(40L, () -> {
-            if (plugin.getCurrencyManager().getDefaultCurrency() == null && (player.isOp() || player.hasPermission("gemseconomy.command.currency"))) {
-                GemsEconomy.lang().sendComponent(player, "err_ask_to_setup_currency");
-            }
-        });
+        plugin.getAccountManager().flushAccount(event.getPlayer().getUniqueId());
     }
 
 }
-

@@ -7,20 +7,14 @@ public class CachedTopList {
 
     private final Currency currency;
     private final int amount;
-    private final int offset;
     private final long cacheTime;
     private LinkedList<CachedTopListEntry> results;
 
-    public CachedTopList(Currency currency, int amount, int offset, long cacheTime) {
+    public CachedTopList(Currency currency, int amount, long cacheTime) {
         this.results = new LinkedList<>();
         this.currency = currency;
         this.amount = amount;
-        this.offset = offset;
         this.cacheTime = cacheTime;
-    }
-
-    public boolean matches(Currency currency, int offset, int amount) {
-        return currency.getUuid().equals(this.getCurrency().getUuid()) && offset == this.getOffset() && amount == this.getAmount();
     }
 
     public boolean isExpired() {
@@ -33,10 +27,6 @@ public class CachedTopList {
 
     public int getAmount() {
         return this.amount;
-    }
-
-    public int getOffset() {
-        return this.offset;
     }
 
     public long getCacheTime() {
