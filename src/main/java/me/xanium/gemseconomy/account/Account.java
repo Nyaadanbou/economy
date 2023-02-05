@@ -28,6 +28,7 @@ public class Account {
     private @NonNull final UUID uuid;
     private @MonotonicNonNull String nickname;
     private @NonNull final Map<Currency, Double> balances = new HashMap<>();
+    private @NonNull final Map<Currency, Double> accBalances = new HashMap<>(); // TODO record accumulated deposition
     private boolean canReceiveCurrency = true;
 
     public Account(@NonNull UUID uuid, @Nullable String nickname) {
@@ -38,7 +39,8 @@ public class Account {
     public synchronized boolean withdraw(@NonNull Currency currency, double amount) {
         if (hasEnough(currency, amount)) {
             GemsPreTransactionEvent preEvent = new GemsPreTransactionEvent(currency, this, amount, TransactionType.WITHDRAW);
-            if (!Schedulers.sync().call(preEvent::callEvent).join()) return false; // Call event on main thread, then wait it return
+            if (!Schedulers.sync().call(preEvent::callEvent).join())
+                return false; // Call event on main thread, then wait it return
 
             double finalAmount = getBalance(currency) - amount;
             double cappedAmount = Math.min(finalAmount, currency.getMaxBalance());
@@ -62,13 +64,16 @@ public class Account {
     public synchronized boolean deposit(@NonNull Currency currency, double amount) {
         if (this.canReceiveCurrency) {
             GemsPreTransactionEvent preEvent = new GemsPreTransactionEvent(currency, this, amount, TransactionType.DEPOSIT);
-            if (!Schedulers.sync().call(preEvent::callEvent).join()) return false; // Call event on main thread, then wait it return
+            if (!Schedulers.sync().call(preEvent::callEvent).join())
+                return false; // Call event on main thread, then wait it return
 
             double finalAmount = getBalance(currency) + amount;
             double cappedAmount = Math.min(finalAmount, currency.getMaxBalance());
 
             // Update balance
             balances.put(currency, cappedAmount);
+            // Accumulate deposited amount
+            accBalances.merge(currency, cappedAmount, Double::sum);
             // Save it to database
             GemsEconomy.getInstance().getDataStore().saveAccount(this);
             // Sync between servers
@@ -85,7 +90,8 @@ public class Account {
 
     public synchronized void setBalance(@NonNull Currency currency, double amount) {
         GemsPreTransactionEvent preEvent = new GemsPreTransactionEvent(currency, this, amount, TransactionType.SET);
-        if (!Schedulers.sync().call(preEvent::callEvent).join()) return; // Call event on main thread, then wait it return
+        if (!Schedulers.sync().call(preEvent::callEvent).join())
+            return; // Call event on main thread, then wait it return
 
         double cappedAmount = Math.min(amount, currency.getMaxBalance());
 
@@ -101,8 +107,6 @@ public class Account {
 
         GemsEconomy.getInstance().getEconomyLogger().log("[BALANCE SET] Account: " + getDisplayName() + " were set to: " + currency.format(cappedAmount));
     }
-
-    // TODO add method: clear balance
 
     public double getBalance(@NonNull Currency currency) {
         return this.balances.computeIfAbsent(currency, Currency::getDefaultBalance);
