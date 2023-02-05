@@ -19,16 +19,16 @@ import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
-import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class Account {
 
     private @NonNull final UUID uuid;
     private @MonotonicNonNull String nickname;
-    private @NonNull final Map<Currency, Double> balances = new HashMap<>();
-    private @NonNull final Map<Currency, Double> accBalances = new HashMap<>(); // TODO record accumulated deposition
+    private final @NonNull Map<Currency, Double> balances = new ConcurrentHashMap<>();
+    private final @NonNull Map<Currency, Double> accBalances = new ConcurrentHashMap<>(); // TODO record accumulated deposition
     private boolean canReceiveCurrency = true;
 
     public Account(@NonNull UUID uuid, @Nullable String nickname) {
