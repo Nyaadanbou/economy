@@ -15,7 +15,6 @@ import me.xanium.gemseconomy.utils.UtilServer;
 import net.milkbowl.vault.economy.AbstractEconomy;
 import net.milkbowl.vault.economy.EconomyResponse;
 import org.bukkit.OfflinePlayer;
-import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -80,7 +79,7 @@ public class GEVaultHook extends AbstractEconomy {
     public double getBalance(String playerName) {
         if (GemsEconomy.getInstance().isDebug())
             UtilServer.consoleLog("Lookup name: " + playerName);
-        @Nullable Account account = GemsEconomy.getInstance().getAccountManager().fetchAccount(playerName);
+        Account account = GemsEconomy.getInstance().getAccountManager().fetchAccount(playerName);
         Currency currency = GemsEconomy.getInstance().getCurrencyManager().getDefaultCurrency();
 
         if (account == null) {
@@ -95,7 +94,7 @@ public class GEVaultHook extends AbstractEconomy {
     public double getBalance(OfflinePlayer player) {
         if (GemsEconomy.getInstance().isDebug())
             UtilServer.consoleLog("Lookup name: " + player.getName() + " (" + player.getUniqueId() + ")");
-        @Nullable Account account = GemsEconomy.getInstance().getAccountManager().fetchAccount(player.getUniqueId());
+        Account account = GemsEconomy.getInstance().getAccountManager().fetchAccount(player.getUniqueId());
         Currency currency = GemsEconomy.getInstance().getCurrencyManager().getDefaultCurrency();
 
         if (account == null) {
@@ -119,7 +118,7 @@ public class GEVaultHook extends AbstractEconomy {
         EconomyResponse.ResponseType type = EconomyResponse.ResponseType.FAILURE;
         String error = null;
 
-        @Nullable Account account = GemsEconomy.getInstance().getAccountManager().fetchAccount(player.getUniqueId());
+        Account account = GemsEconomy.getInstance().getAccountManager().fetchAccount(player.getUniqueId());
         Currency currency = GemsEconomy.getInstance().getCurrencyManager().getDefaultCurrency();
 
         if (account == null) {
@@ -150,7 +149,7 @@ public class GEVaultHook extends AbstractEconomy {
         EconomyResponse.ResponseType type = EconomyResponse.ResponseType.FAILURE;
         String error = null;
 
-        @Nullable Account account = GemsEconomy.getInstance().getAccountManager().fetchAccount(player.getUniqueId());
+        Account account = GemsEconomy.getInstance().getAccountManager().fetchAccount(player.getUniqueId());
         Currency currency = GemsEconomy.getInstance().getCurrencyManager().getDefaultCurrency();
 
         if (account == null) {
@@ -181,7 +180,7 @@ public class GEVaultHook extends AbstractEconomy {
         EconomyResponse.ResponseType type = EconomyResponse.ResponseType.FAILURE;
         String error = null;
 
-        @Nullable Account account = GemsEconomy.getInstance().getAccountManager().fetchAccount(player);
+        Account account = GemsEconomy.getInstance().getAccountManager().fetchAccount(player);
         Currency currency = GemsEconomy.getInstance().getCurrencyManager().getDefaultCurrency();
 
         if (account == null) {
@@ -211,7 +210,7 @@ public class GEVaultHook extends AbstractEconomy {
         EconomyResponse.ResponseType type = EconomyResponse.ResponseType.FAILURE;
         String error = null;
 
-        @Nullable Account account = GemsEconomy.getInstance().getAccountManager().fetchAccount(player);
+        Account account = GemsEconomy.getInstance().getAccountManager().fetchAccount(player);
         Currency currency = GemsEconomy.getInstance().getCurrencyManager().getDefaultCurrency();
 
         if (account == null) {
