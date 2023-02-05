@@ -13,7 +13,6 @@ import com.zaxxer.hikari.HikariDataSource;
 import me.lucko.helper.Schedulers;
 import me.xanium.gemseconomy.GemsEconomy;
 import me.xanium.gemseconomy.account.Account;
-import me.xanium.gemseconomy.bungee.UpdateType;
 import me.xanium.gemseconomy.currency.CachedTopList;
 import me.xanium.gemseconomy.currency.CachedTopListEntry;
 import me.xanium.gemseconomy.currency.Currency;
@@ -264,8 +263,6 @@ public final class MySQLStorage extends DataStorage {
         } catch (SQLException e) {
             e.printStackTrace();
         }
-
-        plugin.getUpdateForwarder().sendUpdateMessage(UpdateType.CURRENCY, currency.getUuid().toString());
     }
 
     @Override
@@ -448,8 +445,6 @@ public final class MySQLStorage extends DataStorage {
             e.printStackTrace();
         }
 
-        plugin.getUpdateForwarder().sendUpdateMessage(UpdateType.ACCOUNT, account.getUuid().toString());
-
         UtilServer.consoleLog("Account created and saved: " + account.getNickname() + " [" + account.getUuid() + "]");
     }
 
@@ -473,8 +468,6 @@ public final class MySQLStorage extends DataStorage {
         } catch (SQLException e) {
             e.printStackTrace();
         }
-
-        plugin.getUpdateForwarder().sendUpdateMessage(UpdateType.ACCOUNT, account.getUuid().toString());
 
         UtilServer.consoleLog("Account saved: " + account.getNickname() + " [" + account.getUuid() + "]");
     }

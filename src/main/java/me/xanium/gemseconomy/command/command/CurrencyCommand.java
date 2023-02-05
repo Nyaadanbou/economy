@@ -115,7 +115,7 @@ public class CurrencyCommand extends GemsCommand {
                     Currency currency = context.get("currency");
                     double amount = context.get("amount");
                     currency.setDefaultBalance(amount);
-                    GemsEconomy.getInstance().getDataStore().saveCurrency(currency);
+                    plugin.getCurrencyManager().save(currency);
                     GemsEconomy.lang().sendComponent(sender, GemsEconomy.lang()
                             .component(sender, "msg_set_currency_default_balance")
                             .replaceText(GemsMessages.CURRENCY_REPLACEMENT.apply(currency.getDisplayName()))
@@ -136,7 +136,7 @@ public class CurrencyCommand extends GemsCommand {
                     Currency currency = context.get("currency");
                     double amount = context.get("amount");
                     currency.setMaxBalance(amount);
-                    GemsEconomy.getInstance().getDataStore().saveCurrency(currency);
+                    plugin.getCurrencyManager().save(currency);
                     GemsEconomy.lang().sendComponent(sender, GemsEconomy.lang()
                             .component(sender, "msg_set_currency_maximum_balance")
                             .replaceText(GemsMessages.CURRENCY_REPLACEMENT.apply(currency.getDisplayName()))
@@ -157,7 +157,7 @@ public class CurrencyCommand extends GemsCommand {
                     Currency currency = context.get("currency");
                     TextColor chatColor = context.get("color");
                     currency.setColor(chatColor);
-                    GemsEconomy.getInstance().getDataStore().saveCurrency(currency);
+                    plugin.getCurrencyManager().save(currency);
                     GemsEconomy.lang().sendComponent(sender, GemsEconomy.lang()
                             .component(sender, "msg_set_currency_color")
                             .replaceText(GemsMessages.CURRENCY_REPLACEMENT.apply(currency.getDisplayName()))
@@ -178,14 +178,14 @@ public class CurrencyCommand extends GemsCommand {
                     String symbol = context.get("symbol");
                     if (symbol.equalsIgnoreCase("remove")) {
                         currency.setSymbol(null);
-                        GemsEconomy.getInstance().getDataStore().saveCurrency(currency);
+                        plugin.getCurrencyManager().save(currency);
                         GemsEconomy.lang().sendComponent(sender, GemsEconomy.lang()
                                 .component(sender, "msg_removed_currency_symbol")
                                 .replaceText(GemsMessages.CURRENCY_REPLACEMENT.apply(currency.getDisplayName()))
                         );
                     } else if (symbol.length() == 1) {
                         currency.setSymbol(symbol);
-                        GemsEconomy.getInstance().getDataStore().saveCurrency(currency);
+                        plugin.getCurrencyManager().save(currency);
                         GemsEconomy.lang().sendComponent(sender, GemsEconomy.lang()
                                 .component(sender, "msg_set_currency_symbol")
                                 .replaceText(GemsMessages.CURRENCY_REPLACEMENT.apply(currency.getDisplayName()))
@@ -208,10 +208,10 @@ public class CurrencyCommand extends GemsCommand {
 
                     Currency oldDefault = GemsEconomy.getInstance().getCurrencyManager().getDefaultCurrency();
                     oldDefault.setDefaultCurrency(false);
-                    GemsEconomy.getInstance().getDataStore().saveCurrency(oldDefault);
+                    plugin.getCurrencyManager().save(oldDefault);
 
                     newDefault.setDefaultCurrency(true);
-                    GemsEconomy.getInstance().getDataStore().saveCurrency(newDefault);
+                    plugin.getCurrencyManager().save(newDefault);
                     GemsEconomy.lang().sendComponent(sender, GemsEconomy.lang()
                             .component(sender, "msg_set_default_currency")
                             .replaceText(GemsMessages.CURRENCY_REPLACEMENT.apply(newDefault.getDisplayName()))
@@ -225,7 +225,7 @@ public class CurrencyCommand extends GemsCommand {
                     CommandSender sender = context.getSender();
                     Currency currency = context.get("currency");
                     currency.setPayable(!currency.isPayable());
-                    GemsEconomy.getInstance().getDataStore().saveCurrency(currency);
+                    plugin.getCurrencyManager().save(currency);
                     GemsEconomy.lang().sendComponent(sender, GemsEconomy.lang()
                             .component(sender, "msg_toggled_currency_payable")
                             .replaceText(GemsMessages.CURRENCY_REPLACEMENT.apply(currency.getDisplayName()))
@@ -240,7 +240,7 @@ public class CurrencyCommand extends GemsCommand {
                     CommandSender sender = context.getSender();
                     Currency currency = context.get("currency");
                     currency.setDecimalSupported(!currency.isDecimalSupported());
-                    GemsEconomy.getInstance().getDataStore().saveCurrency(currency);
+                    plugin.getCurrencyManager().save(currency);
                     GemsEconomy.lang().sendComponent(sender, GemsEconomy.lang()
                             .component(sender, "msg_toggled_currency_decimal_support")
                             .replaceText(GemsMessages.CURRENCY_REPLACEMENT.apply(currency.getDisplayName()))
@@ -267,15 +267,7 @@ public class CurrencyCommand extends GemsCommand {
                 .handler(context -> {
                     CommandSender sender = context.getSender();
                     Currency currency = context.get("currency");
-                    GemsEconomy.getInstance()
-                            .getAccountManager()
-                            .getOfflineAccounts()
-                            .stream()
-                            .filter(account -> account.getBalances().containsKey(currency))
-                            .forEach(account -> {
-                                account.getBalances().put(currency, 0D);
-                                GemsEconomy.getInstance().getDataStore().saveAccount(account);
-                            });
+                    GemsEconomy.getInstance().getCurrencyManager().clear(currency);
                     GemsEconomy.lang().sendComponent(sender, GemsEconomy.lang()
                             .component(sender, "msg_cleared_balance")
                             .replaceText(GemsMessages.CURRENCY_REPLACEMENT.apply(currency.getDisplayName()))
@@ -291,7 +283,7 @@ public class CurrencyCommand extends GemsCommand {
                     Currency currency = context.get("currency");
                     double rate = context.get("rate");
                     currency.setExchangeRate(rate);
-                    GemsEconomy.getInstance().getDataStore().saveCurrency(currency);
+                    plugin.getCurrencyManager().save(currency);
                     GemsEconomy.lang().sendComponent(sender, GemsEconomy.lang()
                             .component(sender, "msg_set_exchange_rate")
                             .replaceText(GemsMessages.CURRENCY_REPLACEMENT.apply(currency.getDisplayName()))

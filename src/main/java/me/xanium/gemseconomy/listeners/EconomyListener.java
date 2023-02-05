@@ -11,7 +11,6 @@ package me.xanium.gemseconomy.listeners;
 import me.lucko.helper.Schedulers;
 import me.xanium.gemseconomy.GemsEconomy;
 import me.xanium.gemseconomy.account.Account;
-import me.xanium.gemseconomy.utils.UtilServer;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -28,18 +27,20 @@ public class EconomyListener implements Listener {
     @EventHandler(priority = EventPriority.LOWEST)
     public void onLogin(PlayerLoginEvent event) {
         Player player = event.getPlayer();
-        if (event.getResult() != PlayerLoginEvent.Result.ALLOWED) return;
-        Schedulers.async().run(() -> {
-            // Create a new Account if it did not exist
+        if (event.getResult() != PlayerLoginEvent.Result.ALLOWED)
+            return;
+        Schedulers.async().run(() -> { // TODO use redis to sync data
             if (!plugin.getAccountManager().hasAccount(player))
-                plugin.getAccountManager().createAccount(player);
+                plugin.getAccountManager().createAccount(player); // Create a new Account if it did not exist
 
-            Account nonNullAccount = requireNonNull(plugin.getAccountManager().fetchAccount(player));
-            String name = player.getName();
-            if (!name.equals(nonNullAccount.getNickname())) {
-                nonNullAccount.setNickname(name);
-                UtilServer.consoleLog("Account name changes detected, updating: " + name);
-                plugin.getDataStore().saveAccount(nonNullAccount);
+            plugin.getAccountManager().refreshAccount(player.getUniqueId()); // Grabs the latest data from database
+            Account account = requireNonNull(plugin.getAccountManager().fetchAccount(player)); // Get and cache the Account
+
+            String playerName = player.getName();
+            if (!playerName.equals(account.getNickname())) {
+                account.setNickname(playerName);
+                plugin.getLogger().info("Account name changes detected, updating: " + playerName);
+                plugin.getDataStore().saveAccount(account);
             }
         });
     }

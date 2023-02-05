@@ -13,6 +13,7 @@ import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 import me.lucko.helper.profiles.OfflineModeProfiles;
 import me.xanium.gemseconomy.GemsEconomy;
+import me.xanium.gemseconomy.bungee.UpdateType;
 import me.xanium.gemseconomy.currency.Currency;
 import me.xanium.gemseconomy.data.DataStorage;
 import me.xanium.gemseconomy.utils.UtilTowny;
@@ -34,11 +35,7 @@ public class AccountManager {
         this.accounts = CacheBuilder
             .newBuilder()
             .expireAfterAccess(1, TimeUnit.MINUTES)
-            .build(new CacheLoader<>() {
-                @Override public @Nullable Account load(@NonNull final UUID uuid) {
-                    return plugin.getDataStore().loadAccount(uuid);
-                }
-            });
+            .build(CacheLoader.from(uuid -> plugin.getDataStore().loadAccount(uuid)));
     }
 
     /**
@@ -56,7 +53,7 @@ public class AccountManager {
      *
      * @see OfflineModeProfiles
      */
-    public synchronized void createAccount(@NonNull String nickname) {
+    public void createAccount(@NonNull String nickname) {
         if (hasAccount(nickname))
             return;
 
@@ -79,6 +76,8 @@ public class AccountManager {
         cacheAccount(account); // Cache it
 
         plugin.getDataStore().createAccount(account); // Save it to database
+
+        plugin.getUpdateForwarder().sendUpdateMessage(UpdateType.ACCOUNT, account.getUuid().toString());
     }
 
     /**
@@ -89,7 +88,7 @@ public class AccountManager {
      *
      * @param player the player who owns the new Account
      */
-    public synchronized void createAccount(@NonNull OfflinePlayer player) {
+    public void createAccount(@NonNull OfflinePlayer player) {
         if (hasAccount(player))
             return;
 
@@ -104,6 +103,8 @@ public class AccountManager {
         cacheAccount(account); // Cache it
 
         plugin.getDataStore().createAccount(account); // Save it to database
+
+        plugin.getUpdateForwarder().sendUpdateMessage(UpdateType.ACCOUNT, account.getUuid().toString());
     }
 
     /**
@@ -114,7 +115,7 @@ public class AccountManager {
      *
      * @param uuid the uuid of the new Account
      */
-    public synchronized void createAccount(@NonNull UUID uuid) {
+    public void createAccount(@NonNull UUID uuid) {
         if (hasAccount(uuid))
             return;
 
@@ -129,6 +130,8 @@ public class AccountManager {
         cacheAccount(account); // Cache it
 
         plugin.getDataStore().createAccount(account); // Save it to database
+
+        plugin.getUpdateForwarder().sendUpdateMessage(UpdateType.ACCOUNT, account.getUuid().toString());
     }
 
     /**

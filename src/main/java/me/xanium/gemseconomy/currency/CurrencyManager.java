@@ -1,6 +1,7 @@
 package me.xanium.gemseconomy.currency;
 
 import me.xanium.gemseconomy.GemsEconomy;
+import me.xanium.gemseconomy.bungee.UpdateType;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
@@ -75,13 +76,38 @@ public class CurrencyManager {
 
         add(currency);
 
-        plugin.getDataStore().saveCurrency(currency);
+        plugin.getDataStore().saveCurrency(currency); // TODO sync creation between servers
+        plugin.getUpdateForwarder().sendUpdateMessage(UpdateType.CURRENCY, currency.getUuid().toString());
 
         return currency;
     }
 
+    public void add(Currency currency) {
+        if (!currencies.contains(currency)) {
+            currencies.add(currency);
+        }
+    }
+
+    public void save(Currency currency) {
+        plugin.getDataStore().saveCurrency(currency); // TODO sync between servers
+        plugin.getUpdateForwarder().sendUpdateMessage(UpdateType.CURRENCY, currency.getUuid().toString());
+    }
+
     /**
-     * <p>Remove specified currency.
+     * Clears the balance of specific currency for all Accounts, i.e. set balance to 0.
+     *
+     * @param currency the currency to clear balance
+     */
+    public void clear(Currency currency) {
+        plugin.getAccountManager().getOfflineAccounts().forEach(account -> {
+            account.getBalances().put(currency, 0D);
+            plugin.getDataStore().saveAccount(account);
+            plugin.getUpdateForwarder().sendUpdateMessage(UpdateType.ACCOUNT, account.getUuid().toString());
+        });
+    }
+
+    /**
+     * Removes specified currency.
      * <p>
      * <b>This will also remove the currency from all accounts!!!</b>
      *
@@ -92,21 +118,18 @@ public class CurrencyManager {
         GemsEconomy.getInstance()
             .getAccountManager()
             .getOfflineAccounts()
-            .stream()
-            .filter(account -> account.getBalances().containsKey(currency))
-            .forEach(account -> account.getBalances().remove(currency));
+            .forEach(account -> {
+                account.getBalances().remove(currency);
+                plugin.getDataStore().saveAccount(account);
+                plugin.getUpdateForwarder().sendUpdateMessage(UpdateType.ACCOUNT, account.getUuid().toString()); // TODO sync deletion between servers
+            });
 
         // Remove this currency from this manager
         currencies.remove(currency);
 
         // Remove this currency from data storage
         plugin.getDataStore().deleteCurrency(currency);
-    }
-
-    public void add(Currency currency) {
-        if (!currencies.contains(currency)) {
-            currencies.add(currency);
-        }
+        plugin.getUpdateForwarder().sendUpdateMessage(UpdateType.CURRENCY, currency.getUuid().toString());
     }
 
     public List<Currency> getCurrencies() {
