@@ -179,12 +179,13 @@ public class AccountManager {
      * @return an Account with given uuid
      */
     public @Nullable Account fetchAccount(@NonNull UUID uuid) {
-        return accounts.computeIfAbsent(uuid, id -> {
-            @Nullable Account account = plugin.getDataStore().loadAccount(uuid);
-            if (account != null)
-                cacheAccount(account);
-            return account;
-        });
+        if (accounts.containsKey(uuid)) {
+            return accounts.get(uuid);
+        }
+        @Nullable Account account = plugin.getDataStore().loadAccount(uuid);
+        if (account != null)
+            cacheAccount(account);
+        return account;
     }
 
     /**
