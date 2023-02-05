@@ -8,6 +8,9 @@
 
 package me.xanium.gemseconomy.account;
 
+import com.google.common.cache.CacheBuilder;
+import com.google.common.cache.CacheLoader;
+import com.google.common.cache.LoadingCache;
 import me.xanium.gemseconomy.GemsEconomy;
 import me.xanium.gemseconomy.currency.Currency;
 import me.xanium.gemseconomy.data.DataStorage;
@@ -18,22 +21,28 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.util.Collection;
-import java.util.Map;
 import java.util.UUID;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.TimeUnit;
 
 public class AccountManager {
 
     private final @NonNull GemsEconomy plugin;
-    private final @NonNull Map<UUID, Account> accounts; // A collection of accounts loaded in memory
+    private final @NonNull LoadingCache<UUID, Account> accounts; // A collection of accounts loaded in memory
 
     public AccountManager(@NonNull GemsEconomy plugin) {
         this.plugin = plugin;
-        this.accounts = new ConcurrentHashMap<>();
+        this.accounts = CacheBuilder
+            .newBuilder()
+            .expireAfterAccess(10, TimeUnit.MINUTES)
+            .build(new CacheLoader<>() {
+                @Override public @Nullable Account load(@NonNull final UUID uuid) {
+                    return plugin.getDataStore().loadAccount(uuid);
+                }
+            });
     }
 
     /**
-     * Creates, saves, and loads an Account into memory.
+     * Creates, saves, and caches an Account.
      * <p>
      * If the Account with the specific name is already loaded in memory or exists in database, this method will simply
      * do nothing.
@@ -73,7 +82,7 @@ public class AccountManager {
     }
 
     /**
-     * Creates, saves, and loads an Account into memory.
+     * Creates, saves, and caches an Account.
      * <p>
      * If the Account with the specific name is already loaded in memory or exists in database, this method will simply
      * do nothing.
@@ -98,7 +107,7 @@ public class AccountManager {
     }
 
     /**
-     * Creates, save, and loads an Account into memory.
+     * Creates, save, and caches an Account.
      * <p>
      * If the Account with the specific uuid is already loaded in memory or exists in database, this method will simply
      * do nothing.
@@ -179,13 +188,7 @@ public class AccountManager {
      * @return an Account with given uuid
      */
     public @Nullable Account fetchAccount(@NonNull UUID uuid) {
-        if (accounts.containsKey(uuid)) {
-            return accounts.get(uuid);
-        }
-        @Nullable Account account = plugin.getDataStore().loadAccount(uuid);
-        if (account != null)
-            cacheAccount(account);
-        return account;
+        return accounts.getUnchecked(uuid);
     }
 
     /**
@@ -201,7 +204,7 @@ public class AccountManager {
      * @return an Account with given name
      */
     public @Nullable Account fetchAccount(@NonNull String name) {
-        for (final Account account : accounts.values()) {
+        for (final Account account : accounts.asMap().values()) {
             if (name.equalsIgnoreCase(account.getNickname()))
                 return account;
         }
@@ -214,32 +217,32 @@ public class AccountManager {
     }
 
     /**
-     * Loads an Account into memory.
+     * Caches an Account.
      * <p>
-     * If the account is already cached, this method will simply do nothing.
+     * If the Account is already cached, this method will override the original.
      *
      * @param account the account to be loaded into memory
      */
     public void cacheAccount(@NonNull Account account) {
-        accounts.putIfAbsent(account.getUuid(), account);
+        accounts.put(account.getUuid(), account);
     }
 
     /**
-     * Unloads the Account from memory.
+     * Discards the Account from memory.
      *
      * @param uuid the account uuid
      */
     public void flushAccount(@NonNull UUID uuid) {
-        accounts.remove(uuid);
+        accounts.invalidate(uuid);
     }
 
     /**
-     * Returns all the Accounts that are currently loaded in memory.
+     * Returns a view of all the Accounts that are currently loaded in memory.
      *
-     * @return all the Accounts loaded in memory
+     * @return a view of all the Accounts loaded in memory
      */
     public @NonNull Collection<Account> getCachedAccounts() {
-        return accounts.values();
+        return accounts.asMap().values();
     }
 
     /**

@@ -342,11 +342,10 @@ public final class MySQLStorage extends DataStorage {
 
     @Override
     public @Nullable Account loadAccount(final @NonNull String name) {
-        // Note: string comparisons are case-insensitive by default in the configuration of SQL server database
-
         Account account = null;
 
         try (Connection connection = getHikari().getConnection()) {
+            // Note: string comparisons are case-insensitive by default in the configuration of SQL server database
             PreparedStatement stmt = connection.prepareStatement("SELECT * FROM " + this.accountsTable + " WHERE nickname = ? LIMIT 1");
             stmt.setString(1, name);
             ResultSet set = stmt.executeQuery();
