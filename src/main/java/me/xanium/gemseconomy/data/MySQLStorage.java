@@ -459,7 +459,7 @@ public final class MySQLStorage extends DataStorage {
 
             JSONObject obj = new JSONObject();
             for (Currency currency : plugin.getCurrencyManager().getCurrencies()) {
-                obj.put(currency.getUuid().toString(), account.getBalance(currency.getSingular()));
+                obj.put(currency.getUuid().toString(), account.getBalance(currency));
             }
             String json = obj.toJSONString();
             stmt.setString(4, json);
