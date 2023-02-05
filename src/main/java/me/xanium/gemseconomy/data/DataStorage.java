@@ -15,6 +15,7 @@ import me.xanium.gemseconomy.currency.Currency;
 import me.xanium.gemseconomy.listeners.EconomyListener;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
+import org.jetbrains.annotations.Contract;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -22,6 +23,7 @@ import java.util.List;
 import java.util.UUID;
 import java.util.function.Consumer;
 
+@SuppressWarnings("DefaultAnnotationParam")
 public abstract class DataStorage {
 
     public final GemsEconomy plugin = GemsEconomy.getInstance();
@@ -83,6 +85,7 @@ public abstract class DataStorage {
      *
      * @param currency the Currency to update
      */
+    @Contract(pure = false)
     public abstract void updateCurrencyLocally(@NonNull Currency currency);
 
     /**
@@ -90,6 +93,7 @@ public abstract class DataStorage {
      *
      * @param currency the Currency to save to database
      */
+    @Contract(pure = true)
     public abstract void saveCurrency(@NonNull Currency currency);
 
     /**
@@ -97,8 +101,10 @@ public abstract class DataStorage {
      *
      * @param currency the currency to delete from database
      */
+    @Contract(pure = true)
     public abstract void deleteCurrency(@NonNull Currency currency);
 
+    @Contract(pure = true)
     public abstract void getTopList(@NonNull Currency currency, int offset, int amount, @NonNull Consumer<LinkedList<CachedTopListEntry>> action);
 
     /**
@@ -137,6 +143,7 @@ public abstract class DataStorage {
      *
      * @param account the Account to save to database
      */
+    @Contract(pure = true)
     public abstract void saveAccount(@NonNull Account account);
 
     /**
@@ -148,6 +155,7 @@ public abstract class DataStorage {
      *
      * @see EconomyListener
      */
+    @Contract(pure = false)
     public abstract void createAccount(@NonNull Account account);
 
     /**
@@ -155,6 +163,7 @@ public abstract class DataStorage {
      *
      * @param account the account to delete from database
      */
+    @Contract(pure = true)
     public abstract void deleteAccount(@NonNull Account account);
 
     /**
