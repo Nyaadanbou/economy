@@ -34,7 +34,6 @@ import java.util.stream.Collectors;
 import static java.util.Objects.requireNonNull;
 import static java.util.Objects.requireNonNullElse;
 
-@SuppressWarnings({"SqlDialectInspection", "SqlNoDataSourceInspection"})
 public final class MySQLStorage extends DataStorage {
 
     // --- Table Names ---
@@ -42,7 +41,7 @@ public final class MySQLStorage extends DataStorage {
     private final String accountsTable = getTablePrefix() + "_accounts";
 
     // --- SQL Statements ---
-    private final String SAVE_ACCOUNT = "INSERT INTO `" + getTablePrefix() + "_accounts` (`nickname`, `uuid`, `payable`, `balance_data`) VALUES(?, ?, ?, ?) ON DUPLICATE KEY UPDATE `nickname` = VALUES(`nickname`), `uuid` = VALUES(`uuid`), `payable` = VALUES(`payable`), `balance_data` = VALUES(`balance_data`)";
+    private final String SAVE_ACCOUNT = "INSERT INTO `" + getTablePrefix() + "_accounts` (`nickname`, `uuid`, `payable`, `balance_data`, `balance_acc`) VALUES(?, ?, ?, ?, ?) ON DUPLICATE KEY UPDATE `nickname` = VALUES(`nickname`), `uuid` = VALUES(`uuid`), `payable` = VALUES(`payable`), `balance_data` = VALUES(`balance_data`), `balance_acc` = VALUES(`balance_acc`)";
     private final String SAVE_CURRENCY = "INSERT INTO `" + getTablePrefix() + "_currencies` (`uuid`, `name_singular`, `name_plural`, `default_balance`, `max_balance`, `symbol`, `decimals_supported`, `is_default`, `payable`, `color`, `exchange_rate`) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) ON DUPLICATE KEY UPDATE `uuid` = VALUES(`uuid`), `name_singular` = VALUES(`name_singular`), `name_plural` = VALUES(`name_plural`), `default_balance` = VALUES(`default_balance`), `max_balance` = VALUES(`max_balance`), `symbol` = VALUES(`symbol`), `decimals_supported` = VALUES(`decimals_supported`), `is_default` = VALUES(`is_default`), `payable` = VALUES(`payable`), `color` = VALUES(`color`), `exchange_rate` = VALUES(`exchange_rate`)";
 
     // --- Cached Top ---
@@ -156,6 +155,12 @@ public final class MySQLStorage extends DataStorage {
                     stmt.execute();
 
                     UtilServer.consoleLog("Altered tables " + this.accountsTable + " to support the new balance data saving");
+                }
+                if (!accountTableColumns.contains("balance_acc")) {
+                    stmt = connection.prepareStatement("ALTER TABLE " + this.accountsTable + " ADD balance_acc LONGTEXT NULL DEFAULT NULL AFTER `balance_data`;");
+                    stmt.execute();
+
+                    UtilServer.consoleLog("Altered table " + this.accountsTable + " to support the records of accumulated balance");
                 }
             }
         } catch (SQLException e) {
