@@ -67,6 +67,7 @@ bukkit {
     version = "${project.version}"
     apiVersion = "1.17"
     authors = listOf("Xanium", "Nailm")
+    depend = listOf("helper")
     softDepend = listOf("Vault")
     load = STARTUP
     loadBefore = listOf("ItemFrameShops")
