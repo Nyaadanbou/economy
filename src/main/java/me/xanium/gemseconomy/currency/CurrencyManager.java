@@ -89,7 +89,7 @@ public class CurrencyManager {
     }
 
     public void save(Currency currency) {
-        plugin.getDataStore().saveCurrency(currency); // TODO sync between servers
+        plugin.getDataStore().saveCurrency(currency); // TODO sync saving between servers
         plugin.getUpdateForwarder().sendUpdateMessage(UpdateType.CURRENCY, currency.getUuid().toString());
     }
 
@@ -102,14 +102,14 @@ public class CurrencyManager {
         plugin.getAccountManager().getOfflineAccounts().forEach(account -> {
             account.getBalances().put(currency, 0D);
             plugin.getDataStore().saveAccount(account);
-            plugin.getUpdateForwarder().sendUpdateMessage(UpdateType.ACCOUNT, account.getUuid().toString());
+            plugin.getUpdateForwarder().sendUpdateMessage(UpdateType.ACCOUNT, account.getUuid().toString()); // TODO sync clear between servers
         });
     }
 
     /**
      * Removes specified currency.
      * <p>
-     * This will also remove the currency from <b>ALL</b> Accounts!</b>
+     * This will also remove the currency from <b>ALL</b> Accounts!
      *
      * @param currency the currency to remove
      */
