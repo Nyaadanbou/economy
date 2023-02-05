@@ -237,6 +237,13 @@ public class AccountManager {
     }
 
     /**
+     * Discards all Accounts from memory.
+     */
+    public void flushAccounts() {
+        accounts.invalidateAll();
+    }
+
+    /**
      * Returns a view of all the Accounts that are currently loaded in memory.
      *
      * @return a view of all the Accounts loaded in memory

@@ -11,12 +11,12 @@ import me.xanium.gemseconomy.command.argument.AccountArgument;
 import me.xanium.gemseconomy.command.argument.AmountArgument;
 import me.xanium.gemseconomy.command.argument.CurrencyArgument;
 import me.xanium.gemseconomy.currency.Currency;
-import me.xanium.gemseconomy.utils.UtilServer;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
 
+import java.util.Collection;
 import java.util.List;
 
 public class EconomyCommand extends GemsCommand {
@@ -78,14 +78,25 @@ public class EconomyCommand extends GemsCommand {
                 })
                 .build();
 
-        Command<CommandSender> cache = builder
-                .literal("cache")
+        Command<CommandSender> cached = builder
+                .literal("cached")
                 .handler(context -> {
-                    for (Account a : GemsEconomy.getInstance().getAccountManager().getCachedAccounts()) {
-                        UtilServer.consoleLog("Account: " + a.getNickname() + " cached");
+                    CommandSender sender = context.getSender();
+                    Collection<Account> cachedAccounts = GemsEconomy.getInstance().getAccountManager().getCachedAccounts();
+                    for (Account a : cachedAccounts) {
+                        sender.sendMessage("Account: " + a.getNickname() + " cached");
                     }
+                    sender.sendMessage("Total cached: " + cachedAccounts.size());
                 })
                 .build();
+
+        Command<CommandSender> flush = builder
+            .literal("flush")
+            .handler(context -> {
+                GemsEconomy.getInstance().getAccountManager().flushAccounts();
+                context.getSender().sendMessage("All cache flushed!");
+            })
+            .build();
 
         Command<CommandSender> debug = builder
                 .literal("debug")
@@ -105,7 +116,8 @@ public class EconomyCommand extends GemsCommand {
                 give,
                 take,
                 set,
-                cache,
+                cached,
+                flush,
                 debug
         ));
     }
