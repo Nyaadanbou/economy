@@ -113,15 +113,33 @@ public class Account {
     }
 
     public double getBalance(@NonNull String identifier) {
-        for (Currency currency : balances.keySet()) {
-            if (currency.getSingular().equalsIgnoreCase(identifier) || currency.getPlural().equalsIgnoreCase(identifier))
-                return balances.get(currency);
-        }
-        return 0; // Do not edit this
+        return balances.keySet().stream()
+            .filter(currency ->
+                currency.getSingular().equalsIgnoreCase(identifier) ||
+                currency.getPlural().equalsIgnoreCase(identifier)
+            )
+            .findAny()
+            .map(balances::get)
+            .orElse(0D); // Do not edit this
     }
 
     public @NonNull Map<Currency, Double> getBalances() {
         return balances;
+    }
+
+    public double getAccBalance(@NonNull Currency currency) {
+        return accBalances.computeIfAbsent(currency, unused -> 0D);
+    }
+
+    public double getAccBalance(@NonNull String identifier) {
+        return accBalances.keySet().stream()
+            .filter(currency ->
+                currency.getSingular().equalsIgnoreCase(identifier) ||
+                currency.getPlural().equalsIgnoreCase(identifier)
+            )
+            .findAny()
+            .map(accBalances::get)
+            .orElse(0D);
     }
 
     public @NonNull Map<Currency, Double> getAccBalances() {
