@@ -54,14 +54,14 @@ bukkit {
 
 tasks {
     jar {
-        enabled = false
+        archiveClassifier.set("nonshade")
     }
-    build {
+    assemble {
         dependsOn(shadowJar)
     }
     shadowJar {
         minimize()
-        archiveFileName.set("${project.name}-${project.version}.jar")
+        archiveFileName.set("${rootProject.name}-${project.version}.jar")
         archiveClassifier.set("")
         sequenceOf(
             "net.kyori",
@@ -74,7 +74,7 @@ tasks {
             "org.intellij",
             "org.slf4j"
         ).forEach {
-            relocate(it, "me.xanium.gemseconomy.lib.$it")
+            relocate(it, "me.xanium.gemseconomy.shade.$it")
         }
     }
     task("deployToServer") {
@@ -90,9 +90,8 @@ tasks {
 publishing {
     publications {
         create<MavenPublication>("maven") {
-            artifact(tasks["javadocJar"])
-            artifact(tasks["sourcesJar"])
-            artifact(tasks["shadowJar"])
+            artifactId = rootProject.name
+            from(components["java"])
         }
     }
 }

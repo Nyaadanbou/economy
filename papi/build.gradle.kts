@@ -20,8 +20,7 @@ dependencies {
 
 tasks {
     jar {
-        archiveFileName.set("Expansion-${project.name}.jar")
-        archiveClassifier.set("")
+        archiveFileName.set("Expansion-${rootProject.name.toLowerCase()}.jar")
     }
     task("deployToServer") {
         dependsOn(build)
