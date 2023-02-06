@@ -70,9 +70,9 @@ public class GemsEconomyExpansion extends PlaceholderExpansion {
             return String.valueOf(Math.round(account.getBalance(defaultCurrency)));
         } else if (params.equals("balance_default_formatted")) {
             return defaultCurrency.format(account.getBalance(defaultCurrency));
-        } else if (params.startsWith("balance_") || !params.startsWith("balance_default")) {
-            String[] currencyArray = params.split("_");
-            String currencyId = currencyArray[1];
+        } else if (params.startsWith("balance_")) {
+            String[] parts = params.split("_");
+            String currencyId = parts[1];
             Currency currency = this.economy.getCurrencyManager().getCurrency(currencyId);
             if (currency == null)
                 return "";
@@ -81,9 +81,9 @@ public class GemsEconomyExpansion extends PlaceholderExpansion {
             } else {
                 return String.valueOf(Math.round(account.getBalance(currency)));
             }
-        } else if (params.startsWith("balance_acc_")) {
-            String[] currencyArray = params.split("_");
-            String currencyId = currencyArray[2];
+        } else if (params.startsWith("balanceacc_")) {
+            String[] parts = params.split("_");
+            String currencyId = parts[1];
             return String.valueOf(account.getAccBalance(currencyId));
         }
 

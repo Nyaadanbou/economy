@@ -41,7 +41,7 @@ dependencies {
 
 bukkit {
     main = "me.xanium.gemseconomy.GemsEconomy"
-    name = project.name
+    name = rootProject.name
     version = "${project.version}"
     apiVersion = "1.17"
     authors = listOf("Xanium", "Nailm")
