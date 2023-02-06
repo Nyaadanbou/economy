@@ -43,6 +43,10 @@ public class UpdateForwarder {
         out.writeUTF(type.name());
         out.writeUTF(uuid.toString());
 
+        if (GemsEconomy.getInstance().isDebug()) {
+            UtilServer.consoleLog(CHANNEL_NAME + " - Sending update message: " + type + " - " + uuid);
+        }
+
         bungee.forward(BungeeCord.ALL_SERVERS, CHANNEL_NAME, out);
     }
 
@@ -51,7 +55,7 @@ public class UpdateForwarder {
         UUID uuid = UUID.fromString(in.readUTF());
 
         if (plugin.isDebug())
-            UtilServer.consoleLog(CHANNEL_NAME + " - Received: " + type + " = " + uuid);
+            UtilServer.consoleLog(CHANNEL_NAME + " - Received: " + type + " - " + uuid);
 
         switch (type) {
             case CURRENCY -> {
