@@ -140,7 +140,7 @@ public final class MySQLStorage extends DataStorage {
             List<String> accountTableColumns = structure.get(this.accountsTable);
             if (accountTableColumns != null && !accountTableColumns.isEmpty()) {
                 if (!accountTableColumns.contains("balance_data")) {
-                    stmt = connection.prepareStatement("ALTER TABLE " + this.accountsTable + " ADD balance_data LONGTEXT NULL DEFAULT NULL AFTER `payable`;");
+                    stmt = connection.prepareStatement("ALTER TABLE " + this.accountsTable + " ADD balance_data LONGTEXT NULL DEFAULT '{}' AFTER `payable`;");
                     stmt.execute();
 
                     stmt = connection.prepareStatement("ALTER TABLE " + this.accountsTable + " DROP COLUMN `id`");
@@ -161,7 +161,7 @@ public final class MySQLStorage extends DataStorage {
                     UtilServer.consoleLog("Altered tables " + this.accountsTable + " to support the new balance data saving");
                 }
                 if (!accountTableColumns.contains("balance_acc")) {
-                    stmt = connection.prepareStatement("ALTER TABLE " + this.accountsTable + " ADD balance_acc LONGTEXT NULL DEFAULT NULL AFTER `balance_data`;");
+                    stmt = connection.prepareStatement("ALTER TABLE " + this.accountsTable + " ADD balance_acc LONGTEXT NULL DEFAULT '{}' AFTER `balance_data`;");
                     stmt.execute();
 
                     UtilServer.consoleLog("Altered table " + this.accountsTable + " to support the records of accumulated balance");
