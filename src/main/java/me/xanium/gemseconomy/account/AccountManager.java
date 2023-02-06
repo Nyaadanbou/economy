@@ -14,7 +14,6 @@ import com.google.common.cache.LoadingCache;
 import me.lucko.helper.profiles.OfflineModeProfiles;
 import me.xanium.gemseconomy.GemsEconomy;
 import me.xanium.gemseconomy.bungee.UpdateType;
-import me.xanium.gemseconomy.currency.Currency;
 import me.xanium.gemseconomy.data.DataStorage;
 import org.bukkit.OfflinePlayer;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -64,9 +63,9 @@ public class AccountManager {
         Account account = new Account(uniqueId, nickname);
 
         // Let's set default balance for this new Account
-        for (final Currency currency : plugin.getCurrencyManager().getCurrencies()) {
-            account.setBalance(currency, currency.getDefaultBalance());
-        }
+        plugin.getCurrencyManager().getCurrencies().forEach(currency ->
+            account.setBalance(currency, currency.getDefaultBalance())
+        );
 
         cacheAccount(account); // Cache it
 
@@ -91,9 +90,9 @@ public class AccountManager {
         Account account = new Account(player.getUniqueId(), player.getName());
 
         // Let's set default balance for this new Account
-        for (final Currency currency : plugin.getCurrencyManager().getCurrencies()) {
-            account.setBalance(currency, currency.getDefaultBalance());
-        }
+        plugin.getCurrencyManager().getCurrencies().forEach(currency ->
+            account.setBalance(currency, currency.getDefaultBalance())
+        );
 
         cacheAccount(account); // Cache it
 
@@ -118,9 +117,9 @@ public class AccountManager {
         Account account = new Account(uuid, null);
 
         // Let's set default balance for this new Account
-        for (final Currency currency : plugin.getCurrencyManager().getCurrencies()) {
-            account.setBalance(currency, currency.getDefaultBalance());
-        }
+        plugin.getCurrencyManager().getCurrencies().forEach(currency ->
+            account.setBalance(currency, currency.getDefaultBalance())
+        );
 
         cacheAccount(account); // Cache it
 
