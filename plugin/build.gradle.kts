@@ -1,40 +1,21 @@
 import net.minecrell.pluginyml.bukkit.BukkitPluginDescription.PluginLoadOrder.STARTUP
 
 plugins {
-    `java-library`
-    `maven-publish`
+    id("cc.mewcraft.common")
+
+    val indraVersion = "3.0.1"
+    id("net.kyori.indra") version indraVersion
+    id("net.kyori.indra.git") version indraVersion
+
     id("com.github.johnrengelman.shadow") version "7.1.2"
     id("net.minecrell.plugin-yml.bukkit") version "0.5.2"
-    id("net.kyori.indra") version "2.1.1"
-    id("net.kyori.indra.git") version "2.1.1"
 }
 
-group = "me.xanium.gemseconomy"
 version = "1.3.3".decorateVersion()
 description = "A multi-currency economy plugin for spigot servers"
 
 fun lastCommitHash(): String = indraGit.commit()?.name?.substring(0, 7) ?: error("Could not determine commit hash")
 fun String.decorateVersion(): String = if (endsWith("-SNAPSHOT")) "$this+${lastCommitHash()}" else this
-
-repositories {
-    mavenLocal()
-    mavenCentral()
-    maven("https://repo.papermc.io/repository/maven-public/") {
-        content {
-            includeGroup("io.papermc.paper")
-        }
-    }
-    maven("https://jitpack.io") {
-        content {
-            includeGroup("com.github.MilkBowl")
-        }
-    }
-    maven("https://repo.minebench.de") {
-        content {
-            includeGroup("de.themoep.utils")
-        }
-    }
-}
 
 dependencies {
     // Server API
@@ -56,10 +37,6 @@ dependencies {
     val cloudVersion = "1.8.0"
     implementation("cloud.commandframework", "cloud-paper", cloudVersion)
     implementation("cloud.commandframework", "cloud-minecraft-extras", cloudVersion)
-}
-
-indra {
-    javaVersions().target(17)
 }
 
 bukkit {
@@ -118,4 +95,12 @@ publishing {
             artifact(tasks["shadowJar"])
         }
     }
+}
+
+indra {
+    javaVersions().target(17)
+}
+
+java {
+    withSourcesJar()
 }
