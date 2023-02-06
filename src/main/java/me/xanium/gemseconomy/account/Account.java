@@ -75,7 +75,7 @@ public class Account {
         // Update balance
         balances.put(currency, cappedAmount);
         // Accumulate deposited amount
-        accBalances.merge(currency, cappedAmount, Double::sum);
+        accBalances.merge(currency, amount, Double::sum);
         // Save it to database
         GemsEconomy.getInstance().getDataStore().saveAccount(this);
         // Sync between servers
