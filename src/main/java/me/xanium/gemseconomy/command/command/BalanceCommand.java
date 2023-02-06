@@ -3,18 +3,19 @@ package me.xanium.gemseconomy.command.command;
 import cloud.commandframework.Command;
 import me.lucko.helper.utils.annotation.NonnullByDefault;
 import me.xanium.gemseconomy.GemsEconomy;
-import me.xanium.gemseconomy.GemsMessages;
 import me.xanium.gemseconomy.account.Account;
 import me.xanium.gemseconomy.command.GemsCommand;
 import me.xanium.gemseconomy.command.GemsCommands;
 import me.xanium.gemseconomy.command.argument.AccountArgument;
 import me.xanium.gemseconomy.currency.Currency;
-import net.kyori.adventure.text.Component;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import java.util.List;
 import java.util.Optional;
+
+import static me.xanium.gemseconomy.GemsMessages.ACCOUNT_REPLACEMENT;
+import static me.xanium.gemseconomy.GemsMessages.AMOUNT_REPLACEMENT;
 
 public class BalanceCommand extends GemsCommand {
 
@@ -67,22 +68,21 @@ public class BalanceCommand extends GemsCommand {
         } else if (currencies == 1) {
             Currency currency = GemsEconomy.getInstance().getCurrencyManager().getDefaultCurrency();
             double balance = account.getBalance(currency);
-            Component balanceMessage = GemsEconomy.lang()
+            GemsEconomy.lang().sendComponent(sender, GemsEconomy.lang()
                 .component(sender, "msg_balance_current")
-                .replaceText(GemsMessages.ACCOUNT_REPLACEMENT.apply(account.getNickname()))
-                .replaceText(GemsMessages.AMOUNT_REPLACEMENT.apply(currency, balance));
-            GemsEconomy.lang().sendComponent(sender, balanceMessage);
+                .replaceText(ACCOUNT_REPLACEMENT.apply(account.getNickname()))
+                .replaceText(AMOUNT_REPLACEMENT.apply(currency, balance))
+            );
         } else {
             GemsEconomy.lang().sendComponent(sender, "msg_balance_multiple", "account", account.getNickname());
-            for (Currency currency : GemsEconomy.getInstance().getCurrencyManager().getCurrencies()) {
+            account.getBalances().forEach((currency, balance) -> {
                 if (sender.hasPermission("gemseconomy.currency.balance." + currency.getSingular())) {
-                    double balance = account.getBalance(currency);
                     GemsEconomy.lang().sendComponent(sender, GemsEconomy.lang()
                         .component(sender, "msg_balance_list")
-                        .replaceText(GemsMessages.AMOUNT_REPLACEMENT.apply(currency, balance))
+                        .replaceText(AMOUNT_REPLACEMENT.apply(currency, balance))
                     );
                 }
-            }
+            });
         }
     }
 

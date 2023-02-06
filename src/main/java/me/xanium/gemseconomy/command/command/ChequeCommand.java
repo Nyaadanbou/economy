@@ -3,7 +3,6 @@ package me.xanium.gemseconomy.command.command;
 import cloud.commandframework.Command;
 import me.lucko.helper.utils.annotation.NonnullByDefault;
 import me.xanium.gemseconomy.GemsEconomy;
-import me.xanium.gemseconomy.GemsMessages;
 import me.xanium.gemseconomy.account.Account;
 import me.xanium.gemseconomy.command.GemsCommand;
 import me.xanium.gemseconomy.command.GemsCommands;
@@ -18,6 +17,7 @@ import org.bukkit.inventory.ItemStack;
 import java.util.List;
 
 import static java.util.Objects.requireNonNull;
+import static me.xanium.gemseconomy.GemsMessages.CURRENCY_REPLACEMENT;
 
 public class ChequeCommand extends GemsCommand {
     public ChequeCommand(GemsEconomy plugin, GemsCommands manager) {
@@ -108,7 +108,7 @@ public class ChequeCommand extends GemsCommand {
         } else {
             GemsEconomy.lang().sendComponent(player, GemsEconomy.lang()
                 .component(player, "err_insufficient_funds")
-                .replaceText(GemsMessages.CURRENCY_REPLACEMENT.apply(currency.getDisplayName()))
+                .replaceText(CURRENCY_REPLACEMENT.apply(currency.getDisplayName()))
             );
         }
     }

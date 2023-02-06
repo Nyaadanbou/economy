@@ -3,7 +3,6 @@ package me.xanium.gemseconomy.command.command;
 import cloud.commandframework.Command;
 import me.lucko.helper.utils.annotation.NonnullByDefault;
 import me.xanium.gemseconomy.GemsEconomy;
-import me.xanium.gemseconomy.GemsMessages;
 import me.xanium.gemseconomy.account.Account;
 import me.xanium.gemseconomy.command.GemsCommand;
 import me.xanium.gemseconomy.command.GemsCommands;
@@ -18,6 +17,8 @@ import org.bukkit.entity.Player;
 
 import java.util.Collection;
 import java.util.List;
+
+import static me.xanium.gemseconomy.GemsMessages.*;
 
 public class EconomyCommand extends GemsCommand {
 
@@ -107,7 +108,7 @@ public class EconomyCommand extends GemsCommand {
                     GemsEconomy.getInstance().setDebug(!GemsEconomy.getInstance().isDebug());
                     GemsEconomy.lang().sendComponent(sender, GemsEconomy.lang()
                             .component(sender, "msg_debug_status")
-                            .replaceText(GemsMessages.STATUS_REPLACEMENT.apply(GemsEconomy.getInstance().isDebug()))
+                            .replaceText(STATUS_REPLACEMENT.apply(GemsEconomy.getInstance().isDebug()))
                     );
                 })
                 .build();
@@ -128,29 +129,29 @@ public class EconomyCommand extends GemsCommand {
             if (account.withdraw(currency, amount)) {
                 GemsEconomy.lang().sendComponent(sender, GemsEconomy.lang()
                         .component(sender, "msg_eco_taken")
-                        .replaceText(GemsMessages.AMOUNT_REPLACEMENT.apply(currency, amount))
-                        .replaceText(GemsMessages.ACCOUNT_REPLACEMENT.apply(account.getNickname()))
+                        .replaceText(AMOUNT_REPLACEMENT.apply(currency, amount))
+                        .replaceText(ACCOUNT_REPLACEMENT.apply(account.getNickname()))
                 );
             } else {
                 GemsEconomy.lang().sendComponent(sender, GemsEconomy.lang()
                         .component(sender, "err_player_insufficient_funds")
-                        .replaceText(GemsMessages.CURRENCY_REPLACEMENT.apply(currency.getDisplayName()))
-                        .replaceText(GemsMessages.ACCOUNT_REPLACEMENT.apply(account.getNickname()))
+                        .replaceText(CURRENCY_REPLACEMENT.apply(currency.getDisplayName()))
+                        .replaceText(ACCOUNT_REPLACEMENT.apply(account.getNickname()))
                 );
             }
         } else {
             if (account.deposit(currency, amount)) {
                 GemsEconomy.lang().sendComponent(sender, GemsEconomy.lang()
                         .component(sender, "msg_eco_added")
-                        .replaceText(GemsMessages.AMOUNT_REPLACEMENT.apply(currency, amount))
-                        .replaceText(GemsMessages.ACCOUNT_REPLACEMENT.apply(account.getNickname()))
+                        .replaceText(AMOUNT_REPLACEMENT.apply(currency, amount))
+                        .replaceText(ACCOUNT_REPLACEMENT.apply(account.getNickname()))
                 );
                 Player target = Bukkit.getPlayer(account.getUuid());
                 if (target != null && !silent) { // Send message if target player is online
                     GemsEconomy.lang().sendComponent(target, GemsEconomy.lang()
                             .component(target, "msg_received_currency")
-                            .replaceText(GemsMessages.AMOUNT_REPLACEMENT.apply(currency, amount))
-                            .replaceText(GemsMessages.ACCOUNT_REPLACEMENT.apply(GemsEconomy.lang().legacy(target, "msg_console_name")))
+                            .replaceText(AMOUNT_REPLACEMENT.apply(currency, amount))
+                            .replaceText(ACCOUNT_REPLACEMENT.apply(GemsEconomy.lang().legacy(target, "msg_console_name")))
                     );
                 }
             }
@@ -162,8 +163,8 @@ public class EconomyCommand extends GemsCommand {
         account.setBalance(currency, amount);
         GemsEconomy.lang().sendComponent(sender, GemsEconomy.lang()
                 .component(sender, "msg_eco_set")
-                .replaceText(GemsMessages.AMOUNT_REPLACEMENT.apply(currency, amount))
-                .replaceText(GemsMessages.ACCOUNT_REPLACEMENT.apply(account.getNickname()))
+                .replaceText(AMOUNT_REPLACEMENT.apply(currency, amount))
+                .replaceText(ACCOUNT_REPLACEMENT.apply(account.getNickname()))
         );
     }
 

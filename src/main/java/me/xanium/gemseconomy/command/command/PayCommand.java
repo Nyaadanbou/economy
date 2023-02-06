@@ -6,7 +6,6 @@ import cloud.commandframework.bukkit.parsers.selector.MultiplePlayerSelectorArgu
 import me.lucko.helper.Schedulers;
 import me.lucko.helper.utils.annotation.NonnullByDefault;
 import me.xanium.gemseconomy.GemsEconomy;
-import me.xanium.gemseconomy.GemsMessages;
 import me.xanium.gemseconomy.account.Account;
 import me.xanium.gemseconomy.command.GemsCommand;
 import me.xanium.gemseconomy.command.GemsCommands;
@@ -18,6 +17,8 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import java.util.List;
+
+import static me.xanium.gemseconomy.GemsMessages.*;
 
 public class PayCommand extends GemsCommand {
 
@@ -54,7 +55,7 @@ public class PayCommand extends GemsCommand {
             !sender.hasPermission("gemseconomy.command.pay." + currency.getSingular().toLowerCase())) {
             GemsEconomy.lang().sendComponent(sender, GemsEconomy.lang()
                 .component(sender, "msg_pay_no_permission")
-                .replaceText(GemsMessages.CURRENCY_REPLACEMENT.apply(currency.getDisplayName()))
+                .replaceText(CURRENCY_REPLACEMENT.apply(currency.getDisplayName()))
             );
             return;
         }
@@ -62,7 +63,7 @@ public class PayCommand extends GemsCommand {
         if (!currency.isPayable()) {
             GemsEconomy.lang().sendComponent(sender, GemsEconomy.lang()
                 .component(sender, "msg_currency_is_not_payable")
-                .replaceText(GemsMessages.CURRENCY_REPLACEMENT.apply(currency.getDisplayName()))
+                .replaceText(CURRENCY_REPLACEMENT.apply(currency.getDisplayName()))
             );
             return;
         }
@@ -97,7 +98,7 @@ public class PayCommand extends GemsCommand {
         if (!myselfAccount.hasEnough(currency, amount)) {
             GemsEconomy.lang().sendComponent(sender, GemsEconomy.lang()
                 .component(sender, "err_insufficient_funds")
-                .replaceText(GemsMessages.CURRENCY_REPLACEMENT.apply(currency.getDisplayName()))
+                .replaceText(CURRENCY_REPLACEMENT.apply(currency.getDisplayName()))
             );
             return;
         }
@@ -106,8 +107,8 @@ public class PayCommand extends GemsCommand {
         if (targetAccount.testOverflow(currency, amount)) {
             GemsEconomy.lang().sendComponent(sender, GemsEconomy.lang()
                 .component(sender, "msg_currency_overflow")
-                .replaceText(GemsMessages.ACCOUNT_REPLACEMENT.apply(targetAccount.getNickname()))
-                .replaceText(GemsMessages.CURRENCY_REPLACEMENT.apply(currency.getDisplayName()))
+                .replaceText(ACCOUNT_REPLACEMENT.apply(targetAccount.getNickname()))
+                .replaceText(CURRENCY_REPLACEMENT.apply(currency.getDisplayName()))
             );
             return;
         }
@@ -125,13 +126,13 @@ public class PayCommand extends GemsCommand {
 
         GemsEconomy.lang().sendComponent(targetPlayer, GemsEconomy.lang()
             .component(targetPlayer, "msg_received_currency")
-            .replaceText(GemsMessages.ACCOUNT_REPLACEMENT.apply(myselfAccount.getNickname()))
-            .replaceText(GemsMessages.AMOUNT_REPLACEMENT.apply(currency, amount))
+            .replaceText(ACCOUNT_REPLACEMENT.apply(myselfAccount.getNickname()))
+            .replaceText(AMOUNT_REPLACEMENT.apply(currency, amount))
         );
         GemsEconomy.lang().sendComponent(sender, GemsEconomy.lang()
             .component(sender, "msg_paid_currency")
-            .replaceText(GemsMessages.ACCOUNT_REPLACEMENT.apply(targetAccount.getNickname()))
-            .replaceText(GemsMessages.AMOUNT_REPLACEMENT.apply(currency, amount))
+            .replaceText(ACCOUNT_REPLACEMENT.apply(targetAccount.getNickname()))
+            .replaceText(AMOUNT_REPLACEMENT.apply(currency, amount))
         );
     }
 

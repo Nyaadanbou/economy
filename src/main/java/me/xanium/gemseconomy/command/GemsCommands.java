@@ -133,6 +133,7 @@ public class GemsCommands extends PaperCommandManager<CommandSender> {
         Stream.of(
             new InternalCommand(plugin, this),
             new BalanceCommand(plugin, this),
+            new BalanceAccCommand(plugin, this),
             new BalanceTopCommand(plugin, this),
             new ChequeCommand(plugin, this),
             new CurrencyCommand(plugin, this),

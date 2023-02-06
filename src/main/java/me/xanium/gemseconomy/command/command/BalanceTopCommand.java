@@ -4,7 +4,6 @@ import cloud.commandframework.Command;
 import cloud.commandframework.arguments.standard.IntegerArgument;
 import me.lucko.helper.utils.annotation.NonnullByDefault;
 import me.xanium.gemseconomy.GemsEconomy;
-import me.xanium.gemseconomy.GemsMessages;
 import me.xanium.gemseconomy.command.GemsCommand;
 import me.xanium.gemseconomy.command.GemsCommands;
 import me.xanium.gemseconomy.command.argument.CurrencyArgument;
@@ -14,6 +13,8 @@ import org.bukkit.command.CommandSender;
 
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
+
+import static me.xanium.gemseconomy.GemsMessages.*;
 
 public class BalanceTopCommand extends GemsCommand {
 
@@ -57,7 +58,7 @@ public class BalanceTopCommand extends GemsCommand {
 
             GemsEconomy.lang().sendComponent(sender, GemsEconomy.lang()
                 .component(sender, "msg_balance_top_header")
-                .replaceText(GemsMessages.CURRENCY_REPLACEMENT.apply(currency.getDisplayName()))
+                .replaceText(CURRENCY_REPLACEMENT.apply(currency.getDisplayName()))
                 .replaceText(config -> config.matchLiteral("{page}").replacement(Integer.toString(pageNum)))
             );
 
@@ -66,8 +67,8 @@ public class BalanceTopCommand extends GemsCommand {
                 double balance = entry.getAmount();
                 GemsEconomy.lang().sendComponent(sender, GemsEconomy.lang()
                     .component(sender, "msg_balance_top_entry")
-                    .replaceText(GemsMessages.AMOUNT_REPLACEMENT.apply(currency, balance))
-                    .replaceText(GemsMessages.ACCOUNT_REPLACEMENT.apply(entry.getName()))
+                    .replaceText(AMOUNT_REPLACEMENT.apply(currency, balance))
+                    .replaceText(ACCOUNT_REPLACEMENT.apply(entry.getName()))
                     .replaceText(config -> config.matchLiteral("{index}").replacement(index.toString()))
                 );
                 index.incrementAndGet();
@@ -77,7 +78,7 @@ public class BalanceTopCommand extends GemsCommand {
             } else {
                 GemsEconomy.lang().sendComponent(sender, GemsEconomy.lang()
                     .component(sender, "msg_balance_top_next")
-                    .replaceText(GemsMessages.CURRENCY_REPLACEMENT.apply(currency.getDisplayName()))
+                    .replaceText(CURRENCY_REPLACEMENT.apply(currency.getDisplayName()))
                     .replaceText(config -> config.matchLiteral("{page}").replacement(Integer.toString(pageNum + 1)))
                 );
             }
