@@ -30,10 +30,7 @@ public class VaultHandler {
                 this.economy = new GEVaultHook();
             }
 
-            if(plugin.getCurrencyManager().getDefaultCurrency() == null){
-                UtilServer.consoleLog("No Default currency found. Vault linking disabled!");
-                return;
-            }
+            plugin.getCurrencyManager().getDefaultCurrency();
 
             ServicesManager sm = Bukkit.getServicesManager();
             sm.register(Economy.class, this.economy, plugin, ServicePriority.Highest);
