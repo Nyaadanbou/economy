@@ -28,7 +28,7 @@ public class Account {
     private final @NonNull UUID uuid;
     private @MonotonicNonNull String nickname;
     private final @NonNull Map<Currency, Double> balances = new ConcurrentHashMap<>();
-    private final @NonNull Map<Currency, Double> accBalances = new ConcurrentHashMap<>(); // TODO record accumulated deposition
+    private final @NonNull Map<Currency, Double> accBalances = new ConcurrentHashMap<>();
     private boolean canReceiveCurrency = true;
 
     public Account(@NonNull UUID uuid, @Nullable String nickname) {
@@ -122,6 +122,10 @@ public class Account {
 
     public @NonNull Map<Currency, Double> getBalances() {
         return balances;
+    }
+
+    public @NonNull Map<Currency, Double> getAccBalances() {
+        return accBalances;
     }
 
     public @NonNull String getDisplayName() {

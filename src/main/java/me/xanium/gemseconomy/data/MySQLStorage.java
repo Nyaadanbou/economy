@@ -69,6 +69,10 @@ public final class MySQLStorage extends DataStorage {
         hikariConfig.addDataSourceProperty("userServerPrepStmts", "true");
     }
 
+    public HikariDataSource getHikari() {
+        return hikari;
+    }
+
     private String getTablePrefix() {
         return requireNonNull(GemsEconomy.getInstance().getConfig().getString("mysql.prefix"));
     }
@@ -181,29 +185,22 @@ public final class MySQLStorage extends DataStorage {
 
         try (Connection connection = getHikari().getConnection()) {
             PreparedStatement stmt = connection.prepareStatement("SELECT * FROM " + this.currencyTable);
-            ResultSet set = stmt.executeQuery();
-            while (set.next()) {
-                UUID uuid = UUID.fromString(set.getString("uuid"));
-                String singular = set.getString("name_singular");
-                String plural = set.getString("name_plural");
-                double defaultBalance = set.getDouble("default_balance");
-                double maxBalance = set.getDouble("max_balance");
-                String symbol = set.getString("symbol");
-                boolean decimals = set.getInt("decimals_supported") == 1;
-                boolean isDefault = set.getInt("is_default") == 1;
-                boolean payable = set.getInt("payable") == 1;
-                TextColor color = requireNonNullElse(TextColor.fromHexString(set.getString("color")), NamedTextColor.WHITE);
-                double exchangeRate = set.getDouble("exchange_rate");
+            ResultSet resultSet = stmt.executeQuery();
+            while (resultSet.next()) {
+                UUID uuid = UUID.fromString(resultSet.getString("uuid"));
+                String singular = resultSet.getString("name_singular");
+                String plural = resultSet.getString("name_plural");
+                double defaultBalance = resultSet.getDouble("default_balance");
+                double maxBalance = resultSet.getDouble("max_balance");
+                String symbol = resultSet.getString("symbol");
+                boolean decimals = resultSet.getInt("decimals_supported") == 1;
+                boolean isDefault = resultSet.getInt("is_default") == 1;
+                boolean payable = resultSet.getInt("payable") == 1;
+                TextColor color = requireNonNullElse(TextColor.fromHexString(resultSet.getString("color")), NamedTextColor.WHITE);
+                double exchangeRate = resultSet.getDouble("exchange_rate");
 
                 Currency currency = new Currency(uuid, singular, plural);
-                currency.setDefaultBalance(defaultBalance);
-                currency.setMaxBalance(maxBalance);
-                currency.setSymbol(symbol);
-                currency.setDecimalSupported(decimals);
-                currency.setDefaultCurrency(isDefault);
-                currency.setPayable(payable);
-                currency.setColor(color);
-                currency.setExchangeRate(exchangeRate);
+                loadCurrencyFromDatabase(currency, defaultBalance, maxBalance, symbol, decimals, isDefault, payable, color, exchangeRate);
 
                 plugin.getCurrencyManager().add(currency);
 
@@ -221,25 +218,18 @@ public final class MySQLStorage extends DataStorage {
         try (Connection connection = getHikari().getConnection()) {
             PreparedStatement stmt = connection.prepareStatement("SELECT * FROM " + this.currencyTable + " WHERE uuid = ? LIMIT 1;");
             stmt.setString(1, currency.getUuid().toString());
-            ResultSet set = stmt.executeQuery();
-            while (set.next()) {
-                double defaultBalance = set.getDouble("default_balance");
-                double maxBalance = set.getDouble("max_balance");
-                String symbol = set.getString("symbol");
-                boolean decimals = set.getInt("decimals_supported") == 1;
-                boolean isDefault = set.getInt("is_default") == 1;
-                boolean payable = set.getInt("payable") == 1;
-                TextColor color = requireNonNullElse(TextColor.fromHexString(set.getString("color")), NamedTextColor.WHITE);
-                double exchangeRate = set.getDouble("exchange_rate");
+            ResultSet resultSet = stmt.executeQuery();
+            while (resultSet.next()) {
+                double defaultBalance = resultSet.getDouble("default_balance");
+                double maxBalance = resultSet.getDouble("max_balance");
+                String symbol = resultSet.getString("symbol");
+                boolean decimals = resultSet.getInt("decimals_supported") == 1;
+                boolean isDefault = resultSet.getInt("is_default") == 1;
+                boolean payable = resultSet.getInt("payable") == 1;
+                TextColor color = requireNonNullElse(TextColor.fromHexString(resultSet.getString("color")), NamedTextColor.WHITE);
+                double exchangeRate = resultSet.getDouble("exchange_rate");
 
-                currency.setDefaultBalance(defaultBalance);
-                currency.setMaxBalance(maxBalance);
-                currency.setSymbol(symbol);
-                currency.setDecimalSupported(decimals);
-                currency.setDefaultCurrency(isDefault);
-                currency.setPayable(payable);
-                currency.setColor(color);
-                currency.setExchangeRate(exchangeRate);
+                loadCurrencyFromDatabase(currency, defaultBalance, maxBalance, symbol, decimals, isDefault, payable, color, exchangeRate);
 
                 UtilServer.consoleLog("Updated currency: " + currency.getPlural());
             }
@@ -351,27 +341,12 @@ public final class MySQLStorage extends DataStorage {
             // Note: string comparisons are case-insensitive by default in the configuration of SQL server database
             PreparedStatement stmt = connection.prepareStatement("SELECT * FROM " + this.accountsTable + " WHERE nickname = ? LIMIT 1");
             stmt.setString(1, name);
-            ResultSet set = stmt.executeQuery();
-            if (set.next()) {
-                account = new Account(UUID.fromString(set.getString("uuid")), set.getString("nickname"));
-                account.setCanReceiveCurrency(set.getInt("payable") == 1);
-
-                String json = set.getString("balance_data");
-
-                JSONParser parser = new JSONParser();
-                Object obj = parser.parse(json);
-                JSONObject data = (JSONObject) obj;
-
-                for (Currency currency : plugin.getCurrencyManager().getCurrencies()) {
-                    Number amount = (Number) data.get(currency.getUuid().toString());
-                    if (amount != null) {
-                        account.getBalances().put(currency, amount.doubleValue());
-                    } else {
-                        account.getBalances().put(currency, currency.getDefaultBalance());
-                    }
-                }
+            ResultSet resultSet = stmt.executeQuery();
+            if (resultSet.next()) {
+                account = new Account(UUID.fromString(resultSet.getString("uuid")), resultSet.getString("nickname"));
+                loadAccountFromDatabase(account, resultSet);
             }
-            set.close();
+            resultSet.close();
         } catch (SQLException | ParseException e) {
             e.printStackTrace();
         }
@@ -386,27 +361,12 @@ public final class MySQLStorage extends DataStorage {
         try (Connection connection = getHikari().getConnection()) {
             PreparedStatement stmt = connection.prepareStatement("SELECT * FROM " + this.accountsTable + " WHERE uuid = ? LIMIT 1");
             stmt.setString(1, uuid.toString());
-            ResultSet set = stmt.executeQuery();
-            if (set.next()) {
-                account = new Account(uuid, set.getString("nickname"));
-                account.setCanReceiveCurrency(set.getInt("payable") == 1);
-
-                String json = set.getString("balance_data");
-
-                JSONParser parser = new JSONParser();
-                Object obj = parser.parse(json);
-                JSONObject data = (JSONObject) obj;
-
-                for (Currency currency : plugin.getCurrencyManager().getCurrencies()) {
-                    Number amount = (Number) data.get(currency.getUuid().toString());
-                    if (amount != null) {
-                        account.getBalances().put(currency, amount.doubleValue());
-                    } else {
-                        account.getBalances().put(currency, currency.getDefaultBalance());
-                    }
-                }
+            ResultSet resultSet = stmt.executeQuery();
+            if (resultSet.next()) {
+                account = new Account(uuid, resultSet.getString("nickname"));
+                loadAccountFromDatabase(account, resultSet);
             }
-            set.close();
+            resultSet.close();
         } catch (SQLException | ParseException e) {
             e.printStackTrace();
         }
@@ -433,47 +393,13 @@ public final class MySQLStorage extends DataStorage {
 
     @Override
     public void createAccount(final @NonNull Account account) {
-        try (Connection connection = getHikari().getConnection()) {
-            PreparedStatement stmt = connection.prepareStatement(SAVE_ACCOUNT);
-
-            stmt.setString(1, account.getDisplayName()); // write nickname
-            stmt.setString(2, account.getUuid().toString()); // write uuid
-            stmt.setInt(3, account.canReceiveCurrency() ? 1 : 0); // write payable
-
-            JSONObject obj = new JSONObject();
-            account.getBalances().forEach((currency, balance) -> obj.put(currency.getUuid().toString(), balance)); // write balance data
-            String json = obj.toJSONString();
-            stmt.setString(4, json);
-
-            stmt.execute();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-
+        saveAccountToDatabase(account);
         UtilServer.consoleLog("Account created and saved: " + account.getNickname() + " [" + account.getUuid() + "]");
     }
 
     @Override
     public void saveAccount(final @NonNull Account account) {
-        try (Connection connection = getHikari().getConnection()) {
-            PreparedStatement stmt = connection.prepareStatement(SAVE_ACCOUNT);
-
-            stmt.setString(1, account.getDisplayName()); // write nickname
-            stmt.setString(2, account.getUuid().toString()); // write uuid
-            stmt.setInt(3, account.canReceiveCurrency() ? 1 : 0); // write payable
-
-            JSONObject obj = new JSONObject();
-            for (Currency currency : plugin.getCurrencyManager().getCurrencies()) {
-                obj.put(currency.getUuid().toString(), account.getBalance(currency));
-            }
-            String json = obj.toJSONString();
-            stmt.setString(4, json);
-
-            stmt.execute();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-
+        saveAccountToDatabase(account);
         UtilServer.consoleLog("Account saved: " + account.getNickname() + " [" + account.getUuid() + "]");
     }
 
@@ -482,7 +408,8 @@ public final class MySQLStorage extends DataStorage {
         deleteAccount(account.getUuid());
     }
 
-    @Override public void deleteAccount(final @NonNull UUID uuid) {
+    @Override
+    public void deleteAccount(final @NonNull UUID uuid) {
         try (Connection connection = getHikari().getConnection()) {
             PreparedStatement stmt = connection.prepareStatement("DELETE FROM " + this.accountsTable + " WHERE uuid = ? LIMIT 1");
             stmt.setString(1, uuid.toString());
@@ -494,7 +421,8 @@ public final class MySQLStorage extends DataStorage {
         }
     }
 
-    @Override public void deleteAccount(final @NonNull String name) {
+    @Override
+    public void deleteAccount(final @NonNull String name) {
         try (Connection connection = getHikari().getConnection()) {
             PreparedStatement stmt = connection.prepareStatement("DELETE FROM " + this.accountsTable + " WHERE nickname = ? LIMIT 1");
             stmt.setString(1, name);
@@ -506,8 +434,93 @@ public final class MySQLStorage extends DataStorage {
         }
     }
 
-    public HikariDataSource getHikari() {
-        return hikari;
+    /**
+     * Common logics of saving an Account to database.
+     *
+     * @param account the Account to save to database
+     */
+    @SuppressWarnings("unchecked")
+    private void saveAccountToDatabase(final @NonNull Account account) {
+        try (Connection connection = getHikari().getConnection()) {
+            PreparedStatement stmt = connection.prepareStatement(SAVE_ACCOUNT);
+
+            stmt.setString(1, account.getDisplayName()); // write nickname
+            stmt.setString(2, account.getUuid().toString()); // write uuid
+            stmt.setInt(3, account.canReceiveCurrency() ? 1 : 0); // write payable
+
+            { // Write balance
+                JSONObject obj = new JSONObject();
+                account.getBalances().forEach((currency, balance) -> obj.put(currency.getUuid().toString(), balance));
+                stmt.setString(4, obj.toJSONString());
+            }
+
+            { // Write accumulated balance
+                JSONObject obj = new JSONObject();
+                account.getAccBalances().forEach((currency, balance) -> obj.put(currency.getUuid().toString(), balance));
+                stmt.setString(5, obj.toJSONString());
+            }
+
+            stmt.execute();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * Common logics of loading an Account from database.
+     *
+     * @param account the Account to be loaded
+     */
+    private void loadAccountFromDatabase(final Account account, final ResultSet resultSet) throws SQLException, ParseException {
+        account.setCanReceiveCurrency(resultSet.getInt("payable") == 1);
+
+        String balanceDataRaw = resultSet.getString("balance_data");
+        String balanceAccRaw = resultSet.getString("balance_acc");
+
+        JSONParser parser = new JSONParser();
+        JSONObject balanceDataJson = (JSONObject) parser.parse(balanceDataRaw);
+        JSONObject balanceAccJson = (JSONObject) parser.parse(balanceAccRaw);
+
+        for (Currency currency : plugin.getCurrencyManager().getCurrencies()) {
+            // --- Reads balance data
+            Number balance = (Number) balanceDataJson.get(currency.getUuid().toString());
+            if (balance != null) {
+                account.getBalances().put(currency, balance.doubleValue());
+            } else {
+                account.getBalances().put(currency, currency.getDefaultBalance());
+            }
+            // --- Reads accumulated balance data
+            Number accBalance = (Number) balanceAccJson.get(currency.getUuid().toString());
+            if (accBalance != null) {
+                account.getAccBalances().put(currency, accBalance.doubleValue());
+            }
+        }
+    }
+
+    /**
+     * Common logics of loading a Currency from database.
+     *
+     * @param currency the Currency to be loaded.
+     */
+    private void loadCurrencyFromDatabase(
+        final Currency currency,
+        final double defaultBalance,
+        final double maximumBalance,
+        final String symbol,
+        final boolean supportDecimals,
+        final boolean defaultCurrency,
+        final boolean payable,
+        final TextColor color,
+        final double exchangeRate
+    ) {
+        currency.setDefaultBalance(defaultBalance);
+        currency.setMaximumBalance(maximumBalance);
+        currency.setSymbol(symbol);
+        currency.setDecimalSupported(supportDecimals);
+        currency.setDefaultCurrency(defaultCurrency);
+        currency.setPayable(payable);
+        currency.setColor(color);
+        currency.setExchangeRate(exchangeRate);
     }
 
 }

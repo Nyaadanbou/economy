@@ -135,7 +135,7 @@ public class CurrencyCommand extends GemsCommand {
                     CommandSender sender = context.getSender();
                     Currency currency = context.get("currency");
                     double amount = context.get("amount");
-                    currency.setMaxBalance(amount);
+                    currency.setMaximumBalance(amount);
                     plugin.getCurrencyManager().save(currency);
                     GemsEconomy.lang().sendComponent(sender, GemsEconomy.lang()
                             .component(sender, "msg_set_currency_maximum_balance")

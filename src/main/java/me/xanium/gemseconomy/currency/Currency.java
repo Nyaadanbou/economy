@@ -55,7 +55,7 @@ public class Currency {
         this.defaultBalance = defaultBalance;
     }
 
-    public void setMaxBalance(double maxBalance) {
+    public void setMaximumBalance(double maxBalance) {
         this.maxBalance = maxBalance;
     }
 

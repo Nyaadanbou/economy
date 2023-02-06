@@ -29,11 +29,13 @@ public class EconomyListener implements Listener {
         Player player = event.getPlayer();
         if (event.getResult() != PlayerLoginEvent.Result.ALLOWED)
             return;
-        Schedulers.async().run(() -> { // TODO use redis to sync data
+        Schedulers.async().run(() -> {
             if (!plugin.getAccountManager().hasAccount(player))
                 plugin.getAccountManager().createAccount(player); // Create a new Account if it did not exist
 
+            // TODO Sync with redis (so we no longer need this line)
             plugin.getAccountManager().refreshAccount(player.getUniqueId()); // Grabs the latest data from database
+
             Account account = requireNonNull(plugin.getAccountManager().fetchAccount(player)); // Get and cache the Account
 
             String playerName = player.getName();
