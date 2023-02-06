@@ -83,8 +83,8 @@ public class EconomyCommand extends GemsCommand {
                 .handler(context -> {
                     CommandSender sender = context.getSender();
                     Collection<Account> cachedAccounts = GemsEconomy.getInstance().getAccountManager().getCachedAccounts();
-                    for (Account a : cachedAccounts) {
-                        sender.sendMessage("Account: " + a.getNickname());
+                    for (Account account : cachedAccounts) {
+                        sender.sendMessage("Account: " + account.getDisplayName());
                     }
                     sender.sendMessage("Total cached: " + cachedAccounts.size());
                 })
