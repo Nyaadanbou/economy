@@ -25,7 +25,7 @@ dependencies {
     compileOnly("com.zaxxer", "HikariCP", "5.0.1")
 
     // 3rd party plugins
-    compileOnly("me.lucko", "helper", "5.6.13")
+    compileOnlyApi("me.lucko", "helper", "5.6.13")
     compileOnly("me.lucko", "helper-redis", "1.2.0")
     compileOnly("com.github.MilkBowl", "VaultAPI", "1.7") { isTransitive = false }
 
