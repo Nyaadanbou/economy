@@ -2,12 +2,12 @@ package me.xanium.gemseconomy.command;
 
 import me.xanium.gemseconomy.GemsEconomy;
 
-public abstract class GemsCommand {
+public abstract class AbstractCommand {
 
     protected final GemsEconomy plugin;
-    protected final GemsCommands manager;
+    protected final CommandManager manager;
 
-    public GemsCommand(GemsEconomy plugin, GemsCommands manager) {
+    public AbstractCommand(GemsEconomy plugin, CommandManager manager) {
         this.plugin = plugin;
         this.manager = manager;
     }

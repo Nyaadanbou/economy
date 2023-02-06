@@ -4,8 +4,8 @@ import cloud.commandframework.Command;
 import cloud.commandframework.arguments.standard.IntegerArgument;
 import me.lucko.helper.utils.annotation.NonnullByDefault;
 import me.xanium.gemseconomy.GemsEconomy;
-import me.xanium.gemseconomy.command.GemsCommand;
-import me.xanium.gemseconomy.command.GemsCommands;
+import me.xanium.gemseconomy.command.AbstractCommand;
+import me.xanium.gemseconomy.command.CommandManager;
 import me.xanium.gemseconomy.command.argument.CurrencyArgument;
 import me.xanium.gemseconomy.currency.CachedTopListEntry;
 import me.xanium.gemseconomy.currency.Currency;
@@ -16,11 +16,11 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import static me.xanium.gemseconomy.GemsMessages.*;
 
-public class BalanceTopCommand extends GemsCommand {
+public class BalanceTopCommand extends AbstractCommand {
 
     private static final int ACCOUNTS_PER_PAGE = 10;
 
-    public BalanceTopCommand(GemsEconomy plugin, GemsCommands manager) {
+    public BalanceTopCommand(GemsEconomy plugin, CommandManager manager) {
         super(plugin, manager);
     }
 

@@ -4,8 +4,8 @@ import cloud.commandframework.Command;
 import cloud.commandframework.arguments.standard.DoubleArgument;
 import cloud.commandframework.arguments.standard.StringArgument;
 import me.xanium.gemseconomy.GemsEconomy;
-import me.xanium.gemseconomy.command.GemsCommand;
-import me.xanium.gemseconomy.command.GemsCommands;
+import me.xanium.gemseconomy.command.AbstractCommand;
+import me.xanium.gemseconomy.command.CommandManager;
 import me.xanium.gemseconomy.command.argument.AmountArgument;
 import me.xanium.gemseconomy.command.argument.CurrencyArgument;
 import me.xanium.gemseconomy.command.argument.TextColorArgument;
@@ -19,9 +19,9 @@ import java.util.List;
 import static me.xanium.gemseconomy.GemsMessages.CURRENCY_REPLACEMENT;
 import static me.xanium.gemseconomy.GemsMessages.STATUS_REPLACEMENT;
 
-public class CurrencyCommand extends GemsCommand {
+public class CurrencyCommand extends AbstractCommand {
 
-    public CurrencyCommand(GemsEconomy plugin, GemsCommands manager) {
+    public CurrencyCommand(GemsEconomy plugin, CommandManager manager) {
         super(plugin, manager);
     }
 

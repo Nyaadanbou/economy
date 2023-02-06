@@ -29,14 +29,14 @@ import java.util.function.Function;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
-public class GemsCommands extends PaperCommandManager<CommandSender> {
+public class CommandManager extends PaperCommandManager<CommandSender> {
 
     public static final CloudKey<GemsEconomy> PLUGIN = SimpleCloudKey.of("gemseconomy:plugin", TypeToken.get(GemsEconomy.class));
     private static final Component NULL = Component.text("null");
     private static final Pattern SYNTAX_HIGHLIGHT_PATTERN = Pattern.compile("[^\\s\\w\\-]");
     private final Map<String, CommandFlag.Builder<?>> flagRegistry = new HashMap<>();
 
-    public GemsCommands(GemsEconomy plugin) throws Exception {
+    public CommandManager(GemsEconomy plugin) throws Exception {
         super(
             plugin,
             AsynchronousCommandExecutionCoordinator.<CommandSender>builder().build(),
@@ -139,7 +139,7 @@ public class GemsCommands extends PaperCommandManager<CommandSender> {
             new CurrencyCommand(plugin, this),
             new EconomyCommand(plugin, this),
             new PayCommand(plugin, this)
-        ).forEach(GemsCommand::register);
+        ).forEach(AbstractCommand::register);
     }
 
     public CommandFlag.Builder<?> getFlag(final String name) {

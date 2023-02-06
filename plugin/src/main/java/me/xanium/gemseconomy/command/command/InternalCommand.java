@@ -2,15 +2,15 @@ package me.xanium.gemseconomy.command.command;
 
 import cloud.commandframework.Command;
 import me.xanium.gemseconomy.GemsEconomy;
-import me.xanium.gemseconomy.command.GemsCommand;
-import me.xanium.gemseconomy.command.GemsCommands;
+import me.xanium.gemseconomy.command.AbstractCommand;
+import me.xanium.gemseconomy.command.CommandManager;
 import org.bukkit.command.CommandSender;
 
 import java.util.List;
 
-public class InternalCommand extends GemsCommand {
+public class InternalCommand extends AbstractCommand {
 
-    public InternalCommand(GemsEconomy plugin, GemsCommands manager) {
+    public InternalCommand(GemsEconomy plugin, CommandManager manager) {
         super(plugin, manager);
     }
 

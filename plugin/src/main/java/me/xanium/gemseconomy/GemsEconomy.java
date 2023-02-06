@@ -13,7 +13,7 @@ import me.xanium.gemseconomy.account.AccountManager;
 import me.xanium.gemseconomy.api.GemsEconomyAPI;
 import me.xanium.gemseconomy.bungee.UpdateForwarder;
 import me.xanium.gemseconomy.cheque.ChequeManager;
-import me.xanium.gemseconomy.command.GemsCommands;
+import me.xanium.gemseconomy.command.CommandManager;
 import me.xanium.gemseconomy.currency.Currency;
 import me.xanium.gemseconomy.currency.CurrencyManager;
 import me.xanium.gemseconomy.data.DataStorage;
@@ -116,7 +116,7 @@ public class GemsEconomy extends ExtendedJavaPlugin {
         }
 
         try {
-            new GemsCommands(this);
+            new CommandManager(this);
         } catch (Exception e) {
             getLogger().log(Level.SEVERE, "Failed to initialize commands", e);
             setEnabled(false);

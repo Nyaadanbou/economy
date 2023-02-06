@@ -4,8 +4,8 @@ import cloud.commandframework.Command;
 import me.lucko.helper.utils.annotation.NonnullByDefault;
 import me.xanium.gemseconomy.GemsEconomy;
 import me.xanium.gemseconomy.account.Account;
-import me.xanium.gemseconomy.command.GemsCommand;
-import me.xanium.gemseconomy.command.GemsCommands;
+import me.xanium.gemseconomy.command.AbstractCommand;
+import me.xanium.gemseconomy.command.CommandManager;
 import me.xanium.gemseconomy.command.argument.AccountArgument;
 import me.xanium.gemseconomy.currency.Currency;
 import org.bukkit.command.CommandSender;
@@ -17,9 +17,9 @@ import java.util.Optional;
 import static me.xanium.gemseconomy.GemsMessages.ACCOUNT_REPLACEMENT;
 import static me.xanium.gemseconomy.GemsMessages.AMOUNT_REPLACEMENT;
 
-public class BalanceAccCommand extends GemsCommand {
+public class BalanceAccCommand extends AbstractCommand {
 
-    public BalanceAccCommand(GemsEconomy plugin, GemsCommands manager) {
+    public BalanceAccCommand(GemsEconomy plugin, CommandManager manager) {
         super(plugin, manager);
     }
 
