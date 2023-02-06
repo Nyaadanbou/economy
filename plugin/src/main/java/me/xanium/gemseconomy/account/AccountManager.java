@@ -16,6 +16,7 @@ import me.xanium.gemseconomy.GemsEconomy;
 import me.xanium.gemseconomy.bungee.UpdateType;
 import me.xanium.gemseconomy.data.DataStorage;
 import org.bukkit.OfflinePlayer;
+import org.bukkit.entity.Player;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
@@ -265,6 +266,26 @@ public class AccountManager {
      */
     public @NonNull Collection<Account> getOfflineAccounts() {
         return plugin.getDataStore().getOfflineAccounts();
+    }
+
+    @Deprecated
+    public @Nullable Account getAccount(@NonNull Player player) {
+        return fetchAccount(player.getUniqueId());
+    }
+
+    @Deprecated
+    public @Nullable Account getAccount(@NonNull OfflinePlayer player) {
+        return fetchAccount(player.getUniqueId());
+    }
+
+    @Deprecated
+    public @Nullable Account getAccount(@NonNull UUID uuid) {
+        return fetchAccount(uuid);
+    }
+
+    @Deprecated
+    public @Nullable Account getAccount(@NonNull String name) {
+        return fetchAccount(name);
     }
 
 }
