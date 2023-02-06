@@ -91,8 +91,8 @@ public abstract class DataStorage {
     /**
      * Updates given Currency from database.
      * <p>
-     * This will load the Currency data from database, then modify the states of given Currency so that its internal
-     * states are synced with the data in database.
+     * This will load the Currency data from database, then modify the states of given Currency object so that its
+     * internal states are synced with the data in database.
      *
      * @param currency the Currency to update
      */

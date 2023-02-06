@@ -76,8 +76,8 @@ public class CurrencyManager {
 
         add(currency);
 
-        plugin.getDataStore().saveCurrency(currency); // TODO sync creation between servers
-        plugin.getUpdateForwarder().sendUpdateMessage(UpdateType.CURRENCY, currency.getUuid().toString());
+        plugin.getDataStore().saveCurrency(currency); // TODO sync account creation between servers
+        plugin.getUpdateForwarder().sendUpdateMessage(UpdateType.CURRENCY, currency.getUuid());
 
         return currency;
     }
@@ -89,8 +89,8 @@ public class CurrencyManager {
     }
 
     public void save(Currency currency) {
-        plugin.getDataStore().saveCurrency(currency); // TODO sync saving between servers
-        plugin.getUpdateForwarder().sendUpdateMessage(UpdateType.CURRENCY, currency.getUuid().toString());
+        plugin.getDataStore().saveCurrency(currency); // TODO sync account saving between servers
+        plugin.getUpdateForwarder().sendUpdateMessage(UpdateType.CURRENCY, currency.getUuid());
     }
 
     /**
@@ -101,8 +101,8 @@ public class CurrencyManager {
     public void clear(Currency currency) {
         plugin.getAccountManager().getOfflineAccounts().forEach(account -> {
             account.getBalances().put(currency, 0D);
-            plugin.getDataStore().saveAccount(account);
-            plugin.getUpdateForwarder().sendUpdateMessage(UpdateType.ACCOUNT, account.getUuid().toString()); // TODO sync clear between servers
+            plugin.getDataStore().saveAccount(account); // TODO sync clearing between servers
+            plugin.getUpdateForwarder().sendUpdateMessage(UpdateType.ACCOUNT, account.getUuid());
         });
     }
 
@@ -120,16 +120,16 @@ public class CurrencyManager {
             .getOfflineAccounts()
             .forEach(account -> {
                 account.getBalances().remove(currency);
-                plugin.getDataStore().saveAccount(account);
-                plugin.getUpdateForwarder().sendUpdateMessage(UpdateType.ACCOUNT, account.getUuid().toString()); // TODO sync deletion between servers
+                plugin.getDataStore().saveAccount(account); // TODO sync account deletion between servers
+                plugin.getUpdateForwarder().sendUpdateMessage(UpdateType.ACCOUNT, account.getUuid());
             });
 
         // Remove this currency from this manager
         currencies.remove(currency);
 
         // Remove this currency from data storage
-        plugin.getDataStore().deleteCurrency(currency);
-        plugin.getUpdateForwarder().sendUpdateMessage(UpdateType.CURRENCY, currency.getUuid().toString());
+        plugin.getDataStore().deleteCurrency(currency); // TODO sync currency deletion between servers
+        plugin.getUpdateForwarder().sendUpdateMessage(UpdateType.CURRENCY, currency.getUuid());
     }
 
     public List<Currency> getCurrencies() {

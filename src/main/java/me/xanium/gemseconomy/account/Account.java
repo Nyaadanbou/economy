@@ -52,7 +52,7 @@ public class Account {
         // Save it to database
         GemsEconomy.getInstance().getDataStore().saveAccount(this);
         // Sync between servers
-        GemsEconomy.getInstance().getUpdateForwarder().sendUpdateMessage(UpdateType.ACCOUNT, getUuid().toString());
+        GemsEconomy.getInstance().getUpdateForwarder().sendUpdateMessage(UpdateType.ACCOUNT, getUuid());
 
         GemsPostTransactionEvent postEvent = new GemsPostTransactionEvent(currency, this, amount, TransactionType.WITHDRAW);
         Schedulers.sync().run(postEvent::callEvent);
@@ -79,7 +79,7 @@ public class Account {
         // Save it to database
         GemsEconomy.getInstance().getDataStore().saveAccount(this);
         // Sync between servers
-        GemsEconomy.getInstance().getUpdateForwarder().sendUpdateMessage(UpdateType.ACCOUNT, getUuid().toString());
+        GemsEconomy.getInstance().getUpdateForwarder().sendUpdateMessage(UpdateType.ACCOUNT, getUuid());
 
         GemsPostTransactionEvent postEvent = new GemsPostTransactionEvent(currency, this, amount, TransactionType.DEPOSIT);
         Schedulers.sync().run(postEvent::callEvent);
@@ -100,7 +100,7 @@ public class Account {
         // Save it to database
         GemsEconomy.getInstance().getDataStore().saveAccount(this);
         // Sync between servers
-        GemsEconomy.getInstance().getUpdateForwarder().sendUpdateMessage(UpdateType.ACCOUNT, getUuid().toString());
+        GemsEconomy.getInstance().getUpdateForwarder().sendUpdateMessage(UpdateType.ACCOUNT, getUuid());
 
         GemsPostTransactionEvent postEvent = new GemsPostTransactionEvent(currency, this, cappedAmount, TransactionType.SET);
         Schedulers.sync().run(postEvent::callEvent);

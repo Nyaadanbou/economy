@@ -8,6 +8,7 @@
 
 package me.xanium.gemseconomy;
 
+import me.lucko.helper.plugin.ExtendedJavaPlugin;
 import me.xanium.gemseconomy.account.AccountManager;
 import me.xanium.gemseconomy.api.GemsEconomyAPI;
 import me.xanium.gemseconomy.bungee.UpdateForwarder;
@@ -23,14 +24,13 @@ import me.xanium.gemseconomy.logging.EconomyLogger;
 import me.xanium.gemseconomy.utils.UtilServer;
 import me.xanium.gemseconomy.vault.VaultHandler;
 import net.kyori.adventure.platform.bukkit.BukkitAudiences;
-import org.bukkit.plugin.java.JavaPlugin;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.util.logging.Level;
 
 import static java.util.Objects.requireNonNull;
 
-public class GemsEconomy extends JavaPlugin {
+public class GemsEconomy extends ExtendedJavaPlugin {
 
     private static GemsEconomy INSTANCE;
 
@@ -55,10 +55,6 @@ public class GemsEconomy extends JavaPlugin {
         return INSTANCE;
     }
 
-    public static GemsMessages lang() {
-        return INSTANCE.messages;
-    }
-
     @SuppressWarnings("unused")
     public static GemsEconomyAPI getAPI() {
         if (INSTANCE.api == null) {
@@ -67,8 +63,12 @@ public class GemsEconomy extends JavaPlugin {
         return INSTANCE.api;
     }
 
+    public static GemsMessages lang() {
+        return INSTANCE.messages;
+    }
+
     @Override
-    public void onLoad() {
+    public void load() {
         getConfig().options().copyDefaults(true);
         saveDefaultConfig();
         reloadConfig();
@@ -80,10 +80,11 @@ public class GemsEconomy extends JavaPlugin {
     }
 
     @Override
-    public void onEnable() {
+    public void enable() {
         INSTANCE = this;
 
-        audiences = BukkitAudiences.create(this);
+        audiences = bind(BukkitAudiences.create(this));
+
         messages = new GemsMessages(this);
         accountManager = new AccountManager(this);
         currencyManager = new CurrencyManager(this);
@@ -97,7 +98,7 @@ public class GemsEconomy extends JavaPlugin {
             throw new IllegalStateException("No default currency is provided");
         }
 
-        getServer().getPluginManager().registerEvents(new EconomyListener(), this);
+        bind(registerListener(new EconomyListener()));
 
         if (isVault()) {
             vaultHandler = new VaultHandler(this);
@@ -105,9 +106,6 @@ public class GemsEconomy extends JavaPlugin {
         } else {
             UtilServer.consoleLog("Vault link is disabled.");
         }
-
-        getServer().getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");
-        getServer().getMessenger().registerIncomingPluginChannel(this, "BungeeCord", updateForwarder);
 
         if (isLogging()) {
             getEconomyLogger().save();
@@ -126,13 +124,8 @@ public class GemsEconomy extends JavaPlugin {
     }
 
     @Override
-    public void onDisable() {
+    public void disable() {
         disabling = true;
-
-        if (audiences != null) {
-            audiences.close();
-            audiences = null;
-        }
 
         if (isVault())
             getVaultHandler().unhook();

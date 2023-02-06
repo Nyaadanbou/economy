@@ -2,7 +2,7 @@ package me.xanium.gemseconomy.data;
 
 public enum StorageType {
 
-    // TODO CodingForFun: add MongoDB support
+    // TODO coding for fun: add MongoDB support
     MYSQL, MONGODB
 
 }

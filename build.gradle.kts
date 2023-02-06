@@ -45,6 +45,7 @@ dependencies {
 
     // 3rd party plugins
     compileOnly("me.lucko", "helper", "5.6.13")
+    compileOnly("me.lucko", "helper-redis", "1.2.0")
     compileOnly("com.github.MilkBowl", "VaultAPI", "1.7") { isTransitive = false }
 
     // Libraries that needs to be shaded
@@ -67,7 +68,7 @@ bukkit {
     version = "${project.version}"
     apiVersion = "1.17"
     authors = listOf("Xanium", "Nailm")
-    depend = listOf("helper")
+    depend = listOf("helper", "helper-redis")
     softDepend = listOf("Vault")
     load = STARTUP
     loadBefore = listOf("ItemFrameShops")

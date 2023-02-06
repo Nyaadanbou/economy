@@ -1,24 +1,22 @@
 package me.xanium.gemseconomy.bungee;
 
-import com.google.common.collect.Iterables;
 import com.google.common.io.ByteArrayDataInput;
 import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
 import me.lucko.helper.Schedulers;
+import me.lucko.helper.Services;
+import me.lucko.helper.messaging.bungee.BungeeCord;
 import me.xanium.gemseconomy.GemsEconomy;
 import me.xanium.gemseconomy.currency.Currency;
 import me.xanium.gemseconomy.utils.UtilServer;
-import org.bukkit.Bukkit;
-import org.bukkit.entity.Player;
-import org.bukkit.plugin.messaging.PluginMessageListener;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.UUID;
 
-@SuppressWarnings("UnstableApiUsage")
-public class UpdateForwarder implements PluginMessageListener {
+public class UpdateForwarder {
 
-    // TODO replace it with redis as it doesn't work well if servers are empty
+    // TODO replace it with redis since it doesn't sync with "empty servers" at all.
+    //  "empty servers" = servers without online players.
+    //  Useful library: https://github.com/lucko/helper/wiki/helper:-Messenger
 
     private static final String CHANNEL_NAME = "GemsEconomy";
 
@@ -29,64 +27,50 @@ public class UpdateForwarder implements PluginMessageListener {
      * sustain synced balances and currencies on all the servers.
      */
     private final GemsEconomy plugin;
+    private final BungeeCord bungee;
 
     public UpdateForwarder(GemsEconomy plugin) {
         this.plugin = plugin;
+        this.bungee = Services.load(BungeeCord.class);
+
+        bungee.registerForwardCallback(CHANNEL_NAME, this::handleIncomingMessage); // Handle received messages
     }
 
-    @Override
-    public void onPluginMessageReceived(String channel, @NotNull Player notInUse, byte[] message) {
-        if (!channel.equals("BungeeCord"))
-            return;
+    public void sendUpdateMessage(UpdateType type, UUID uuid) {
+        @SuppressWarnings("UnstableApiUsage")
+        ByteArrayDataOutput out = ByteStreams.newDataOutput();
 
-        ByteArrayDataInput in = ByteStreams.newDataInput(message);
+        out.writeUTF(type.name());
+        out.writeUTF(uuid.toString());
 
-        if (!in.readUTF().equals(CHANNEL_NAME))
-            return; // Sub-channel is not ours
+        bungee.forward(BungeeCord.ALL_SERVERS, CHANNEL_NAME, out);
+    }
 
+    private boolean handleIncomingMessage(ByteArrayDataInput in) {
         UpdateType type = UpdateType.valueOf(in.readUTF());
-        String name = in.readUTF();
+        UUID uuid = UUID.fromString(in.readUTF());
 
         if (plugin.isDebug())
-            UtilServer.consoleLog(CHANNEL_NAME + " - Received: " + type + " = " + name);
+            UtilServer.consoleLog(CHANNEL_NAME + " - Received: " + type + " = " + uuid);
 
         switch (type) {
             case CURRENCY -> {
-                UUID uuid = UUID.fromString(name);
                 Currency currency = plugin.getCurrencyManager().getCurrency(uuid);
                 if (currency != null) {
-                    plugin.getDataStore().updateCurrencyLocally(currency);
-                    if (GemsEconomy.getInstance().isDebug())
-                        UtilServer.consoleLog(CHANNEL_NAME + " - Currency " + name + " updated.");
+                    plugin.getDataStore().updateCurrencyLocally(currency); // TODO support sync addition & deletion
+                    if (GemsEconomy.getInstance().isDebug()) {
+                        UtilServer.consoleLog(CHANNEL_NAME + " - Currency " + uuid + " updated.");
+                    }
                 }
             }
             case ACCOUNT -> {
-                UUID uuid = UUID.fromString(name);
                 Schedulers.async().run(() -> plugin.getAccountManager().refreshAccount(uuid));
                 if (plugin.isDebug()) {
-                    UtilServer.consoleLog(CHANNEL_NAME + " - Account " + name + " updated.");
+                    UtilServer.consoleLog(CHANNEL_NAME + " - Account " + uuid + " updated.");
                 }
             }
         }
+
+        return false;
     }
-
-    public void sendUpdateMessage(UpdateType type, String name) {
-        ByteArrayDataOutput out = ByteStreams.newDataOutput();
-        out.writeUTF("Forward");
-        out.writeUTF("ONLINE");
-
-        out.writeUTF(CHANNEL_NAME);
-        out.writeUTF(type.name());
-        out.writeUTF(name);
-
-        Player player = Iterables.getFirst(Bukkit.getOnlinePlayers(), null);
-        if (player == null) {
-            if (GemsEconomy.getInstance().isDebug())
-                UtilServer.consoleLog(CHANNEL_NAME + " - No players online. Don't send update message.");
-            return;
-        }
-
-        player.sendPluginMessage(GemsEconomy.getInstance(), "BungeeCord", out.toByteArray());
-    }
-
 }

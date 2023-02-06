@@ -73,7 +73,7 @@ public class AccountManager {
 
         plugin.getDataStore().createAccount(account); // Save it to database
 
-        plugin.getUpdateForwarder().sendUpdateMessage(UpdateType.ACCOUNT, account.getUuid().toString());
+        plugin.getUpdateForwarder().sendUpdateMessage(UpdateType.ACCOUNT, account.getUuid());
     }
 
     /**
@@ -100,7 +100,7 @@ public class AccountManager {
 
         plugin.getDataStore().createAccount(account); // Save it to database
 
-        plugin.getUpdateForwarder().sendUpdateMessage(UpdateType.ACCOUNT, account.getUuid().toString());
+        plugin.getUpdateForwarder().sendUpdateMessage(UpdateType.ACCOUNT, account.getUuid());
     }
 
     /**
@@ -127,7 +127,7 @@ public class AccountManager {
 
         plugin.getDataStore().createAccount(account); // Save it to database
 
-        plugin.getUpdateForwarder().sendUpdateMessage(UpdateType.ACCOUNT, account.getUuid().toString());
+        plugin.getUpdateForwarder().sendUpdateMessage(UpdateType.ACCOUNT, account.getUuid());
     }
 
     /**
