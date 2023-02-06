@@ -16,7 +16,6 @@ import me.xanium.gemseconomy.GemsEconomy;
 import me.xanium.gemseconomy.bungee.UpdateType;
 import me.xanium.gemseconomy.currency.Currency;
 import me.xanium.gemseconomy.data.DataStorage;
-import me.xanium.gemseconomy.utils.UtilTowny;
 import org.bukkit.OfflinePlayer;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
@@ -64,13 +63,9 @@ public class AccountManager {
         // Not found in cache or database - create new one
         Account account = new Account(uniqueId, nickname);
 
-        // Let's set the default balance
+        // Let's set default balance for this new Account
         for (final Currency currency : plugin.getCurrencyManager().getCurrencies()) {
-            if (UtilTowny.isTownyAccount(nickname)) {
-                account.setBalance(currency, 0D); // It's a Towny Account - put zero balance
-            } else {
-                account.setBalance(currency, currency.getDefaultBalance()); // It's a player Account - put default balance
-            }
+            account.setBalance(currency, currency.getDefaultBalance());
         }
 
         cacheAccount(account); // Cache it
@@ -95,7 +90,7 @@ public class AccountManager {
         // Not found in cache or database - create new one
         Account account = new Account(player.getUniqueId(), player.getName());
 
-        // Let's set the default balance
+        // Let's set default balance for this new Account
         for (final Currency currency : plugin.getCurrencyManager().getCurrencies()) {
             account.setBalance(currency, currency.getDefaultBalance());
         }
@@ -122,7 +117,7 @@ public class AccountManager {
         // Not found in cache or database - create new one
         Account account = new Account(uuid, null);
 
-        // Let's set the default balance
+        // Let's set default balance for this new Account
         for (final Currency currency : plugin.getCurrencyManager().getCurrencies()) {
             account.setBalance(currency, currency.getDefaultBalance());
         }
