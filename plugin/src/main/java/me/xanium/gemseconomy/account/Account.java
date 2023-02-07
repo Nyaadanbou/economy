@@ -41,8 +41,8 @@ public class Account {
             return false;
 
         GemsPreTransactionEvent preEvent = new GemsPreTransactionEvent(currency, this, amount, TransactionType.WITHDRAW);
-        if (!Schedulers.sync().call(preEvent::callEvent).join())
-            return false; // Call event on main thread, then wait it return
+        if (!preEvent.callEvent())
+            return false;
 
         double finalAmount = getBalance(currency) - amount;
         double cappedAmount = Math.min(finalAmount, currency.getMaxBalance());
@@ -66,8 +66,8 @@ public class Account {
             return false;
 
         GemsPreTransactionEvent preEvent = new GemsPreTransactionEvent(currency, this, amount, TransactionType.DEPOSIT);
-        if (!Schedulers.sync().call(preEvent::callEvent).join())
-            return false; // Call event on main thread, then wait it return
+        if (!preEvent.callEvent())
+            return false;
 
         double finalAmount = getBalance(currency) + amount;
         double cappedAmount = Math.min(finalAmount, currency.getMaxBalance());
@@ -90,8 +90,8 @@ public class Account {
 
     public synchronized void setBalance(@NonNull Currency currency, double amount) {
         GemsPreTransactionEvent preEvent = new GemsPreTransactionEvent(currency, this, amount, TransactionType.SET);
-        if (!Schedulers.sync().call(preEvent::callEvent).join())
-            return; // Call event on main thread, then wait it return
+        if (!preEvent.callEvent())
+            return;
 
         double cappedAmount = Math.min(amount, currency.getMaxBalance());
 

@@ -2,13 +2,17 @@ package me.xanium.gemseconomy.event;
 
 import me.xanium.gemseconomy.account.Account;
 import me.xanium.gemseconomy.currency.Currency;
+import org.bukkit.Bukkit;
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
+import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.framework.qual.DefaultQualifier;
 
+@DefaultQualifier(NonNull.class)
 public class GemsPayEvent extends Event implements Cancellable {
 
-    private static final HandlerList handlerList = new HandlerList();
+    private static final HandlerList HANDLERS = new HandlerList();
     private boolean cancel;
     private final Currency currency;
     private final Account payer;
@@ -16,6 +20,7 @@ public class GemsPayEvent extends Event implements Cancellable {
     private final double amount;
 
     public GemsPayEvent(Currency currency, Account payer, Account received, double amount) {
+        super(!Bukkit.isPrimaryThread());
         this.currency = currency;
         this.payer = payer;
         this.received = received;
@@ -43,15 +48,6 @@ public class GemsPayEvent extends Event implements Cancellable {
     }
 
     @Override
-    public HandlerList getHandlers() {
-        return handlerList;
-    }
-
-    public static HandlerList getHandlerList() {
-        return handlerList;
-    }
-
-    @Override
     public boolean isCancelled() {
         return cancel;
     }
@@ -60,4 +56,14 @@ public class GemsPayEvent extends Event implements Cancellable {
     public void setCancelled(boolean cancelled) {
         this.cancel = cancelled;
     }
+
+    @Override
+    public @NonNull HandlerList getHandlers() {
+        return HANDLERS;
+    }
+
+    public static @NonNull HandlerList getHandlerList() {
+        return HANDLERS;
+    }
+
 }
