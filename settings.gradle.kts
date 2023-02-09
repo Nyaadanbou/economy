@@ -1,5 +1,6 @@
 rootProject.name = "GemsEconomy"
 
+include(":velocity")
 include(":bukkit")
 include(":papi")
 
