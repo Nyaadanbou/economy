@@ -12,7 +12,7 @@ fun lastCommitHash(): String = indraGit.commit()?.name?.substring(0, 7) ?: error
 fun String.decorateVersion(): String = if (endsWith("-SNAPSHOT")) "$this-${lastCommitHash()}" else this
 
 dependencies {
-    compileOnly(project(":plugin"))
+    compileOnly(project(":bukkit"))
     compileOnly("me.lucko", "helper", "5.6.13")
     compileOnly("me.clip", "placeholderapi", "2.11.2")
     compileOnly("io.papermc.paper", "paper-api", "1.17.1-R0.1-SNAPSHOT")

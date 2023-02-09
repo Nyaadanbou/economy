@@ -1,6 +1,6 @@
 rootProject.name = "GemsEconomy"
 
-include(":plugin")
+include(":bukkit")
 include(":papi")
 
 pluginManagement {
