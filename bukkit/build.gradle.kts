@@ -11,7 +11,7 @@ plugins {
     id("net.minecrell.plugin-yml.bukkit") version "0.5.2"
 }
 
-version = "1.3.3".decorateVersion()
+version = "1.3.4".decorateVersion()
 description = "A multi-currency economy plugin for spigot servers"
 
 fun lastCommitHash(): String = indraGit.commit()?.name?.substring(0, 7) ?: error("Could not determine commit hash")
@@ -26,7 +26,7 @@ dependencies {
 
     // 3rd party plugins
     compileOnlyApi("me.lucko", "helper", "5.6.13")
-    compileOnly("me.lucko", "helper-redis", "1.2.0")
+    compileOnlyApi("me.lucko", "helper-redis", "1.2.0")
     compileOnly("com.github.MilkBowl", "VaultAPI", "1.7") { isTransitive = false }
 
     // Libraries that needs to be shaded
@@ -45,7 +45,7 @@ bukkit {
     version = "${project.version}"
     apiVersion = "1.17"
     authors = listOf("Xanium", "Nailm")
-    depend = listOf("helper", "helper-redis")
+    depend = listOf("helper")
     softDepend = listOf("Vault")
     load = STARTUP
     loadBefore = listOf("ItemFrameShops")
