@@ -11,7 +11,7 @@ plugins {
     id("net.minecrell.plugin-yml.bukkit") version "0.5.2"
 }
 
-version = "1.3.4".decorateVersion()
+version = "1.3.5".decorateVersion()
 description = "A multi-currency economy plugin for spigot servers"
 
 fun lastCommitHash(): String = indraGit.commit()?.name?.substring(0, 7) ?: error("Could not determine commit hash")

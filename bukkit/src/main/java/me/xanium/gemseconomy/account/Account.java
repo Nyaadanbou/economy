@@ -8,7 +8,6 @@
 
 package me.xanium.gemseconomy.account;
 
-import me.lucko.helper.Schedulers;
 import me.xanium.gemseconomy.GemsEconomy;
 import me.xanium.gemseconomy.bungee.UpdateType;
 import me.xanium.gemseconomy.currency.Currency;
@@ -55,7 +54,7 @@ public class Account {
         GemsEconomy.getInstance().getUpdateForwarder().sendUpdateMessage(UpdateType.ACCOUNT, getUuid());
 
         GemsPostTransactionEvent postEvent = new GemsPostTransactionEvent(currency, this, amount, TransactionType.WITHDRAW);
-        Schedulers.sync().run(postEvent::callEvent);
+        postEvent.callEvent();
 
         GemsEconomy.getInstance().getEconomyLogger().log("[WITHDRAW] Account: " + getDisplayName() + " were withdrawn: " + currency.format(amount) + " and now has " + currency.format(cappedAmount));
         return true;
@@ -82,7 +81,7 @@ public class Account {
         GemsEconomy.getInstance().getUpdateForwarder().sendUpdateMessage(UpdateType.ACCOUNT, getUuid());
 
         GemsPostTransactionEvent postEvent = new GemsPostTransactionEvent(currency, this, amount, TransactionType.DEPOSIT);
-        Schedulers.sync().run(postEvent::callEvent);
+        postEvent.callEvent();
 
         GemsEconomy.getInstance().getEconomyLogger().log("[DEPOSIT] Account: " + getDisplayName() + " were deposited: " + currency.format(amount) + " and now has " + currency.format(cappedAmount));
         return true;
@@ -103,7 +102,7 @@ public class Account {
         GemsEconomy.getInstance().getUpdateForwarder().sendUpdateMessage(UpdateType.ACCOUNT, getUuid());
 
         GemsPostTransactionEvent postEvent = new GemsPostTransactionEvent(currency, this, cappedAmount, TransactionType.SET);
-        Schedulers.sync().run(postEvent::callEvent);
+        postEvent.callEvent();
 
         GemsEconomy.getInstance().getEconomyLogger().log("[BALANCE SET] Account: " + getDisplayName() + " were set to: " + currency.format(cappedAmount));
     }
