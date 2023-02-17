@@ -13,10 +13,10 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
+import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
-import org.jetbrains.annotations.NotNull;
 
 import java.text.NumberFormat;
 import java.util.UUID;
@@ -26,9 +26,9 @@ import java.util.UUID;
 public class Currency {
 
     private final UUID uuid;
-    private String singular;
-    private String plural;
-    @Nullable private String symbol = null;
+    @MonotonicNonNull private String singular;
+    @MonotonicNonNull private String plural;
+    @Nullable private String symbol;
     private TextColor color = NamedTextColor.WHITE;
     private boolean decimalSupported = true;
     private boolean payable = true;
@@ -37,17 +37,39 @@ public class Currency {
     private double maxBalance = 0D; // zero means unlimited
     private double exchangeRate = 0D;
 
-    public Currency(@NotNull UUID uuid, @NotNull String singular, @NotNull String plural) {
+    public Currency(final UUID uuid) {
+        this.uuid = uuid;
+    }
+
+    public Currency(UUID uuid, String singular, String plural) {
         this.uuid = uuid;
         this.singular = singular;
         this.plural = plural;
     }
 
-    public void setSingular(@NotNull String singular) {
+    /**
+     * Copy all states of specific Currency to this Currency.
+     *
+     * @param other the Currency which the states are copied from
+     */
+    public void update(Currency other) {
+        this.singular = other.singular;
+        this.plural = other.plural;
+        this.symbol = other.symbol;
+        this.color = other.color;
+        this.decimalSupported = other.decimalSupported;
+        this.payable = other.payable;
+        this.defaultCurrency = other.defaultCurrency;
+        this.defaultBalance = other.defaultBalance;
+        this.maxBalance = other.maxBalance;
+        this.exchangeRate = other.exchangeRate;
+    }
+
+    public void setSingular(String singular) {
         this.singular = singular;
     }
 
-    public void setPlural(@NotNull String plural) {
+    public void setPlural(String plural) {
         this.plural = plural;
     }
 
@@ -59,15 +81,15 @@ public class Currency {
         this.maxBalance = maxBalance;
     }
 
-    public @NotNull UUID getUuid() {
+    public UUID getUuid() {
         return this.uuid;
     }
 
-    public @NotNull String getSingular() {
+    public String getSingular() {
         return this.singular;
     }
 
-    public @NotNull String getPlural() {
+    public String getPlural() {
         return this.plural;
     }
 
@@ -79,7 +101,7 @@ public class Currency {
         return this.maxBalance == 0D ? Integer.MAX_VALUE : this.maxBalance;
     }
 
-    public @NotNull String format(double amount) {
+    public String format(double amount) {
         StringBuilder amt = new StringBuilder();
         if (this.getSymbol() != null) {
             amt.append(this.getSymbol());
@@ -103,15 +125,15 @@ public class Currency {
         return amt.toString();
     }
 
-    public @NotNull Component componentFormat(double amount) {
+    public Component componentFormat(double amount) {
         return Component.text(format(amount)).color(color);
     }
 
-    public @NotNull String getDisplayNameLegacy() {
+    public String getDisplayNameLegacy() {
         return LegacyComponentSerializer.legacyAmpersand().serialize(getDisplayName());
     }
 
-    public @NotNull Component getDisplayName() {
+    public Component getDisplayName() {
         return Component.text(singular).color(color);
     }
 
@@ -139,11 +161,11 @@ public class Currency {
         this.decimalSupported = decimalSupported;
     }
 
-    public @NotNull TextColor getColor() {
+    public TextColor getColor() {
         return this.color;
     }
 
-    public void setColor(@NotNull TextColor color) {
+    public void setColor(TextColor color) {
         this.color = color;
     }
 
@@ -162,5 +184,17 @@ public class Currency {
     public void setExchangeRate(double exchangeRate) {
         this.exchangeRate = exchangeRate;
     }
+
+    @Override public boolean equals(@Nullable final Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        final Currency currency = (Currency) o;
+        return uuid.equals(currency.uuid);
+    }
+
+    @Override public int hashCode() {
+        return uuid.hashCode();
+    }
+
 }
 

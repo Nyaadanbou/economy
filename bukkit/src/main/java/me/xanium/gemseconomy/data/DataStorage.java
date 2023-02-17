@@ -23,7 +23,6 @@ import java.util.List;
 import java.util.UUID;
 import java.util.function.Consumer;
 
-@SuppressWarnings("DefaultAnnotationParam")
 public abstract class DataStorage {
 
     public final GemsEconomy plugin = GemsEconomy.getInstance();
@@ -89,15 +88,11 @@ public abstract class DataStorage {
     public abstract void loadCurrencies();
 
     /**
-     * Updates given Currency from database.
-     * <p>
-     * This will load the Currency data from database, then modify the states of given Currency object so that its
-     * internal states are synced with the data in database.
+     * Loads, and returns specific Currency from database.
      *
-     * @param currency the Currency to update
+     * @param uuid the uuid of specific Currency
      */
-    @Contract(pure = false)
-    public abstract void updateCurrencyLocally(final @NonNull Currency currency);
+    public abstract @Nullable Currency loadCurrency(final @NonNull UUID uuid);
 
     /**
      * Saves given Currency to database.

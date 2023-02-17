@@ -182,28 +182,13 @@ public final class MySQLStorage extends DataStorage {
     @Override
     public void loadCurrencies() {
         requireNonNull(hikari, "hikari");
-
+        // TODO decouple it - make it return a set of currencies
         try (Connection connection = getHikari().getConnection()) {
             PreparedStatement stmt = connection.prepareStatement("SELECT * FROM " + this.currencyTable);
             ResultSet resultSet = stmt.executeQuery();
             while (resultSet.next()) {
-                UUID uuid = UUID.fromString(resultSet.getString("uuid"));
-                String singular = resultSet.getString("name_singular");
-                String plural = resultSet.getString("name_plural");
-                double defaultBalance = resultSet.getDouble("default_balance");
-                double maxBalance = resultSet.getDouble("max_balance");
-                String symbol = resultSet.getString("symbol");
-                boolean decimals = resultSet.getInt("decimals_supported") == 1;
-                boolean isDefault = resultSet.getInt("is_default") == 1;
-                boolean payable = resultSet.getInt("payable") == 1;
-                TextColor color = requireNonNullElse(TextColor.fromHexString(resultSet.getString("color")), NamedTextColor.WHITE);
-                double exchangeRate = resultSet.getDouble("exchange_rate");
-
-                Currency currency = new Currency(uuid, singular, plural);
-                loadCurrencyFromDatabase(currency, defaultBalance, maxBalance, symbol, decimals, isDefault, payable, color, exchangeRate);
-
-                plugin.getCurrencyManager().add(currency);
-
+                Currency currency = loadCurrencyFromDatabase(resultSet);
+                plugin.getCurrencyManager().addCurrencyIfAbsent(currency);
                 UtilServer.consoleLog("Loaded currency: %s (default_balance: %s, max_balance: %s, default_currency: %s, payable: %s)".formatted(
                     currency.getSingular(), currency.getDefaultBalance(), currency.getMaxBalance(), currency.isDefaultCurrency(), currency.isPayable()
                 ));
@@ -214,28 +199,18 @@ public final class MySQLStorage extends DataStorage {
     }
 
     @Override
-    public void updateCurrencyLocally(final @NonNull Currency currency) {
+    public @Nullable Currency loadCurrency(final @NonNull UUID uuid) {
         try (Connection connection = getHikari().getConnection()) {
             PreparedStatement stmt = connection.prepareStatement("SELECT * FROM " + this.currencyTable + " WHERE uuid = ? LIMIT 1;");
-            stmt.setString(1, currency.getUuid().toString());
+            stmt.setString(1, uuid.toString());
             ResultSet resultSet = stmt.executeQuery();
-            while (resultSet.next()) {
-                double defaultBalance = resultSet.getDouble("default_balance");
-                double maxBalance = resultSet.getDouble("max_balance");
-                String symbol = resultSet.getString("symbol");
-                boolean decimals = resultSet.getInt("decimals_supported") == 1;
-                boolean isDefault = resultSet.getInt("is_default") == 1;
-                boolean payable = resultSet.getInt("payable") == 1;
-                TextColor color = requireNonNullElse(TextColor.fromHexString(resultSet.getString("color")), NamedTextColor.WHITE);
-                double exchangeRate = resultSet.getDouble("exchange_rate");
-
-                loadCurrencyFromDatabase(currency, defaultBalance, maxBalance, symbol, decimals, isDefault, payable, color, exchangeRate);
-
-                UtilServer.consoleLog("Updated currency: " + currency.getPlural());
+            if (resultSet.next()) {
+                return loadCurrencyFromDatabase(resultSet);
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
+        return null;
     }
 
     @Override
@@ -253,7 +228,6 @@ public final class MySQLStorage extends DataStorage {
             stmt.setInt(9, currency.isPayable() ? 1 : 0);
             stmt.setString(10, currency.getColor().asHexString());
             stmt.setDouble(11, currency.getExchangeRate());
-
             stmt.execute();
         } catch (SQLException e) {
             e.printStackTrace();
@@ -482,6 +456,7 @@ public final class MySQLStorage extends DataStorage {
         JSONObject balanceAccJson = (JSONObject) parser.parse(balanceAccRaw);
 
         for (Currency currency : plugin.getCurrencyManager().getCurrencies()) {
+
             // --- Reads balance data
             Number balance = (Number) balanceDataJson.get(currency.getUuid().toString());
             if (balance != null) {
@@ -489,30 +464,35 @@ public final class MySQLStorage extends DataStorage {
             } else {
                 account.getBalances().put(currency, currency.getDefaultBalance());
             }
+
             // --- Reads accumulated balance data
             Number accBalance = (Number) balanceAccJson.get(currency.getUuid().toString());
             if (accBalance != null) {
                 account.getAccBalances().put(currency, accBalance.doubleValue());
             }
+
         }
     }
 
     /**
      * Common logics of loading a Currency from database.
-     *
-     * @param currency the Currency to be loaded.
      */
-    private void loadCurrencyFromDatabase(
-        final Currency currency,
-        final double defaultBalance,
-        final double maximumBalance,
-        final String symbol,
-        final boolean supportDecimals,
-        final boolean defaultCurrency,
-        final boolean payable,
-        final TextColor color,
-        final double exchangeRate
-    ) {
+    private Currency loadCurrencyFromDatabase(ResultSet resultSet) throws SQLException {
+        UUID uuid = UUID.fromString(resultSet.getString("uuid"));
+        String singular = resultSet.getString("name_singular");
+        String plural = resultSet.getString("name_plural");
+        double defaultBalance = resultSet.getDouble("default_balance");
+        double maximumBalance = resultSet.getDouble("max_balance");
+        String symbol = resultSet.getString("symbol");
+        boolean supportDecimals = resultSet.getInt("decimals_supported") == 1;
+        boolean defaultCurrency = resultSet.getInt("is_default") == 1;
+        boolean payable = resultSet.getInt("payable") == 1;
+        TextColor color = requireNonNullElse(TextColor.fromHexString(resultSet.getString("color")), NamedTextColor.WHITE);
+        double exchangeRate = resultSet.getDouble("exchange_rate");
+
+        Currency currency = new Currency(uuid);
+        currency.setSingular(singular);
+        currency.setPlural(plural);
         currency.setDefaultBalance(defaultBalance);
         currency.setMaximumBalance(maximumBalance);
         currency.setSymbol(symbol);
@@ -521,6 +501,8 @@ public final class MySQLStorage extends DataStorage {
         currency.setPayable(payable);
         currency.setColor(color);
         currency.setExchangeRate(exchangeRate);
+
+        return currency;
     }
 
 }

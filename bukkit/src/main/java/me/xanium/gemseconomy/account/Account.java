@@ -9,7 +9,7 @@
 package me.xanium.gemseconomy.account;
 
 import me.xanium.gemseconomy.GemsEconomy;
-import me.xanium.gemseconomy.bungee.UpdateType;
+import me.xanium.gemseconomy.message.Action;
 import me.xanium.gemseconomy.currency.Currency;
 import me.xanium.gemseconomy.event.GemsPostTransactionEvent;
 import me.xanium.gemseconomy.event.GemsPreTransactionEvent;
@@ -51,7 +51,7 @@ public class Account {
         // Save it to database
         GemsEconomy.getInstance().getDataStore().saveAccount(this);
         // Sync between servers
-        GemsEconomy.getInstance().getUpdateForwarder().sendUpdateMessage(UpdateType.ACCOUNT, getUuid());
+        GemsEconomy.getInstance().getUpdateForwarder().sendMessage(Action.UPDATE_ACCOUNT, getUuid());
 
         GemsPostTransactionEvent postEvent = new GemsPostTransactionEvent(currency, this, amount, TransactionType.WITHDRAW);
         postEvent.callEvent();
@@ -78,7 +78,7 @@ public class Account {
         // Save it to database
         GemsEconomy.getInstance().getDataStore().saveAccount(this);
         // Sync between servers
-        GemsEconomy.getInstance().getUpdateForwarder().sendUpdateMessage(UpdateType.ACCOUNT, getUuid());
+        GemsEconomy.getInstance().getUpdateForwarder().sendMessage(Action.UPDATE_ACCOUNT, getUuid());
 
         GemsPostTransactionEvent postEvent = new GemsPostTransactionEvent(currency, this, amount, TransactionType.DEPOSIT);
         postEvent.callEvent();
@@ -99,7 +99,7 @@ public class Account {
         // Save it to database
         GemsEconomy.getInstance().getDataStore().saveAccount(this);
         // Sync between servers
-        GemsEconomy.getInstance().getUpdateForwarder().sendUpdateMessage(UpdateType.ACCOUNT, getUuid());
+        GemsEconomy.getInstance().getUpdateForwarder().sendMessage(Action.UPDATE_ACCOUNT, getUuid());
 
         GemsPostTransactionEvent postEvent = new GemsPostTransactionEvent(currency, this, cappedAmount, TransactionType.SET);
         postEvent.callEvent();

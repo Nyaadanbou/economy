@@ -11,7 +11,7 @@ package me.xanium.gemseconomy;
 import me.lucko.helper.plugin.ExtendedJavaPlugin;
 import me.xanium.gemseconomy.account.AccountManager;
 import me.xanium.gemseconomy.api.GemsEconomyAPI;
-import me.xanium.gemseconomy.bungee.UpdateForwarder;
+import me.xanium.gemseconomy.message.MessageForwarder;
 import me.xanium.gemseconomy.cheque.ChequeManager;
 import me.xanium.gemseconomy.command.CommandManager;
 import me.xanium.gemseconomy.currency.Currency;
@@ -43,7 +43,7 @@ public class GemsEconomy extends ExtendedJavaPlugin {
     private CurrencyManager currencyManager;
     private VaultHandler vaultHandler;
     private EconomyLogger economyLogger;
-    private UpdateForwarder updateForwarder;
+    private MessageForwarder updateForwarder;
 
     private boolean debug = false;
     private boolean vault = true;
@@ -89,7 +89,7 @@ public class GemsEconomy extends ExtendedJavaPlugin {
         accountManager = new AccountManager(this);
         currencyManager = new CurrencyManager(this);
         economyLogger = new EconomyLogger(this);
-        updateForwarder = new UpdateForwarder(this);
+        updateForwarder = MessageForwarder.get();
 
         initializeDataStore(StorageType.valueOf(requireNonNull(getConfig().getString("storage")).toUpperCase()));
 
@@ -174,7 +174,7 @@ public class GemsEconomy extends ExtendedJavaPlugin {
         return chequeManager;
     }
 
-    public UpdateForwarder getUpdateForwarder() {
+    public MessageForwarder getUpdateForwarder() {
         return updateForwarder;
     }
 

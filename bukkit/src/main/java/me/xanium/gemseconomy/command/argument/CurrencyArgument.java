@@ -14,6 +14,7 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Queue;
 import java.util.function.BiFunction;
@@ -75,7 +76,7 @@ public class CurrencyArgument extends CommandArgument<CommandSender, Currency> {
             // to see corresponding tab completions
             CommandSender sender = commandContext.getSender();
             List<String> suggestions = new ArrayList<>();
-            List<Currency> currencies = GemsEconomy.getInstance().getCurrencyManager().getCurrencies();
+            Collection<Currency> currencies = GemsEconomy.getInstance().getCurrencyManager().getCurrencies();
             for (Currency currency : currencies) {
                 String singular = currency.getSingular();
                 if (sender.hasPermission("gemseconomy.currency.completion." + singular)) {

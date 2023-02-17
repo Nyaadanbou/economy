@@ -1,36 +1,34 @@
 package me.xanium.gemseconomy.currency;
 
+import com.google.common.collect.ImmutableList;
 import me.xanium.gemseconomy.GemsEconomy;
-import me.xanium.gemseconomy.bungee.UpdateType;
+import me.xanium.gemseconomy.message.Action;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 
 @DefaultQualifier(NonNull.class)
 public class CurrencyManager {
 
     private final GemsEconomy plugin;
-    private final List<Currency> currencies = new ArrayList<>();
+    private final Map<UUID, Currency> currencies;
 
     public CurrencyManager(GemsEconomy plugin) {
         this.plugin = plugin;
+        this.currencies = new ConcurrentHashMap<>();
     }
 
     public boolean currencyExist(String name) {
-        for (Currency currency : currencies) {
-            if (currency.getSingular().equalsIgnoreCase(name) || currency.getPlural().equalsIgnoreCase(name)) {
-                return true;
-            }
-        }
-        return false;
+        return getCurrency(name) != null;
     }
 
     public @Nullable Currency getCurrency(String name) {
-        for (Currency currency : currencies) {
+        for (Currency currency : currencies.values()) {
             if (currency.getSingular().equalsIgnoreCase(name) || currency.getPlural().equalsIgnoreCase(name)) {
                 return currency;
             }
@@ -39,16 +37,11 @@ public class CurrencyManager {
     }
 
     public @Nullable Currency getCurrency(UUID uuid) {
-        for (Currency currency : currencies) {
-            if (!currency.getUuid().equals(uuid))
-                continue;
-            return currency;
-        }
-        return null;
+        return currencies.get(uuid);
     }
 
     public @NonNull Currency getDefaultCurrency() {
-        for (Currency currency : currencies) {
+        for (Currency currency : currencies.values()) {
             if (currency.isDefaultCurrency())
                 return currency;
         }
@@ -56,84 +49,128 @@ public class CurrencyManager {
     }
 
     /**
-     * Creates a new currency and saves it to database.
+     * Creates a new Currency and saves it to database.
      *
-     * @param singular the singular form of the new currency
-     * @param plural   the plural form of the new currency
+     * @param singular the singular form of the new Currency
+     * @param plural   the plural form of the new Currency
      *
-     * @return the new currency, or <code>null</code> if already existed
+     * @return the new Currency, or <code>null</code> if already existed
      */
-    public @Nullable Currency createNewCurrency(String singular, String plural) {
+    public @Nullable Currency createCurrency(String singular, String plural) {
         if (currencyExist(singular) || currencyExist(plural)) {
             return null;
         }
 
         Currency currency = new Currency(UUID.randomUUID(), singular, plural);
         currency.setExchangeRate(1.0);
+
         if (currencies.size() == 0) {
             currency.setDefaultCurrency(true);
         }
 
-        add(currency);
+        addCurrencyIfAbsent(currency);
 
-        plugin.getDataStore().saveCurrency(currency); // TODO sync account creation between servers
-        plugin.getUpdateForwarder().sendUpdateMessage(UpdateType.CURRENCY, currency.getUuid());
+        plugin.getDataStore().saveCurrency(currency);
+        plugin.getUpdateForwarder().sendMessage(Action.CREATE_CURRENCY, currency.getUuid());
 
         return currency;
     }
 
-    public void add(Currency currency) {
-        if (!currencies.contains(currency)) {
-            currencies.add(currency);
-        }
-    }
-
-    public void save(Currency currency) {
-        plugin.getDataStore().saveCurrency(currency); // TODO sync account saving between servers
-        plugin.getUpdateForwarder().sendUpdateMessage(UpdateType.CURRENCY, currency.getUuid());
+    /**
+     * Adds given Currency object to memory.
+     * <p>
+     * If this manager already contains specific Currency, this method will do nothing.
+     *
+     * @param currency a Currency
+     */
+    public void addCurrencyIfAbsent(Currency currency) {
+        currencies.putIfAbsent(currency.getUuid(), currency);
     }
 
     /**
-     * Clears the balance of specific currency for <b>ALL</b> Accounts, i.e. set balance to 0.
+     * Loads specific Currency from database, overriding any in memory.
      *
-     * @param currency the currency to clear balance
+     * @param uuid the uuid of specific Currency
      */
-    public void clear(Currency currency) {
+    public void loadCurrencyOverride(UUID uuid) {
+        @Nullable Currency updated = plugin.getDataStore().loadCurrency(uuid);
+        if (updated != null) {
+            currencies.put(updated.getUuid(), updated);
+        }
+    }
+
+    /**
+     * Updates specific Currency in the memory so that it syncs with database.
+     * <p>
+     * This method is specifically used by {@link me.xanium.gemseconomy.message.MessageForwarder}.
+     *
+     * @param uuid the uuid of specific Currency
+     */
+    public void updateCurrency(UUID uuid) {
+        @Nullable Currency updated = plugin.getDataStore().loadCurrency(uuid);
+        @Nullable Currency loaded = currencies.get(uuid);
+        if (updated != null && loaded != null) {
+            loaded.update(updated); // This manager has specific Currency, but not synced with database
+        }
+    }
+
+    /**
+     * Saves specific currency to database.
+     *
+     * @param currency a Currency
+     */
+    public void saveCurrency(Currency currency) {
+        plugin.getDataStore().saveCurrency(currency);
+        plugin.getUpdateForwarder().sendMessage(Action.UPDATE_CURRENCY, currency.getUuid());
+    }
+
+    /**
+     * Clears the balance of specific Currency for <b>ALL</b> Accounts, i.e. set balance to 0.
+     *
+     * @param currency the Currency to clear balance
+     */
+    public void clearBalance(Currency currency) {
         plugin.getAccountManager().getOfflineAccounts().forEach(account -> {
             account.getBalances().put(currency, 0D);
-            plugin.getDataStore().saveAccount(account); // TODO sync clearing between servers
-            plugin.getUpdateForwarder().sendUpdateMessage(UpdateType.ACCOUNT, account.getUuid());
+            plugin.getDataStore().saveAccount(account);
+            plugin.getUpdateForwarder().sendMessage(Action.UPDATE_ACCOUNT, account.getUuid());
         });
     }
 
     /**
-     * Removes specified currency.
+     * Removes specified Currency.
      * <p>
-     * This will also remove the currency from <b>ALL</b> Accounts!
+     * This will also remove the Currency from <b>ALL</b> Accounts!
      *
-     * @param currency the currency to remove
+     * @param currency the Currency to remove
      */
-    public void remove(Currency currency) {
+    public void removeCurrency(Currency currency) {
         // Remove this currency from all accounts
         GemsEconomy.getInstance()
             .getAccountManager()
             .getOfflineAccounts()
             .forEach(account -> {
                 account.getBalances().remove(currency);
-                plugin.getDataStore().saveAccount(account); // TODO sync account deletion between servers
-                plugin.getUpdateForwarder().sendUpdateMessage(UpdateType.ACCOUNT, account.getUuid());
+                plugin.getDataStore().saveAccount(account);
+                plugin.getUpdateForwarder().sendMessage(Action.UPDATE_ACCOUNT, account.getUuid());
             });
 
         // Remove this currency from this manager
-        currencies.remove(currency);
+        currencies.remove(currency.getUuid());
 
         // Remove this currency from data storage
-        plugin.getDataStore().deleteCurrency(currency); // TODO sync currency deletion between servers
-        plugin.getUpdateForwarder().sendUpdateMessage(UpdateType.CURRENCY, currency.getUuid());
+        plugin.getDataStore().deleteCurrency(currency);
+        plugin.getUpdateForwarder().sendMessage(Action.DELETE_CURRENCY, currency.getUuid());
+    }
+
+    public void removeCurrency(UUID uuid) {
+        Currency currency = currencies.get(uuid);
+        if (currency != null)
+            removeCurrency(currency);
     }
 
     public List<Currency> getCurrencies() {
-        return currencies;
+        return ImmutableList.copyOf(currencies.values());
     }
 
 }
