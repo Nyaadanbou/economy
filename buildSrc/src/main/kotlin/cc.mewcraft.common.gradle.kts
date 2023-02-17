@@ -8,6 +8,8 @@ plugins {
 }
 
 group = "me.xanium.gemseconomy"
+version = "1.3.5"
+description = "A modern multi-currency economy plugin"
 
 repositories {
     mavenLocal()

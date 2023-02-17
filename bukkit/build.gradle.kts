@@ -11,11 +11,7 @@ plugins {
     id("net.minecrell.plugin-yml.bukkit") version "0.5.2"
 }
 
-version = "1.3.5".decorateVersion()
-description = "A multi-currency economy plugin for spigot servers"
-
-fun lastCommitHash(): String = indraGit.commit()?.name?.substring(0, 7) ?: error("Could not determine commit hash")
-fun String.decorateVersion(): String = if (endsWith("-SNAPSHOT")) "$this+${lastCommitHash()}" else this
+version = "${rootProject.version}".decorateVersion()
 
 dependencies {
     // Server API
@@ -35,6 +31,7 @@ dependencies {
     implementation("net.kyori", "adventure-text-minimessage", "4.12.0")
     implementation("net.kyori", "adventure-platform-bukkit", "4.1.2")
     implementation("de.themoep.utils", "lang-bukkit", "1.3-SNAPSHOT")
+
     val cloudVersion = "1.8.0"
     implementation("cloud.commandframework", "cloud-paper", cloudVersion)
     implementation("cloud.commandframework", "cloud-minecraft-extras", cloudVersion)
@@ -104,3 +101,6 @@ indra {
 java {
     withSourcesJar()
 }
+
+fun lastCommitHash(): String = indraGit.commit()?.name?.substring(0, 7) ?: error("Could not determine commit hash")
+fun String.decorateVersion(): String = if (endsWith("-SNAPSHOT")) "$this+${lastCommitHash()}" else this
