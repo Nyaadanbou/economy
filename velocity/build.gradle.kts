@@ -6,7 +6,7 @@ plugins {
     id("net.kyori.indra.git") version indraVersion
 }
 
-version = "${rootProject.version}".decorateVersion()
+version = "${project.version}".decorateVersion()
 
 dependencies {
     compileOnly("com.zaxxer", "HikariCP", "5.0.1")
