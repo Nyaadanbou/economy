@@ -13,12 +13,10 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Server;
 
-import java.util.Optional;
-
 public class UtilServer {
 
-    private static final String Console_Prefix = "§2[GemsEconomy] §f";
-    private static final String Error_Prefix = "§c[GemsEconomy] §f";
+    private static final String CONSOLE_PREFIX = "§2[GemsEconomy] §f";
+    private static final String ERROR_PREFIX = "§c[GemsEconomy] §f";
 
     private static Server getServer() {
         return Bukkit.getServer();
@@ -26,19 +24,19 @@ public class UtilServer {
 
     public static void consoleLog(String message) {
         if (GemsEconomy.getInstance().isDebug()) {
-            StackWalker walker = StackWalker.getInstance();
-            Optional<String> walk = walker.walk(frameStream -> frameStream
-                    .skip(1)
-                    .map(f -> f.getClassName() + ":" + f.getMethodName())
-                    .filter(s -> !(s.contains("minecraft")))
-                    .reduce((e1, e2) -> e1 + " <- " + e2));
-            getServer().getConsoleSender().sendMessage(Console_Prefix + colorize(message));
-            getServer().getConsoleSender().sendMessage(Console_Prefix + walk.orElse(""));
+            // StackWalker walker = StackWalker.getInstance();
+            // Optional<String> walk = walker.walk(frameStream -> frameStream
+            //         .skip(1)
+            //         .map(f -> f.getClassName() + ":" + f.getMethodName())
+            //         .filter(s -> !(s.contains("minecraft")))
+            //         .reduce((e1, e2) -> e1 + " <- " + e2));
+            // getServer().getConsoleSender().sendMessage(Console_Prefix + walk.orElse(""));
+            getServer().getConsoleSender().sendMessage(CONSOLE_PREFIX + colorize(message));
         }
     }
 
     public static void consoleLog(Throwable message) {
-        getServer().getConsoleSender().sendMessage(Error_Prefix + message);
+        getServer().getConsoleSender().sendMessage(ERROR_PREFIX + message);
     }
 
     private static String colorize(String message) {

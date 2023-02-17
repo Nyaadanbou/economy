@@ -1,13 +1,10 @@
 package me.xanium.gemseconomy.message;
 
-/**
- * Whether to update {@link me.xanium.gemseconomy.account.Account} or {@link me.xanium.gemseconomy.currency.Currency}.
- */
-public enum Action {
-    UPDATE_ACCOUNT,
-    DELETE_ACCOUNT,
-    CREATE_ACCOUNT,
-    UPDATE_CURRENCY,
-    DELETE_CURRENCY,
-    CREATE_CURRENCY
+public class Action {
+    public static final String UPDATE_ACCOUNT = "update_account";
+    public static final String DELETE_ACCOUNT = "delete_account";
+    public static final String CREATE_ACCOUNT = "create_account";
+    public static final String UPDATE_CURRENCY = "update_currency";
+    public static final String DELETE_CURRENCY = "delete_currency";
+    public static final String CREATE_CURRENCY = "create_currency";
 }

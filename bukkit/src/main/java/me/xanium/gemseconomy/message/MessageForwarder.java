@@ -17,6 +17,6 @@ public interface MessageForwarder {
         return new RedisMessageForwarder(GemsEconomy.getInstance(), connector);
     }
 
-    void sendMessage(Action type, UUID uuid);
+    void sendMessage(String type, UUID uuid);
 
 }

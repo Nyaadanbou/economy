@@ -4,6 +4,7 @@ import com.google.common.io.ByteArrayDataInput;
 import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
 import de.themoep.connectorplugin.bukkit.BukkitConnectorPlugin;
+import de.themoep.connectorplugin.connector.ConnectingPlugin;
 import de.themoep.connectorplugin.connector.Message;
 import de.themoep.connectorplugin.connector.MessageTarget;
 import me.lucko.helper.Schedulers;
@@ -23,6 +24,7 @@ public class RedisMessageForwarder implements MessageForwarder {
 
     private final GemsEconomy plugin;
     private final BukkitConnectorPlugin connectorPlugin;
+    private final ConnectingPlugin connectingPlugin = () -> "GemsEconomy";
 
     public RedisMessageForwarder(GemsEconomy plugin, BukkitConnectorPlugin connectorPlugin) {
         this.plugin = plugin;
@@ -64,32 +66,33 @@ public class RedisMessageForwarder implements MessageForwarder {
         });
     }
 
-    @Override public void sendMessage(final Action action, final UUID uuid) {
+    @Override
+    public void sendMessage(final String action, final UUID uuid) {
         sendData(action, MessageTarget.OTHERS_QUEUE, writeUUID(uuid));
         switch (action) {
-            case CREATE_ACCOUNT -> UtilServer.consoleLog("Sent - Account created: " + uuid);
-            case UPDATE_ACCOUNT -> UtilServer.consoleLog("Sent - Account updated: " + uuid);
-            case DELETE_ACCOUNT -> UtilServer.consoleLog("Sent - Account deleted: " + uuid);
-            case CREATE_CURRENCY -> UtilServer.consoleLog("Sent - Currency created: " + uuid);
-            case UPDATE_CURRENCY -> UtilServer.consoleLog("Sent - Currency updated: " + uuid);
-            case DELETE_CURRENCY -> UtilServer.consoleLog("Sent - Currency deleted: " + uuid);
+            case Action.CREATE_ACCOUNT -> UtilServer.consoleLog("Sent - Account created: " + uuid);
+            case Action.UPDATE_ACCOUNT -> UtilServer.consoleLog("Sent - Account updated: " + uuid);
+            case Action.DELETE_ACCOUNT -> UtilServer.consoleLog("Sent - Account deleted: " + uuid);
+            case Action.CREATE_CURRENCY -> UtilServer.consoleLog("Sent - Currency created: " + uuid);
+            case Action.UPDATE_CURRENCY -> UtilServer.consoleLog("Sent - Currency updated: " + uuid);
+            case Action.DELETE_CURRENCY -> UtilServer.consoleLog("Sent - Currency deleted: " + uuid);
         }
     }
 
-    private void sendData(Action action, MessageTarget target, byte[] data) {
-        this.connectorPlugin.getConnector().sendData(this.connectorPlugin, action.name(), target, data);
+    private void sendData(String action, MessageTarget target, byte[] data) {
+        this.connectorPlugin.getConnector().sendData(this.connectingPlugin, action, target, data);
     }
 
-    private void sendData(Action action, MessageTarget target, Player player, byte[] data) {
-        this.connectorPlugin.getConnector().sendData(this.connectorPlugin, action.name(), target, player, data);
+    private void sendData(String action, MessageTarget target, Player player, byte[] data) {
+        this.connectorPlugin.getConnector().sendData(this.connectingPlugin, action, target, player, data);
     }
 
-    private void sendData(Action action, MessageTarget target, String server, byte[] data) {
-        this.connectorPlugin.getConnector().sendData(this.connectorPlugin, action.name(), target, server, data);
+    private void sendData(String action, MessageTarget target, String server, byte[] data) {
+        this.connectorPlugin.getConnector().sendData(this.connectingPlugin, action, target, server, data);
     }
 
-    private void registerHandler(Action action, BiConsumer<Player, Message> handler) {
-        this.connectorPlugin.getConnector().registerMessageHandler(this.connectorPlugin, action.name(), handler);
+    private void registerHandler(String action, BiConsumer<Player, Message> handler) {
+        this.connectorPlugin.getConnector().registerMessageHandler(this.connectingPlugin, action, handler);
     }
 
     private UUID readUUID(byte[] data) {
