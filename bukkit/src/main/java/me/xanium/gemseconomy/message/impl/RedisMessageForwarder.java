@@ -4,7 +4,6 @@ import com.google.common.io.ByteArrayDataInput;
 import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
 import de.themoep.connectorplugin.bukkit.BukkitConnectorPlugin;
-import de.themoep.connectorplugin.bukkit.connector.RedisConnector;
 import de.themoep.connectorplugin.connector.Message;
 import de.themoep.connectorplugin.connector.MessageTarget;
 import me.xanium.gemseconomy.GemsEconomy;
@@ -21,14 +20,10 @@ import java.util.function.BiConsumer;
 @SuppressWarnings("UnstableApiUsage")
 public class RedisMessageForwarder implements MessageForwarder {
 
-    private final GemsEconomy plugin;
     private final BukkitConnectorPlugin connectorPlugin;
-    private final RedisConnector connector;
 
     public RedisMessageForwarder(GemsEconomy plugin, BukkitConnectorPlugin connectorPlugin) {
-        this.plugin = plugin;
         this.connectorPlugin = connectorPlugin;
-        this.connector = (RedisConnector) connectorPlugin.getConnector();
 
         // --- Handle incoming messages ---
 
@@ -75,19 +70,19 @@ public class RedisMessageForwarder implements MessageForwarder {
     }
 
     private void sendData(Action action, MessageTarget target, byte[] data) {
-        this.connector.sendData(this.connectorPlugin, action.name(), target, data);
+        this.connectorPlugin.getConnector().sendData(this.connectorPlugin, action.name(), target, data);
     }
 
     private void sendData(Action action, MessageTarget target, Player player, byte[] data) {
-        this.connector.sendData(this.connectorPlugin, action.name(), target, player, data);
+        this.connectorPlugin.getConnector().sendData(this.connectorPlugin, action.name(), target, player, data);
     }
 
     private void sendData(Action action, MessageTarget target, String server, byte[] data) {
-        this.connector.sendData(this.connectorPlugin, action.name(), target, server, data);
+        this.connectorPlugin.getConnector().sendData(this.connectorPlugin, action.name(), target, server, data);
     }
 
     private void registerHandler(Action action, BiConsumer<Player, Message> handler) {
-        this.connector.registerMessageHandler(this.connectorPlugin, action.name(), handler);
+        this.connectorPlugin.getConnector().registerMessageHandler(this.connectorPlugin, action.name(), handler);
     }
 
     private UUID readUUID(byte[] data) {
