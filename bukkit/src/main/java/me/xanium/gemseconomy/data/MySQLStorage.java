@@ -368,13 +368,13 @@ public final class MySQLStorage extends DataStorage {
     @Override
     public void createAccount(final @NonNull Account account) {
         saveAccountToDatabase(account);
-        UtilServer.consoleLog("Account created and saved: " + account.getNickname() + " [" + account.getUuid() + "]");
+        UtilServer.consoleLog("Account created and saved: " + account.getNickname() + " - " + account.getUuid());
     }
 
     @Override
     public void saveAccount(final @NonNull Account account) {
         saveAccountToDatabase(account);
-        UtilServer.consoleLog("Account saved: " + account.getNickname() + " [" + account.getUuid() + "]");
+        UtilServer.consoleLog("Account saved: " + account.getNickname() + " - " + account.getUuid());
     }
 
     @Override
