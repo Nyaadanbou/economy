@@ -33,7 +33,7 @@ public class AccountManager {
         this.plugin = plugin;
         this.accounts = CacheBuilder
             .newBuilder()
-            .expireAfterAccess(1, TimeUnit.MINUTES)
+            .expireAfterAccess(10, TimeUnit.MINUTES)
             .build(CacheLoader.from(uuid ->
                 plugin.getDataStore().loadAccount(uuid) // This might return null
             ));
