@@ -6,6 +6,7 @@ import com.google.common.io.ByteStreams;
 import de.themoep.connectorplugin.bukkit.BukkitConnectorPlugin;
 import de.themoep.connectorplugin.connector.Message;
 import de.themoep.connectorplugin.connector.MessageTarget;
+import me.lucko.helper.Schedulers;
 import me.xanium.gemseconomy.GemsEconomy;
 import me.xanium.gemseconomy.message.Action;
 import me.xanium.gemseconomy.message.MessageForwarder;
@@ -20,13 +21,19 @@ import java.util.function.BiConsumer;
 @SuppressWarnings("UnstableApiUsage")
 public class RedisMessageForwarder implements MessageForwarder {
 
+    private final GemsEconomy plugin;
     private final BukkitConnectorPlugin connectorPlugin;
 
     public RedisMessageForwarder(GemsEconomy plugin, BukkitConnectorPlugin connectorPlugin) {
+        this.plugin = plugin;
         this.connectorPlugin = connectorPlugin;
+        Schedulers.sync().run(this::registerHandlers); // Must register it after "Done!"
+    }
 
-        // --- Handle incoming messages ---
-
+    /**
+     * Handles incoming messages.
+     */
+    private void registerHandlers() {
         registerHandler(Action.CREATE_ACCOUNT, (player, message) -> {
             // Don't need to "sync" account creation
         });

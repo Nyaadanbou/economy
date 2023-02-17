@@ -11,7 +11,7 @@ plugins {
     id("net.minecrell.plugin-yml.bukkit") version "0.5.2"
 }
 
-version = "${rootProject.version}".decorateVersion()
+version = "${project.version}".decorateVersion()
 
 dependencies {
     // Server API
@@ -43,7 +43,7 @@ bukkit {
     version = "${project.version}"
     apiVersion = "1.17"
     authors = listOf("Xanium", "Nailm")
-    depend = listOf("helper")
+    depend = listOf("helper", "MewCore")
     softDepend = listOf("Vault", "ConnectorPlugin")
     load = STARTUP
     loadBefore = listOf("ItemFrameShops")
