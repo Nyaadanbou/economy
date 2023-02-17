@@ -54,7 +54,7 @@ public class AccountManager {
      *
      * @see OfflineModeProfiles
      */
-    public void createAccount(@NonNull String nickname) {
+    public synchronized void createAccount(@NonNull String nickname) {
         if (hasAccount(nickname))
             return;
 
@@ -85,7 +85,7 @@ public class AccountManager {
      *
      * @param player the player who owns the new Account
      */
-    public void createAccount(@NonNull OfflinePlayer player) {
+    public synchronized void createAccount(@NonNull OfflinePlayer player) {
         if (hasAccount(player))
             return;
 
@@ -112,7 +112,7 @@ public class AccountManager {
      *
      * @param uuid the uuid of the new Account
      */
-    public void createAccount(@NonNull UUID uuid) {
+    public synchronized void createAccount(@NonNull UUID uuid) {
         if (hasAccount(uuid))
             return;
 
