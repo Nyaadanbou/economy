@@ -29,7 +29,9 @@ public class RedisMessageForwarder implements MessageForwarder {
     public RedisMessageForwarder(GemsEconomy plugin, BukkitConnectorPlugin connectorPlugin) {
         this.plugin = plugin;
         this.connectorPlugin = connectorPlugin;
-        Schedulers.sync().run(this::registerHandlers); // Must register it after "Done!"
+
+        // Must register it after "Done!"
+        Schedulers.bukkit().runTask(plugin, this::registerHandlers);
     }
 
     /**
@@ -102,8 +104,8 @@ public class RedisMessageForwarder implements MessageForwarder {
 
     private byte[] writeUUID(UUID uuid) {
         ByteArrayDataOutput out = ByteStreams.newDataOutput();
-        out.writeLong(uuid.getLeastSignificantBits());
-        out.writeLong(uuid.getMostSignificantBits());
+        out.writeLong(uuid.getMostSignificantBits()); // Must first write most sig bits
+        out.writeLong(uuid.getLeastSignificantBits()); // Must second write least sig bits
         return out.toByteArray();
     }
 
