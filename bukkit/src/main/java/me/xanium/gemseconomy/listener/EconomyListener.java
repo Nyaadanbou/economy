@@ -6,7 +6,7 @@
  * Thank you.
  */
 
-package me.xanium.gemseconomy.listeners;
+package me.xanium.gemseconomy.listener;
 
 import me.lucko.helper.Schedulers;
 import me.lucko.helper.terminable.Terminable;
