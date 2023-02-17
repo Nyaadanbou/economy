@@ -28,6 +28,7 @@ dependencies {
     compileOnlyApi("me.lucko", "helper", "5.6.13")
     compileOnlyApi("me.lucko", "helper-redis", "1.2.0")
     compileOnly("com.github.MilkBowl", "VaultAPI", "1.7") { isTransitive = false }
+    compileOnly("de.themoep.connectorplugin", "bukkit", "1.2-SNAPSHOT")
 
     // Libraries that needs to be shaded
     implementation("net.kyori", "adventure-api", "4.12.0")
@@ -46,7 +47,7 @@ bukkit {
     apiVersion = "1.17"
     authors = listOf("Xanium", "Nailm")
     depend = listOf("helper")
-    softDepend = listOf("Vault")
+    softDepend = listOf("Vault", "ConnectorPlugin")
     load = STARTUP
     loadBefore = listOf("ItemFrameShops")
     libraries = listOf("com.zaxxer:HikariCP:5.0.1")

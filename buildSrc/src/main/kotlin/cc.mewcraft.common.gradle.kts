@@ -25,6 +25,7 @@ repositories {
     maven("https://repo.minebench.de") {
         content {
             includeGroup("de.themoep.utils")
+            includeGroup("de.themoep.connectorplugin")
         }
     }
     maven("'https://repo.extendedclip.com/content/repositories/placeholderapi/'") {
