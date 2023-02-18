@@ -24,11 +24,13 @@ import org.checkerframework.checker.nullness.qual.Nullable;
 import java.util.Collection;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.locks.ReentrantLock;
 
 public class AccountManager {
 
     private final @NonNull GemsEconomy plugin;
     private final @NonNull LoadingCache<UUID, Account> accounts; // A collection of accounts loaded in memory
+    private final @NonNull ReentrantLock lock;
 
     public AccountManager(@NonNull GemsEconomy plugin) {
         this.plugin = plugin;
@@ -39,6 +41,7 @@ public class AccountManager {
                     return plugin.getDataStore().loadAccount(key); // This might return null;
                 }
             }, HelperExecutors.asyncHelper()));
+        this.lock = new ReentrantLock();
     }
 
     /**
@@ -56,25 +59,30 @@ public class AccountManager {
      *
      * @see OfflineModeProfiles
      */
-    public synchronized void createAccount(@NonNull String nickname) {
-        if (hasAccount(nickname))
-            return;
+    public void createAccount(@NonNull String nickname) {
+        lock.lock();
+        try {
+            if (hasAccount(nickname))
+                return;
 
-        // Get the UUID of the name by using the Mojang offline player method
-        // so that we can ensure same nicknames always point to the same UUID.
-        UUID uniqueId = OfflineModeProfiles.getUniqueId(nickname);
+            // Get the UUID of the name by using the Mojang offline player method
+            // so that we can ensure same nicknames always point to the same UUID.
+            UUID uniqueId = OfflineModeProfiles.getUniqueId(nickname);
 
-        // Not found in cache or database - create new one
-        Account account = new Account(uniqueId, nickname);
+            // Not found in cache or database - create new one
+            Account account = new Account(uniqueId, nickname);
 
-        // Let's set default balance for this new Account
-        plugin.getCurrencyManager().getCurrencies().forEach(currency ->
-            account.setBalance(currency, currency.getDefaultBalance())
-        );
+            // Let's set default balance for this new Account
+            plugin.getCurrencyManager().getCurrencies().forEach(currency ->
+                account.setBalance(currency, currency.getDefaultBalance())
+            );
 
-        cacheAccount(account); // Cache it
-        plugin.getDataStore().createAccount(account); // Save it to database
-        plugin.getUpdateForwarder().sendMessage(Action.UPDATE_ACCOUNT, account.getUuid());
+            cacheAccount(account); // Cache it
+            plugin.getDataStore().createAccount(account); // Save it to database
+            plugin.getUpdateForwarder().sendMessage(Action.UPDATE_ACCOUNT, account.getUuid());
+        } finally {
+            lock.unlock();
+        }
     }
 
     /**
@@ -85,21 +93,26 @@ public class AccountManager {
      *
      * @param player the player who owns the new Account
      */
-    public synchronized void createAccount(@NonNull OfflinePlayer player) {
-        if (hasAccount(player))
-            return;
+    public void createAccount(@NonNull OfflinePlayer player) {
+        lock.lock();
+        try {
+            if (hasAccount(player))
+                return;
 
-        // Not found in cache or database - create new one
-        Account account = new Account(player.getUniqueId(), player.getName());
+            // Not found in cache or database - create new one
+            Account account = new Account(player.getUniqueId(), player.getName());
 
-        // Let's set default balance for this new Account
-        plugin.getCurrencyManager().getCurrencies().forEach(currency ->
-            account.setBalance(currency, currency.getDefaultBalance())
-        );
+            // Let's set default balance for this new Account
+            plugin.getCurrencyManager().getCurrencies().forEach(currency ->
+                account.setBalance(currency, currency.getDefaultBalance())
+            );
 
-        cacheAccount(account); // Cache it
-        plugin.getDataStore().createAccount(account); // Save it to database
-        plugin.getUpdateForwarder().sendMessage(Action.UPDATE_ACCOUNT, account.getUuid());
+            cacheAccount(account); // Cache it
+            plugin.getDataStore().createAccount(account); // Save it to database
+            plugin.getUpdateForwarder().sendMessage(Action.UPDATE_ACCOUNT, account.getUuid());
+        } finally {
+            lock.unlock();
+        }
     }
 
     /**
@@ -110,21 +123,26 @@ public class AccountManager {
      *
      * @param uuid the uuid of the new Account
      */
-    public synchronized void createAccount(@NonNull UUID uuid) {
-        if (hasAccount(uuid))
-            return;
+    public void createAccount(@NonNull UUID uuid) {
+        lock.lock();
+        try {
+            if (hasAccount(uuid))
+                return;
 
-        // Not found in cache or database - create new one
-        Account account = new Account(uuid, null);
+            // Not found in cache or database - create new one
+            Account account = new Account(uuid, null);
 
-        // Let's set default balance for this new Account
-        plugin.getCurrencyManager().getCurrencies().forEach(currency ->
-            account.setBalance(currency, currency.getDefaultBalance())
-        );
+            // Let's set default balance for this new Account
+            plugin.getCurrencyManager().getCurrencies().forEach(currency ->
+                account.setBalance(currency, currency.getDefaultBalance())
+            );
 
-        cacheAccount(account); // Cache it
-        plugin.getDataStore().createAccount(account); // Save it to database
-        plugin.getUpdateForwarder().sendMessage(Action.UPDATE_ACCOUNT, account.getUuid());
+            cacheAccount(account); // Cache it
+            plugin.getDataStore().createAccount(account); // Save it to database
+            plugin.getUpdateForwarder().sendMessage(Action.UPDATE_ACCOUNT, account.getUuid());
+        } finally {
+            lock.unlock();
+        }
     }
 
     /**
