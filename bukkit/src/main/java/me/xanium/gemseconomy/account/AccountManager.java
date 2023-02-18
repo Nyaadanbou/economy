@@ -252,6 +252,7 @@ public class AccountManager {
         // TODO according to Guava javadoc, if the Account is being read
         //  by another thread this method will basically do nothing.
         //  This would be an issue because the Account may not sync with database.
+        //  Link: https://github.com/google/guava/wiki/CachesExplained
         accounts.refresh(uuid);
     }
 
