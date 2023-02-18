@@ -22,9 +22,10 @@ dependencies {
 
     // 3rd party plugins
     compileOnlyApi("me.lucko", "helper", "5.6.13")
-    compileOnlyApi("me.lucko", "helper-redis", "1.2.0")
     compileOnly("com.github.MilkBowl", "VaultAPI", "1.7") { isTransitive = false }
-    compileOnly("de.themoep.connectorplugin", "bukkit", "1.5-SNAPSHOT")
+    val connectorVersion = "1.5-SNAPSHOT"
+    compileOnly("de.themoep.connectorplugin", "core", connectorVersion)
+    compileOnly("de.themoep.connectorplugin", "bukkit", connectorVersion)
 
     // Libraries that needs to be shaded
     implementation("net.kyori", "adventure-api", "4.12.0")
