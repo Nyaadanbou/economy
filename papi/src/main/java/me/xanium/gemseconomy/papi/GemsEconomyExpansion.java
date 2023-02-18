@@ -84,7 +84,7 @@ public class GemsEconomyExpansion extends PlaceholderExpansion {
         } else if (params.startsWith("balanceacc_")) {
             String[] parts = params.split("_");
             String currencyId = parts[1];
-            return String.valueOf(account.getAccBalance(currencyId));
+            return String.valueOf(account.getCumulativeBalance(currencyId));
         }
 
         return null;

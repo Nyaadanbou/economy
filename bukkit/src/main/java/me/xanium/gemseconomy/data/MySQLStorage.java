@@ -430,7 +430,7 @@ public final class MySQLStorage extends DataStorage {
 
             { // Write accumulated balance
                 JSONObject obj = new JSONObject();
-                account.getAccBalances().forEach((currency, balance) -> obj.put(currency.getUuid().toString(), balance));
+                account.getCumulativeBalances().forEach((currency, balance) -> obj.put(currency.getUuid().toString(), balance));
                 stmt.setString(5, obj.toJSONString());
             }
 
@@ -468,7 +468,7 @@ public final class MySQLStorage extends DataStorage {
             // --- Reads accumulated balance data
             Number accBalance = (Number) balanceAccJson.get(currency.getUuid().toString());
             if (accBalance != null) {
-                account.getAccBalances().put(currency, accBalance.doubleValue());
+                account.getCumulativeBalances().put(currency, accBalance.doubleValue());
             }
 
         }
