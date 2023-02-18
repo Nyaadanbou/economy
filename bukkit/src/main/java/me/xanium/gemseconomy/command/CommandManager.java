@@ -14,6 +14,7 @@ import cloud.commandframework.keys.SimpleCloudKey;
 import cloud.commandframework.minecraft.extras.MinecraftExceptionHandler;
 import cloud.commandframework.paper.PaperCommandManager;
 import io.leangen.geantyref.TypeToken;
+import me.lucko.helper.scheduler.HelperExecutors;
 import me.xanium.gemseconomy.GemsEconomy;
 import me.xanium.gemseconomy.command.command.*;
 import net.kyori.adventure.text.Component;
@@ -39,7 +40,9 @@ public class CommandManager extends PaperCommandManager<CommandSender> {
     public CommandManager(GemsEconomy plugin) throws Exception {
         super(
             plugin,
-            AsynchronousCommandExecutionCoordinator.<CommandSender>builder().build(),
+            AsynchronousCommandExecutionCoordinator.<CommandSender>builder()
+                .withExecutor(HelperExecutors.asyncHelper()) // We use helper's executor
+                .build(),
             Function.identity(),
             Function.identity()
         );
