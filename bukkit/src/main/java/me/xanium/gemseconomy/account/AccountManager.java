@@ -20,13 +20,11 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
-import org.checkerframework.framework.qual.DefaultQualifier;
 
 import java.util.Collection;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
-@DefaultQualifier(NonNull.class)
 public class AccountManager {
 
     private final @NonNull GemsEconomy plugin;
@@ -37,7 +35,7 @@ public class AccountManager {
         this.accounts = CacheBuilder.newBuilder()
             .expireAfterAccess(10, TimeUnit.MINUTES)
             .build(CacheLoader.asyncReloading(new CacheLoader<>() {
-                @Override public @Nullable Account load(final UUID key) {
+                @Override public @Nullable Account load(final @NonNull UUID key) {
                     return plugin.getDataStore().loadAccount(key); // This might return null;
                 }
             }, HelperExecutors.asyncHelper()));
