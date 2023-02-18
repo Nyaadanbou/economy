@@ -37,7 +37,9 @@ public class EconomyListener implements Listener, Terminable {
             if (!plugin.getAccountManager().hasAccount(player))
                 plugin.getAccountManager().createAccount(player); // Create a new Account if it did not exist
 
-            Account account = requireNonNull(plugin.getAccountManager().fetchAccount(player)); // Get and cache the Account
+            Account account = plugin.getAccountManager().fetchAccount(player); // Get and cache the Account
+
+            requireNonNull(account, "account"); // Should never be null as we've already checked (and created if needed)
 
             String playerName = player.getName();
             if (!playerName.equals(account.getNickname())) { // Update nickname when the player changed their name

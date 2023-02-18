@@ -17,8 +17,6 @@ import org.bukkit.entity.Player;
 import java.util.UUID;
 import java.util.function.BiConsumer;
 
-// TODO use async where possible
-
 @SuppressWarnings("UnstableApiUsage")
 public class RedisMessageForwarder implements MessageForwarder {
 
@@ -70,15 +68,17 @@ public class RedisMessageForwarder implements MessageForwarder {
 
     @Override
     public void sendMessage(final String action, final UUID uuid) {
-        sendData(action, MessageTarget.OTHERS_QUEUE, writeUUID(uuid));
-        switch (action) {
-            case Action.CREATE_ACCOUNT -> UtilServer.consoleLog("Sent - Account created: " + uuid);
-            case Action.UPDATE_ACCOUNT -> UtilServer.consoleLog("Sent - Account updated: " + uuid);
-            case Action.DELETE_ACCOUNT -> UtilServer.consoleLog("Sent - Account deleted: " + uuid);
-            case Action.CREATE_CURRENCY -> UtilServer.consoleLog("Sent - Currency created: " + uuid);
-            case Action.UPDATE_CURRENCY -> UtilServer.consoleLog("Sent - Currency updated: " + uuid);
-            case Action.DELETE_CURRENCY -> UtilServer.consoleLog("Sent - Currency deleted: " + uuid);
-        }
+        Schedulers.async().run(() -> {
+            sendData(action, MessageTarget.OTHERS_QUEUE, writeUUID(uuid));
+            switch (action) {
+                case Action.CREATE_ACCOUNT -> UtilServer.consoleLog("Sent - Account created: " + uuid);
+                case Action.UPDATE_ACCOUNT -> UtilServer.consoleLog("Sent - Account updated: " + uuid);
+                case Action.DELETE_ACCOUNT -> UtilServer.consoleLog("Sent - Account deleted: " + uuid);
+                case Action.CREATE_CURRENCY -> UtilServer.consoleLog("Sent - Currency created: " + uuid);
+                case Action.UPDATE_CURRENCY -> UtilServer.consoleLog("Sent - Currency updated: " + uuid);
+                case Action.DELETE_CURRENCY -> UtilServer.consoleLog("Sent - Currency deleted: " + uuid);
+            }
+        }); // Async
     }
 
     private void sendData(String action, MessageTarget target, byte[] data) {
