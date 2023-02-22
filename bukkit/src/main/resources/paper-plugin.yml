@@ -3,7 +3,7 @@ main: me.xanium.gemseconomy.GemsEconomy
 loader: me.xanium.gemseconomy.GemsEconomyLoader
 version: ${version}
 api-version: 1.19
-author: [ Nailm ]
+authors: [ Nailm ]
 description: ${description}
 load-before: [ ]
 load-after: [ ]
