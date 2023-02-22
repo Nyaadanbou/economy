@@ -72,27 +72,27 @@ public class GemsEconomy extends ExtendedJavaPlugin {
         saveDefaultConfig();
         reloadConfig();
 
-        debug = getConfig().getBoolean("debug");
-        vault = getConfig().getBoolean("vault");
-        logging = getConfig().getBoolean("transaction_log");
+        this.debug = getConfig().getBoolean("debug");
+        this.vault = getConfig().getBoolean("vault");
+        this.logging = getConfig().getBoolean("transaction_log");
 
-        messages = new GemsMessages(this);
-        accountManager = new AccountManager(this);
-        currencyManager = new CurrencyManager(this);
-        economyLogger = new EconomyLogger(this);
-        updateForwarder = MessageForwarder.get();
+        this.messages = new GemsMessages(this);
+        this.accountManager = new AccountManager(this);
+        this.currencyManager = new CurrencyManager(this);
+        this.economyLogger = new EconomyLogger(this);
+        this.updateForwarder = MessageForwarder.get();
 
         initializeDataStore(StorageType.valueOf(requireNonNull(getConfig().getString("storage")).toUpperCase()));
 
-        if (currencyManager.getCurrencies().stream().noneMatch(Currency::isDefaultCurrency)) {
-            logger.severe("No default currency is provided");
+        if (this.currencyManager.getCurrencies().stream().noneMatch(Currency::isDefaultCurrency)) {
+            this.logger.severe("No default currency is provided");
             getServer().getPluginManager().disablePlugin(this);
             return;
         }
 
         if (isVault()) {
-            vaultHandler = new VaultHandler(this);
-            vaultHandler.hook();
+            this.vaultHandler = new VaultHandler(this);
+            this.vaultHandler.hook();
         } else {
             UtilServer.consoleLog("Vault link is disabled.");
         }
@@ -100,7 +100,7 @@ public class GemsEconomy extends ExtendedJavaPlugin {
 
     @Override
     public void enable() {
-        audiences = bind(BukkitAudiences.create(this));
+        this.audiences = bind(BukkitAudiences.create(this));
 
         registerListener(new EconomyListener()).bindWith(this);
 
@@ -117,7 +117,7 @@ public class GemsEconomy extends ExtendedJavaPlugin {
 
     @Override
     public void disable() {
-        disabling = true;
+        this.disabling = true;
 
         if (isVault())
             getVaultHandler().unhook();
@@ -127,7 +127,7 @@ public class GemsEconomy extends ExtendedJavaPlugin {
     }
 
     public void reloadLanguages() {
-        messages = new GemsMessages(this);
+        this.messages = new GemsMessages(this);
     }
 
     public void reloadConfiguration() {
@@ -139,35 +139,35 @@ public class GemsEconomy extends ExtendedJavaPlugin {
     }
 
     public BukkitAudiences getAudiences() {
-        return audiences;
+        return this.audiences;
     }
 
     public DataStorage getDataStore() {
-        return dataStorage;
+        return this.dataStorage;
     }
 
     public CurrencyManager getCurrencyManager() {
-        return currencyManager;
+        return this.currencyManager;
     }
 
     public AccountManager getAccountManager() {
-        return accountManager;
+        return this.accountManager;
     }
 
     public VaultHandler getVaultHandler() {
-        return vaultHandler;
+        return this.vaultHandler;
     }
 
     public EconomyLogger getEconomyLogger() {
-        return economyLogger;
+        return this.economyLogger;
     }
 
     public MessageForwarder getUpdateForwarder() {
-        return updateForwarder;
+        return this.updateForwarder;
     }
 
     public boolean isDebug() {
-        return debug;
+        return this.debug;
     }
 
     public void setDebug(boolean debug) {
@@ -175,15 +175,15 @@ public class GemsEconomy extends ExtendedJavaPlugin {
     }
 
     public boolean isVault() {
-        return vault;
+        return this.vault;
     }
 
     public boolean isLogging() {
-        return logging;
+        return this.logging;
     }
 
     public boolean isDisabling() {
-        return disabling;
+        return this.disabling;
     }
 
     private void initializeDataStore(@Nullable StorageType strategy) {
@@ -196,7 +196,7 @@ public class GemsEconomy extends ExtendedJavaPlugin {
         ));
 
         if (strategy != null) {
-            dataStorage = DataStorage.getMethod(strategy);
+            this.dataStorage = DataStorage.getMethod(strategy);
         } else {
             UtilServer.consoleLog("§cNo valid storage method provided.");
             UtilServer.consoleLog("§cCheck your files, then try again.");
