@@ -68,13 +68,13 @@ public class AccountManager {
         Account account = new Account(uniqueId, nickname);
 
         // Let's set default balance for this new Account
-        plugin.getCurrencyManager().getCurrencies().forEach(currency ->
+        this.plugin.getCurrencyManager().getCurrencies().forEach(currency ->
             account.setBalance(currency, currency.getDefaultBalance())
         );
 
         cacheAccount(account); // Cache it
-        plugin.getDataStore().createAccount(account); // Save it to database
-        plugin.getUpdateForwarder().sendMessage(Action.UPDATE_ACCOUNT, account.getUuid());
+        this.plugin.getDataStore().createAccount(account); // Save it to database
+        this.plugin.getMessenger().sendMessage(Action.UPDATE_ACCOUNT, account.getUuid());
     }
 
     /**
@@ -93,13 +93,13 @@ public class AccountManager {
         Account account = new Account(player.getUniqueId(), player.getName());
 
         // Let's set default balance for this new Account
-        plugin.getCurrencyManager().getCurrencies().forEach(currency ->
+        this.plugin.getCurrencyManager().getCurrencies().forEach(currency ->
             account.setBalance(currency, currency.getDefaultBalance())
         );
 
         cacheAccount(account); // Cache it
-        plugin.getDataStore().createAccount(account); // Save it to database
-        plugin.getUpdateForwarder().sendMessage(Action.UPDATE_ACCOUNT, account.getUuid());
+        this.plugin.getDataStore().createAccount(account); // Save it to database
+        this.plugin.getMessenger().sendMessage(Action.UPDATE_ACCOUNT, account.getUuid());
     }
 
     /**
@@ -118,13 +118,13 @@ public class AccountManager {
         Account account = new Account(uuid, null);
 
         // Let's set default balance for this new Account
-        plugin.getCurrencyManager().getCurrencies().forEach(currency ->
+        this.plugin.getCurrencyManager().getCurrencies().forEach(currency ->
             account.setBalance(currency, currency.getDefaultBalance())
         );
 
         cacheAccount(account); // Cache it
-        plugin.getDataStore().createAccount(account); // Save it to database
-        plugin.getUpdateForwarder().sendMessage(Action.UPDATE_ACCOUNT, account.getUuid());
+        this.plugin.getDataStore().createAccount(account); // Save it to database
+        this.plugin.getMessenger().sendMessage(Action.UPDATE_ACCOUNT, account.getUuid());
     }
 
     /**
@@ -133,8 +133,8 @@ public class AccountManager {
      * @param uuid the uuid of specific Account
      */
     public void deleteAccount(@NonNull UUID uuid) {
-        accounts.invalidate(uuid); // Delete from memory
-        plugin.getDataStore().deleteAccount(uuid); // Delete from database
+        this.accounts.invalidate(uuid); // Delete from memory
+        this.plugin.getDataStore().deleteAccount(uuid); // Delete from database
     }
 
     /**
@@ -143,8 +143,8 @@ public class AccountManager {
      * @param player the owner of specific Account
      */
     public void deleteAccount(@NonNull OfflinePlayer player) {
-        accounts.invalidate(player.getUniqueId()); // Delete from memory
-        plugin.getDataStore().deleteAccount(player.getUniqueId()); // Delete from database
+        this.accounts.invalidate(player.getUniqueId()); // Delete from memory
+        this.plugin.getDataStore().deleteAccount(player.getUniqueId()); // Delete from database
     }
 
     /**
@@ -204,7 +204,7 @@ public class AccountManager {
      * @return an Account with given uuid
      */
     public @Nullable Account fetchAccount(@NonNull UUID uuid) {
-        return accounts.getUnchecked(uuid);
+        return this.accounts.getUnchecked(uuid);
     }
 
     /**
@@ -220,11 +220,11 @@ public class AccountManager {
      * @return an Account with given name
      */
     public @Nullable Account fetchAccount(@NonNull String name) {
-        for (final Account account : accounts.asMap().values()) {
+        for (final Account account : this.accounts.asMap().values()) {
             if (name.equalsIgnoreCase(account.getNickname()))
                 return account;
         }
-        @Nullable Account account = plugin.getDataStore().loadAccount(name);
+        @Nullable Account account = this.plugin.getDataStore().loadAccount(name);
         if (account == null)
             return null;
         else
@@ -240,7 +240,7 @@ public class AccountManager {
      * @param account the Account to be loaded into memory
      */
     public void cacheAccount(@NonNull Account account) {
-        accounts.put(account.getUuid(), account);
+        this.accounts.put(account.getUuid(), account);
     }
 
     /**
@@ -253,7 +253,7 @@ public class AccountManager {
         //  by another thread this method will basically do nothing.
         //  This would be an issue because the Account may not sync with database.
         //  Link: https://github.com/google/guava/wiki/CachesExplained
-        accounts.refresh(uuid);
+        this.accounts.refresh(uuid);
     }
 
     /**
@@ -262,14 +262,14 @@ public class AccountManager {
      * @param uuid the uuid of the Account
      */
     public void flushAccount(@NonNull UUID uuid) {
-        accounts.invalidate(uuid);
+        this.accounts.invalidate(uuid);
     }
 
     /**
      * Discards all Account objects from memory.
      */
     public void flushAccounts() {
-        accounts.invalidateAll();
+        this.accounts.invalidateAll();
     }
 
     /**
@@ -278,14 +278,14 @@ public class AccountManager {
      * @return a view of all the Accounts loaded in memory
      */
     public @NonNull Collection<Account> getCachedAccounts() {
-        return accounts.asMap().values();
+        return this.accounts.asMap().values();
     }
 
     /**
      * It's simply a wrapper of {@link DataStorage#getOfflineAccounts()}.
      */
     public @NonNull Collection<Account> getOfflineAccounts() {
-        return plugin.getDataStore().getOfflineAccounts();
+        return this.plugin.getDataStore().getOfflineAccounts();
     }
 
     @Deprecated

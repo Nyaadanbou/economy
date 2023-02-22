@@ -53,7 +53,7 @@ public class Account {
             double cappedAmount = Math.min(finalAmount, currency.getMaxBalance());
             balances.put(currency, cappedAmount); // Update balance
             GemsEconomy.getInstance().getDataStore().saveAccount(this); // Save it to database
-            GemsEconomy.getInstance().getUpdateForwarder().sendMessage(Action.UPDATE_ACCOUNT, getUuid()); // Sync between servers
+            GemsEconomy.getInstance().getMessenger().sendMessage(Action.UPDATE_ACCOUNT, getUuid()); // Sync between servers
             GemsEconomy.getInstance().getEconomyLogger().log("[WITHDRAW] Account: " + getDisplayName() + " were withdrawn: " + currency.format(amount) + " and now has " + currency.format(cappedAmount));
         } finally {
             lock.writeLock().unlock();
@@ -80,7 +80,7 @@ public class Account {
             balances.put(currency, cappedAmount); // Update balance
             cumulativeBalances.merge(currency, amount, Double::sum); // Accumulate deposited amount
             GemsEconomy.getInstance().getDataStore().saveAccount(this); // Save it to database
-            GemsEconomy.getInstance().getUpdateForwarder().sendMessage(Action.UPDATE_ACCOUNT, getUuid()); // Sync between servers
+            GemsEconomy.getInstance().getMessenger().sendMessage(Action.UPDATE_ACCOUNT, getUuid()); // Sync between servers
             GemsEconomy.getInstance().getEconomyLogger().log("[DEPOSIT] Account: " + getDisplayName() + " were deposited: " + currency.format(amount) + " and now has " + currency.format(cappedAmount));
         } finally {
             lock.writeLock().unlock();
@@ -102,7 +102,7 @@ public class Account {
             double cappedAmount = Math.min(amount, currency.getMaxBalance());
             balances.put(currency, cappedAmount); // Update balance
             GemsEconomy.getInstance().getDataStore().saveAccount(this); // Save it to database
-            GemsEconomy.getInstance().getUpdateForwarder().sendMessage(Action.UPDATE_ACCOUNT, getUuid()); // Sync between servers
+            GemsEconomy.getInstance().getMessenger().sendMessage(Action.UPDATE_ACCOUNT, getUuid()); // Sync between servers
             GemsEconomy.getInstance().getEconomyLogger().log("[BALANCE SET] Account: " + getDisplayName() + " were set to: " + currency.format(cappedAmount));
         } finally {
             lock.writeLock().unlock();

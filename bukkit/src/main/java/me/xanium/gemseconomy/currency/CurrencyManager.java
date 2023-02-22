@@ -3,6 +3,7 @@ package me.xanium.gemseconomy.currency;
 import com.google.common.collect.ImmutableList;
 import me.xanium.gemseconomy.GemsEconomy;
 import me.xanium.gemseconomy.message.Action;
+import me.xanium.gemseconomy.message.Messenger;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
@@ -28,7 +29,7 @@ public class CurrencyManager {
     }
 
     public @Nullable Currency getCurrency(String name) {
-        for (Currency currency : currencies.values()) {
+        for (Currency currency : this.currencies.values()) {
             if (currency.getSingular().equalsIgnoreCase(name) || currency.getPlural().equalsIgnoreCase(name)) {
                 return currency;
             }
@@ -37,11 +38,11 @@ public class CurrencyManager {
     }
 
     public @Nullable Currency getCurrency(UUID uuid) {
-        return currencies.get(uuid);
+        return this.currencies.get(uuid);
     }
 
     public @NonNull Currency getDefaultCurrency() {
-        for (Currency currency : currencies.values()) {
+        for (Currency currency : this.currencies.values()) {
             if (currency.isDefaultCurrency())
                 return currency;
         }
@@ -64,14 +65,14 @@ public class CurrencyManager {
         Currency currency = new Currency(UUID.randomUUID(), singular, plural);
         currency.setExchangeRate(1.0);
 
-        if (currencies.size() == 0) {
+        if (this.currencies.size() == 0) {
             currency.setDefaultCurrency(true);
         }
 
         addCurrencyIfAbsent(currency);
 
-        plugin.getDataStore().saveCurrency(currency);
-        plugin.getUpdateForwarder().sendMessage(Action.CREATE_CURRENCY, currency.getUuid());
+        this.plugin.getDataStore().saveCurrency(currency);
+        this.plugin.getMessenger().sendMessage(Action.CREATE_CURRENCY, currency.getUuid());
 
         return currency;
     }
@@ -84,7 +85,7 @@ public class CurrencyManager {
      * @param currency a Currency
      */
     public void addCurrencyIfAbsent(Currency currency) {
-        currencies.putIfAbsent(currency.getUuid(), currency);
+        this.currencies.putIfAbsent(currency.getUuid(), currency);
     }
 
     /**
@@ -93,22 +94,22 @@ public class CurrencyManager {
      * @param uuid the uuid of specific Currency
      */
     public void loadCurrencyOverride(UUID uuid) {
-        @Nullable Currency updated = plugin.getDataStore().loadCurrency(uuid);
+        @Nullable Currency updated = this.plugin.getDataStore().loadCurrency(uuid);
         if (updated != null) {
-            currencies.put(updated.getUuid(), updated);
+            this.currencies.put(updated.getUuid(), updated);
         }
     }
 
     /**
      * Updates specific Currency in the memory so that it syncs with database.
      * <p>
-     * This method is specifically used by {@link me.xanium.gemseconomy.message.MessageForwarder}.
+     * This method is specifically used by {@link Messenger}.
      *
      * @param uuid the uuid of specific Currency
      */
     public void updateCurrency(UUID uuid) {
-        @Nullable Currency updated = plugin.getDataStore().loadCurrency(uuid);
-        @Nullable Currency loaded = currencies.get(uuid);
+        @Nullable Currency updated = this.plugin.getDataStore().loadCurrency(uuid);
+        @Nullable Currency loaded = this.currencies.get(uuid);
         if (updated != null && loaded != null) {
             loaded.update(updated); // This manager has specific Currency, but not synced with database
         }
@@ -120,8 +121,8 @@ public class CurrencyManager {
      * @param currency a Currency
      */
     public void saveCurrency(Currency currency) {
-        plugin.getDataStore().saveCurrency(currency);
-        plugin.getUpdateForwarder().sendMessage(Action.UPDATE_CURRENCY, currency.getUuid());
+        this.plugin.getDataStore().saveCurrency(currency);
+        this.plugin.getMessenger().sendMessage(Action.UPDATE_CURRENCY, currency.getUuid());
     }
 
     /**
@@ -130,10 +131,10 @@ public class CurrencyManager {
      * @param currency the Currency to clear balance
      */
     public void clearBalance(Currency currency) {
-        plugin.getAccountManager().getOfflineAccounts().forEach(account -> {
+        this.plugin.getAccountManager().getOfflineAccounts().forEach(account -> {
             account.getBalances().put(currency, 0D);
-            plugin.getDataStore().saveAccount(account);
-            plugin.getUpdateForwarder().sendMessage(Action.UPDATE_ACCOUNT, account.getUuid());
+            this.plugin.getDataStore().saveAccount(account);
+            this.plugin.getMessenger().sendMessage(Action.UPDATE_ACCOUNT, account.getUuid());
         });
     }
 
@@ -151,26 +152,26 @@ public class CurrencyManager {
             .getOfflineAccounts()
             .forEach(account -> {
                 account.getBalances().remove(currency);
-                plugin.getDataStore().saveAccount(account);
-                plugin.getUpdateForwarder().sendMessage(Action.UPDATE_ACCOUNT, account.getUuid());
+                this.plugin.getDataStore().saveAccount(account);
+                this.plugin.getMessenger().sendMessage(Action.UPDATE_ACCOUNT, account.getUuid());
             });
 
         // Remove this currency from this manager
-        currencies.remove(currency.getUuid());
+        this.currencies.remove(currency.getUuid());
 
         // Remove this currency from data storage
-        plugin.getDataStore().deleteCurrency(currency);
-        plugin.getUpdateForwarder().sendMessage(Action.DELETE_CURRENCY, currency.getUuid());
+        this.plugin.getDataStore().deleteCurrency(currency);
+        this.plugin.getMessenger().sendMessage(Action.DELETE_CURRENCY, currency.getUuid());
     }
 
     public void removeCurrency(UUID uuid) {
-        Currency currency = currencies.get(uuid);
+        Currency currency = this.currencies.get(uuid);
         if (currency != null)
             removeCurrency(currency);
     }
 
     public List<Currency> getCurrencies() {
-        return ImmutableList.copyOf(currencies.values());
+        return ImmutableList.copyOf(this.currencies.values());
     }
 
 }

@@ -7,4 +7,8 @@ public class Action {
     public static final String UPDATE_CURRENCY = "update_currency";
     public static final String DELETE_CURRENCY = "delete_currency";
     public static final String CREATE_CURRENCY = "create_currency";
+
+    private Action() {
+        throw new UnsupportedOperationException();
+    }
 }

@@ -19,7 +19,7 @@ import me.xanium.gemseconomy.data.MySQLStorage;
 import me.xanium.gemseconomy.data.StorageType;
 import me.xanium.gemseconomy.listener.EconomyListener;
 import me.xanium.gemseconomy.logging.EconomyLogger;
-import me.xanium.gemseconomy.message.MessageForwarder;
+import me.xanium.gemseconomy.message.Messenger;
 import me.xanium.gemseconomy.utils.UtilServer;
 import me.xanium.gemseconomy.vault.VaultHandler;
 import net.kyori.adventure.platform.bukkit.BukkitAudiences;
@@ -41,7 +41,7 @@ public class GemsEconomy extends ExtendedJavaPlugin {
     private CurrencyManager currencyManager;
     private VaultHandler vaultHandler;
     private EconomyLogger economyLogger;
-    private MessageForwarder updateForwarder;
+    private Messenger messenger;
 
     private boolean debug = false;
     private boolean vault = true;
@@ -100,7 +100,7 @@ public class GemsEconomy extends ExtendedJavaPlugin {
     @Override
     public void enable() {
         this.audiences = bind(BukkitAudiences.create(this));
-        this.updateForwarder = bind(MessageForwarder.get());
+        this.messenger = bind(Messenger.get());
 
         registerListener(new EconomyListener()).bindWith(this);
 
@@ -161,8 +161,8 @@ public class GemsEconomy extends ExtendedJavaPlugin {
         return this.economyLogger;
     }
 
-    public MessageForwarder getUpdateForwarder() {
-        return this.updateForwarder;
+    public Messenger getMessenger() {
+        return this.messenger;
     }
 
     public boolean isDebug() {
