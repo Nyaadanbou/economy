@@ -80,7 +80,6 @@ public class GemsEconomy extends ExtendedJavaPlugin {
         this.accountManager = new AccountManager(this);
         this.currencyManager = new CurrencyManager(this);
         this.economyLogger = new EconomyLogger(this);
-        this.updateForwarder = MessageForwarder.get();
 
         initializeDataStore(StorageType.valueOf(requireNonNull(getConfig().getString("storage")).toUpperCase()));
 
@@ -101,11 +100,11 @@ public class GemsEconomy extends ExtendedJavaPlugin {
     @Override
     public void enable() {
         this.audiences = bind(BukkitAudiences.create(this));
+        this.updateForwarder = bind(MessageForwarder.get());
 
         registerListener(new EconomyListener()).bindWith(this);
 
-        if (isLogging())
-            getEconomyLogger().save();
+        if (isLogging()) getEconomyLogger().save();
 
         try {
             new CommandManager(this);

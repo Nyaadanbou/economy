@@ -109,4 +109,8 @@ public class RedisMessageForwarder implements MessageForwarder {
         return out.toByteArray();
     }
 
+    @Override public void close() {
+        this.connectorPlugin.getConnector().unregisterMessageHandlers(this.connectingPlugin);
+    }
+
 }
