@@ -1,6 +1,6 @@
 #
 # GemsEconomy Main Configuration file.
-# Developer(s): [Xanium, Nailm]
+# Developer(s): [ Nailm, Xanium ]
 
 storage: mysql
 vault: true

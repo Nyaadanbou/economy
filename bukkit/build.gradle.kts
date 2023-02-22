@@ -15,7 +15,7 @@ version = "${project.version}".decorateVersion()
 
 dependencies {
     // Server API
-    compileOnly("io.papermc.paper", "paper-api", "1.17.1-R0.1-SNAPSHOT")
+    compileOnly("io.papermc.paper", "paper-api", "1.19.3-R0.1-SNAPSHOT")
 
     // Will be downloaded upon plugin startup
     compileOnly("com.zaxxer", "HikariCP", "5.0.1")
@@ -38,6 +38,7 @@ dependencies {
     implementation("cloud.commandframework", "cloud-minecraft-extras", cloudVersion)
 }
 
+// TODO remove/replace it with paper plugin specifications
 bukkit {
     main = "me.xanium.gemseconomy.GemsEconomy"
     name = rootProject.name
@@ -76,6 +77,14 @@ tasks {
             relocate(it, "me.xanium.gemseconomy.shade.$it")
         }
     }
+    processResources {
+        filesMatching("**/paper-plugin.yml") {
+            expand(mapOf(
+                "version" to "${project.version}",
+                "description" to project.description
+            ))
+        }
+    }
     task("deployToServer") {
         dependsOn(build)
         doLast {
@@ -89,7 +98,7 @@ tasks {
 publishing {
     publications {
         create<MavenPublication>("maven") {
-            artifactId = rootProject.name
+            artifactId = "GemsEconomy"
             from(components["java"])
         }
     }

@@ -1,0 +1,22 @@
+name: GemsEconomy
+main: me.xanium.gemseconomy.GemsEconomy
+loader: me.xanium.gemseconomy.GemsEconomyLoader
+version: ${version}
+api-version: 1.19
+author: [ Nailm ]
+description: ${description}
+load-before: [ ]
+load-after: [ ]
+dependencies:
+  - name: helper
+    required: true
+    bootstrap: false
+  - name: MewCore
+    required: true
+    bootstrap: false
+  - name: Vault
+    required: false
+    bootstrap: false
+  - name: ConnectorPlugin
+    required: false
+    bootstrap: false
