@@ -76,8 +76,6 @@ public class GemsEconomy extends ExtendedJavaPlugin {
         vault = getConfig().getBoolean("vault");
         logging = getConfig().getBoolean("transaction_log");
 
-        audiences = bind(BukkitAudiences.create(this));
-
         messages = new GemsMessages(this);
         accountManager = new AccountManager(this);
         currencyManager = new CurrencyManager(this);
@@ -102,6 +100,8 @@ public class GemsEconomy extends ExtendedJavaPlugin {
 
     @Override
     public void enable() {
+        audiences = bind(BukkitAudiences.create(this));
+
         registerListener(new EconomyListener()).bindWith(this);
 
         if (isLogging())
