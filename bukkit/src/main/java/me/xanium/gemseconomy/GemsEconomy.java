@@ -12,7 +12,6 @@ import me.lucko.helper.plugin.ExtendedJavaPlugin;
 import me.xanium.gemseconomy.account.AccountManager;
 import me.xanium.gemseconomy.api.GemsEconomyAPI;
 import me.xanium.gemseconomy.message.MessageForwarder;
-import me.xanium.gemseconomy.cheque.ChequeManager;
 import me.xanium.gemseconomy.command.CommandManager;
 import me.xanium.gemseconomy.currency.Currency;
 import me.xanium.gemseconomy.currency.CurrencyManager;
@@ -39,7 +38,6 @@ public class GemsEconomy extends ExtendedJavaPlugin {
     private GemsEconomyAPI api;
     private DataStorage dataStorage = null;
     private AccountManager accountManager;
-    private ChequeManager chequeManager;
     private CurrencyManager currencyManager;
     private VaultHandler vaultHandler;
     private EconomyLogger economyLogger;
@@ -48,7 +46,6 @@ public class GemsEconomy extends ExtendedJavaPlugin {
     private boolean debug = false;
     private boolean vault = true;
     private boolean logging = false;
-    private boolean cheques = false;
     private boolean disabling = false;
 
     public static GemsEconomy getInstance() {
@@ -76,7 +73,6 @@ public class GemsEconomy extends ExtendedJavaPlugin {
         debug = getConfig().getBoolean("debug");
         vault = getConfig().getBoolean("vault");
         logging = getConfig().getBoolean("transaction_log");
-        cheques = getConfig().getBoolean("cheque.enabled");
     }
 
     @Override
@@ -94,8 +90,9 @@ public class GemsEconomy extends ExtendedJavaPlugin {
         initializeDataStore(StorageType.valueOf(requireNonNull(getConfig().getString("storage")).toUpperCase()));
 
         if (currencyManager.getCurrencies().stream().noneMatch(Currency::isDefaultCurrency)) {
+            logger.severe("No default currency is provided");
             getServer().getPluginManager().disablePlugin(this);
-            throw new IllegalStateException("No default currency is provided");
+            return;
         }
 
         bind(registerListener(new EconomyListener()));
@@ -111,15 +108,11 @@ public class GemsEconomy extends ExtendedJavaPlugin {
             getEconomyLogger().save();
         }
 
-        if (isChequesEnabled()) {
-            chequeManager = new ChequeManager(this);
-        }
-
         try {
             new CommandManager(this);
         } catch (Exception e) {
             getLogger().log(Level.SEVERE, "Failed to initialize commands", e);
-            setEnabled(false);
+            getServer().getPluginManager().disablePlugin(this);
         }
     }
 
@@ -170,10 +163,6 @@ public class GemsEconomy extends ExtendedJavaPlugin {
         return economyLogger;
     }
 
-    public ChequeManager getChequeManager() {
-        return chequeManager;
-    }
-
     public MessageForwarder getUpdateForwarder() {
         return updateForwarder;
     }
@@ -196,10 +185,6 @@ public class GemsEconomy extends ExtendedJavaPlugin {
 
     public boolean isDisabling() {
         return disabling;
-    }
-
-    public boolean isChequesEnabled() {
-        return cheques;
     }
 
     private void initializeDataStore(@Nullable StorageType strategy) {
