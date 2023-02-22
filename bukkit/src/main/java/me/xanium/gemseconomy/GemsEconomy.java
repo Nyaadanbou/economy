@@ -11,7 +11,6 @@ package me.xanium.gemseconomy;
 import me.lucko.helper.plugin.ExtendedJavaPlugin;
 import me.xanium.gemseconomy.account.AccountManager;
 import me.xanium.gemseconomy.api.GemsEconomyAPI;
-import me.xanium.gemseconomy.message.MessageForwarder;
 import me.xanium.gemseconomy.command.CommandManager;
 import me.xanium.gemseconomy.currency.Currency;
 import me.xanium.gemseconomy.currency.CurrencyManager;
@@ -20,6 +19,7 @@ import me.xanium.gemseconomy.data.MySQLStorage;
 import me.xanium.gemseconomy.data.StorageType;
 import me.xanium.gemseconomy.listener.EconomyListener;
 import me.xanium.gemseconomy.logging.EconomyLogger;
+import me.xanium.gemseconomy.message.MessageForwarder;
 import me.xanium.gemseconomy.utils.UtilServer;
 import me.xanium.gemseconomy.vault.VaultHandler;
 import net.kyori.adventure.platform.bukkit.BukkitAudiences;
@@ -66,6 +66,8 @@ public class GemsEconomy extends ExtendedJavaPlugin {
 
     @Override
     public void load() {
+        INSTANCE = this;
+
         getConfig().options().copyDefaults(true);
         saveDefaultConfig();
         reloadConfig();
@@ -73,11 +75,6 @@ public class GemsEconomy extends ExtendedJavaPlugin {
         debug = getConfig().getBoolean("debug");
         vault = getConfig().getBoolean("vault");
         logging = getConfig().getBoolean("transaction_log");
-    }
-
-    @Override
-    public void enable() {
-        INSTANCE = this;
 
         audiences = bind(BukkitAudiences.create(this));
 
@@ -95,18 +92,20 @@ public class GemsEconomy extends ExtendedJavaPlugin {
             return;
         }
 
-        bind(registerListener(new EconomyListener()));
-
         if (isVault()) {
             vaultHandler = new VaultHandler(this);
             vaultHandler.hook();
         } else {
             UtilServer.consoleLog("Vault link is disabled.");
         }
+    }
 
-        if (isLogging()) {
+    @Override
+    public void enable() {
+        registerListener(new EconomyListener()).bindWith(this);
+
+        if (isLogging())
             getEconomyLogger().save();
-        }
 
         try {
             new CommandManager(this);
