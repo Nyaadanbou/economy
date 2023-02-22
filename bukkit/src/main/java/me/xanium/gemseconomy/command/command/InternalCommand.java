@@ -14,6 +14,7 @@ public class InternalCommand extends AbstractCommand {
         super(plugin, manager);
     }
 
+    @SuppressWarnings("deprecation")
     @Override
     public void register() {
         Command.Builder<CommandSender> builder = manager
