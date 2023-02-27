@@ -43,7 +43,7 @@ public class GEVaultHook extends AbstractEconomy {
     @Override
     public String currencyNameSingular() {
         Currency currency = GemsEconomy.getInstance().getCurrencyManager().getDefaultCurrency();
-        return currency.getSingular();
+        return currency.getName();
     }
 
     @Override

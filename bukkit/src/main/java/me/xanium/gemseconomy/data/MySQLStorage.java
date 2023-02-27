@@ -42,7 +42,7 @@ public final class MySQLStorage extends DataStorage {
 
     // --- SQL Statements ---
     private final String SAVE_ACCOUNT = "INSERT INTO `" + getTablePrefix() + "_accounts` (`nickname`, `uuid`, `payable`, `balance_data`, `balance_acc`) VALUES(?, ?, ?, ?, ?) ON DUPLICATE KEY UPDATE `nickname` = VALUES(`nickname`), `uuid` = VALUES(`uuid`), `payable` = VALUES(`payable`), `balance_data` = VALUES(`balance_data`), `balance_acc` = VALUES(`balance_acc`)";
-    private final String SAVE_CURRENCY = "INSERT INTO `" + getTablePrefix() + "_currencies` (`uuid`, `name_singular`, `default_balance`, `max_balance`, `symbol`, `decimals_supported`, `is_default`, `payable`, `color`, `exchange_rate`) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) ON DUPLICATE KEY UPDATE `uuid` = VALUES(`uuid`), `name_singular` = VALUES(`name_singular`), `default_balance` = VALUES(`default_balance`), `max_balance` = VALUES(`max_balance`), `symbol` = VALUES(`symbol`), `decimals_supported` = VALUES(`decimals_supported`), `is_default` = VALUES(`is_default`), `payable` = VALUES(`payable`), `color` = VALUES(`color`), `exchange_rate` = VALUES(`exchange_rate`)";
+    private final String SAVE_CURRENCY = "INSERT INTO `" + getTablePrefix() + "_currencies` (`uuid`, `name`, `default_balance`, `max_balance`, `symbol`, `decimals_supported`, `is_default`, `payable`, `color`, `exchange_rate`) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) ON DUPLICATE KEY UPDATE `uuid` = VALUES(`uuid`), `name` = VALUES(`name`), `default_balance` = VALUES(`default_balance`), `max_balance` = VALUES(`max_balance`), `symbol` = VALUES(`symbol`), `decimals_supported` = VALUES(`decimals_supported`), `is_default` = VALUES(`is_default`), `payable` = VALUES(`payable`), `color` = VALUES(`color`), `exchange_rate` = VALUES(`exchange_rate`)";
 
     // --- Cached Top ---
     private final LinkedHashMap<UUID, CachedTopList> topList = new LinkedHashMap<>();
@@ -78,7 +78,7 @@ public final class MySQLStorage extends DataStorage {
     }
 
     private void setupTables(Connection connection) throws SQLException {
-        try (PreparedStatement ps = connection.prepareStatement("CREATE TABLE IF NOT EXISTS " + this.currencyTable + " (uuid VARCHAR(255) NOT NULL PRIMARY KEY, name_singular VARCHAR(255), default_balance DECIMAL, max_balance DECIMAL, symbol VARCHAR(10), decimals_supported INT, is_default INT, payable INT, color VARCHAR(255), exchange_rate DECIMAL);")) {
+        try (PreparedStatement ps = connection.prepareStatement("CREATE TABLE IF NOT EXISTS " + this.currencyTable + " (uuid VARCHAR(255) NOT NULL PRIMARY KEY, name VARCHAR(255), default_balance DECIMAL, max_balance DECIMAL, symbol VARCHAR(10), decimals_supported INT, is_default INT, payable INT, color VARCHAR(255), exchange_rate DECIMAL);")) {
             ps.execute();
         }
         try (PreparedStatement ps = connection.prepareStatement("CREATE TABLE IF NOT EXISTS " + this.accountsTable + " (nickname VARCHAR(255), uuid VARCHAR(255) NOT NULL PRIMARY KEY, payable INT, balance_data LONGTEXT NULL);")) {
@@ -134,6 +134,12 @@ public final class MySQLStorage extends DataStorage {
                     stmt.execute();
 
                     UtilServer.consoleLog("Altered table " + this.currencyTable + " to support the new max_balance variable.");
+                }
+                if (currencyTableColumns.contains("name_singular")) {
+                    stmt = connection.prepareStatement("ALTER TABLE " + this.currencyTable + " RENAME COLUMN `name_singular` TO `name`");
+                    stmt.execute();
+
+                    UtilServer.consoleLog("Altered table " + this.currencyTable + " to rename 'name_singular' to just 'name'.");
                 }
                 if (currencyTableColumns.contains("name_plural")) {
                     stmt = connection.prepareStatement("ALTER TABLE " + this.currencyTable + " DROP COLUMN `name_plural`");
@@ -196,7 +202,7 @@ public final class MySQLStorage extends DataStorage {
                 Currency currency = loadCurrencyFromDatabase(resultSet);
                 plugin.getCurrencyManager().addCurrencyIfAbsent(currency);
                 UtilServer.consoleLog("Loaded currency: %s (default_balance: %s, max_balance: %s, default_currency: %s, payable: %s)".formatted(
-                    currency.getSingular(), currency.getDefaultBalance(), currency.getMaxBalance(), currency.isDefaultCurrency(), currency.isPayable()
+                    currency.getName(), currency.getDefaultBalance(), currency.getMaxBalance(), currency.isDefaultCurrency(), currency.isPayable()
                 ));
             }
         } catch (SQLException e) {
@@ -224,7 +230,7 @@ public final class MySQLStorage extends DataStorage {
         try (Connection connection = getHikari().getConnection()) {
             PreparedStatement stmt = connection.prepareStatement(SAVE_CURRENCY);
             stmt.setString(1, currency.getUuid().toString());
-            stmt.setString(2, currency.getSingular());
+            stmt.setString(2, currency.getName());
             stmt.setDouble(4, currency.getDefaultBalance());
             stmt.setDouble(5, currency.getMaxBalance());
             stmt.setString(6, currency.getSymbolNullable());
@@ -484,7 +490,7 @@ public final class MySQLStorage extends DataStorage {
      */
     private Currency loadCurrencyFromDatabase(ResultSet resultSet) throws SQLException {
         UUID uuid = UUID.fromString(resultSet.getString("uuid"));
-        String singular = resultSet.getString("name_singular");
+        String name = resultSet.getString("name");
         double defaultBalance = resultSet.getDouble("default_balance");
         double maximumBalance = resultSet.getDouble("max_balance");
         String symbol = resultSet.getString("symbol");
@@ -495,7 +501,7 @@ public final class MySQLStorage extends DataStorage {
         double exchangeRate = resultSet.getDouble("exchange_rate");
 
         Currency currency = new Currency(uuid);
-        currency.setSingular(singular);
+        currency.setName(name);
         currency.setDefaultBalance(defaultBalance);
         currency.setMaximumBalance(maximumBalance);
         currency.setSymbol(symbol);

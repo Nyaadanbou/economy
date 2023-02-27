@@ -25,7 +25,7 @@ import java.util.UUID;
 public class Currency {
 
     private final UUID uuid;
-    private @MonotonicNonNull String singular;
+    private @MonotonicNonNull String name;
     private @Nullable String symbol;
     private TextColor color = NamedTextColor.WHITE;
     private boolean decimalSupported = true;
@@ -39,9 +39,9 @@ public class Currency {
         this.uuid = uuid;
     }
 
-    public Currency(UUID uuid, String singular) {
+    public Currency(UUID uuid, String name) {
         this.uuid = uuid;
-        this.singular = singular;
+        this.name = name;
     }
 
     /**
@@ -50,7 +50,7 @@ public class Currency {
      * @param other the Currency which the states are copied from
      */
     public void update(Currency other) {
-        this.singular = other.singular;
+        this.name = other.name;
         this.symbol = other.symbol;
         this.color = other.color;
         this.decimalSupported = other.decimalSupported;
@@ -65,12 +65,20 @@ public class Currency {
     //// Balance Amount /////
     ///
 
+    /**
+     * @deprecated use {@link #getName()} instead
+     */
+    @Deprecated
     public String getSingular() {
-        return this.singular;
+        return getName();
     }
 
-    public void setSingular(String singular) {
-        this.singular = singular;
+    public String getName() {
+        return this.name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     public double getDefaultBalance() {
@@ -94,7 +102,7 @@ public class Currency {
     ////
 
     /**
-     * @deprecated in favor of {@link #simpleFormat(double)}
+     * @deprecated in favor of {@link #simpleFormat(double)} or {@link #fancyFormat(double)}
      */
     @Deprecated
     public String format(double amount) {
@@ -112,7 +120,7 @@ public class Currency {
      */
     public String simpleFormat(double amount) {
         String amountString = UtilString.format(amount, this.decimalSupported);
-        String nameString = getSingular().replace("_", " ");
+        String nameString = getName().replace("_", " ");
         return GemsEconomy.lang().raw("msg_balance_simple_format",
             "amount", amountString,
             "name", nameString
@@ -132,7 +140,7 @@ public class Currency {
     public String fancyFormat(double amount) {
         String amountString = UtilString.format(amount, this.decimalSupported);
         String symbolString = getSymbolOrEmpty();
-        String nameString = getSingular().replace("_", " ");
+        String nameString = getName().replace("_", " ");
         return GemsEconomy.lang().raw("msg_balance_fancy_format",
             "amount", amountString,
             "name", nameString,
@@ -141,7 +149,7 @@ public class Currency {
     }
 
     public Component getDisplayName() {
-        return Component.text(this.singular).color(this.color);
+        return Component.text(this.name).color(this.color);
     }
 
     public TextColor getColor() {

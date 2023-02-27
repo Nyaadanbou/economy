@@ -33,12 +33,12 @@ public class CurrencyCommand extends AbstractCommand {
 
         Command<CommandSender> createCurrency = builder
             .literal("create")
-            .argument(StringArgument.of("singular"))
+            .argument(StringArgument.of("name"))
             .handler(context -> {
                 CommandSender sender = context.getSender();
-                String singular = context.get("singular");
+                String name = context.get("name");
 
-                Currency currency = GemsEconomy.getInstance().getCurrencyManager().createCurrency(singular);
+                Currency currency = GemsEconomy.getInstance().getCurrencyManager().createCurrency(name);
                 if (currency != null) {
                     GemsEconomy.lang().sendComponent(sender, GemsEconomy.lang()
                         .component(sender, "msg_created_currency")
@@ -71,10 +71,10 @@ public class CurrencyCommand extends AbstractCommand {
                 Currency currency = context.get("currency");
                 GemsEconomy.lang().sendComponent(sender, "msg_currency_uuid", "uuid", currency.getUuid().toString());
                 GemsEconomy.lang().sendComponent(sender, GemsEconomy.lang()
-                    .component(sender, "msg_currency_display_name")
+                    .component(sender, "msg_currency_name")
                     .replaceText(config -> {
-                        config.matchLiteral("{singular}");
-                        config.replacement(Component.text(currency.getSingular(), currency.getColor()));
+                        config.matchLiteral("{name}");
+                        config.replacement(Component.text(currency.getName(), currency.getColor()));
                     })
                 );
                 GemsEconomy.lang().sendComponent(sender, "msg_currency_default_balance", "default_balance", Double.toString(currency.getDefaultBalance()));

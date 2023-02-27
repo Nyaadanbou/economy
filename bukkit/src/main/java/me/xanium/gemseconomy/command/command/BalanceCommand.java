@@ -76,7 +76,7 @@ public class BalanceCommand extends AbstractCommand {
         } else {
             GemsEconomy.lang().sendComponent(sender, "msg_balance_multiple", "account", account.getNickname());
             account.getBalances().forEach((currency, balance) -> {
-                if (sender.hasPermission("gemseconomy.currency.balance." + currency.getSingular())) {
+                if (sender.hasPermission("gemseconomy.currency.balance." + currency.getName())) {
                     GemsEconomy.lang().sendComponent(sender, GemsEconomy.lang()
                         .component(sender, "msg_balance_list")
                         .replaceText(AMOUNT_REPLACEMENT.apply(currency, balance))

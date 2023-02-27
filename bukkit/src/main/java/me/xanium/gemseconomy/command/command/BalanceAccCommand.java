@@ -76,7 +76,7 @@ public class BalanceAccCommand extends AbstractCommand {
         } else {
             GemsEconomy.lang().sendComponent(sender, "msg_balance_acc_multiple", "account", account.getNickname());
             account.getCumulativeBalances().forEach((currency, acc) -> {
-                if (sender.hasPermission("gemseconomy.currency.balanceacc." + currency.getSingular())) {
+                if (sender.hasPermission("gemseconomy.currency.balanceacc." + currency.getName())) {
                     double balance = account.getCumulativeBalance(currency);
                     GemsEconomy.lang().sendComponent(sender, GemsEconomy.lang()
                         .component(sender, "msg_balance_list")

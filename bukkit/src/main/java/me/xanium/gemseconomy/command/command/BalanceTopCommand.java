@@ -38,7 +38,7 @@ public class BalanceTopCommand extends AbstractCommand {
                     GemsEconomy.lang().sendComponent(sender, "err_balance_top_no_support");
                     return;
                 }
-                if (!sender.hasPermission("gemseconomy.command.baltop." + currency.getSingular())) {
+                if (!sender.hasPermission("gemseconomy.command.baltop." + currency.getName())) {
                     GemsEconomy.lang().sendComponent(sender, "err_balance_top_no_permission");
                     return;
                 }

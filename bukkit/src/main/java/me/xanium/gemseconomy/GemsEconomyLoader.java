@@ -14,6 +14,7 @@ public class GemsEconomyLoader implements PluginLoader {
         MavenLibraryResolver resolver = new MavenLibraryResolver();
 
         resolver.addRepository(new RemoteRepository.Builder("central", "default", "https://repo1.maven.org/maven2/").build());
+        resolver.addRepository(new RemoteRepository.Builder("aliyunmaven", "default", "https://maven.aliyun.com/repository/public/").build());
         resolver.addDependency(new Dependency(new DefaultArtifact("com.zaxxer:HikariCP:5.0.1"), null));
         resolver.addDependency(new Dependency(new DefaultArtifact("cloud.commandframework:cloud-paper:1.8.1"), null));
         resolver.addDependency(new Dependency(new DefaultArtifact("cloud.commandframework:cloud-minecraft-extras:1.8.1"), null));
