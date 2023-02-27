@@ -109,9 +109,9 @@ public class GemsEconomyAPI {
     }
 
     /**
-     * @param name - the Currency name in singular or plural
+     * @param name - the Currency name
      *
-     * @return - Currency object
+     * @return - a Currency object
      */
     public Currency getCurrency(@NonNull String name) {
         requireNonNull(name, "name");

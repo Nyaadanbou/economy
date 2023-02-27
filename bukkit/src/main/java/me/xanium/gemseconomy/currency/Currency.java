@@ -26,7 +26,6 @@ public class Currency {
 
     private final UUID uuid;
     private @MonotonicNonNull String singular;
-    private @MonotonicNonNull String plural;
     private @Nullable String symbol;
     private TextColor color = NamedTextColor.WHITE;
     private boolean decimalSupported = true;
@@ -40,10 +39,9 @@ public class Currency {
         this.uuid = uuid;
     }
 
-    public Currency(UUID uuid, String singular, String plural) {
+    public Currency(UUID uuid, String singular) {
         this.uuid = uuid;
         this.singular = singular;
-        this.plural = plural;
     }
 
     /**
@@ -53,7 +51,6 @@ public class Currency {
      */
     public void update(Currency other) {
         this.singular = other.singular;
-        this.plural = other.plural;
         this.symbol = other.symbol;
         this.color = other.color;
         this.decimalSupported = other.decimalSupported;
@@ -74,14 +71,6 @@ public class Currency {
 
     public void setSingular(String singular) {
         this.singular = singular;
-    }
-
-    public String getPlural() {
-        return this.plural;
-    }
-
-    public void setPlural(String plural) {
-        this.plural = plural;
     }
 
     public double getDefaultBalance() {
@@ -123,9 +112,7 @@ public class Currency {
      */
     public String simpleFormat(double amount) {
         String amountString = UtilString.format(amount, this.decimalSupported);
-        String nameString = amount != 1.0
-            ? this.getPlural().replace("_", " ")
-            : this.getSingular().replace("_", " ");
+        String nameString = getSingular().replace("_", " ");
         return GemsEconomy.lang().raw("msg_balance_simple_format",
             "amount", amountString,
             "name", nameString
@@ -145,9 +132,7 @@ public class Currency {
     public String fancyFormat(double amount) {
         String amountString = UtilString.format(amount, this.decimalSupported);
         String symbolString = getSymbolOrEmpty();
-        String nameString = amount != 1.0
-            ? this.getPlural().replace("_", " ")
-            : this.getSingular().replace("_", " ");
+        String nameString = getSingular().replace("_", " ");
         return GemsEconomy.lang().raw("msg_balance_fancy_format",
             "amount", amountString,
             "name", nameString,

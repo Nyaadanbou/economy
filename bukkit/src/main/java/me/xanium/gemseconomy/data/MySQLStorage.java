@@ -42,7 +42,7 @@ public final class MySQLStorage extends DataStorage {
 
     // --- SQL Statements ---
     private final String SAVE_ACCOUNT = "INSERT INTO `" + getTablePrefix() + "_accounts` (`nickname`, `uuid`, `payable`, `balance_data`, `balance_acc`) VALUES(?, ?, ?, ?, ?) ON DUPLICATE KEY UPDATE `nickname` = VALUES(`nickname`), `uuid` = VALUES(`uuid`), `payable` = VALUES(`payable`), `balance_data` = VALUES(`balance_data`), `balance_acc` = VALUES(`balance_acc`)";
-    private final String SAVE_CURRENCY = "INSERT INTO `" + getTablePrefix() + "_currencies` (`uuid`, `name_singular`, `name_plural`, `default_balance`, `max_balance`, `symbol`, `decimals_supported`, `is_default`, `payable`, `color`, `exchange_rate`) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) ON DUPLICATE KEY UPDATE `uuid` = VALUES(`uuid`), `name_singular` = VALUES(`name_singular`), `name_plural` = VALUES(`name_plural`), `default_balance` = VALUES(`default_balance`), `max_balance` = VALUES(`max_balance`), `symbol` = VALUES(`symbol`), `decimals_supported` = VALUES(`decimals_supported`), `is_default` = VALUES(`is_default`), `payable` = VALUES(`payable`), `color` = VALUES(`color`), `exchange_rate` = VALUES(`exchange_rate`)";
+    private final String SAVE_CURRENCY = "INSERT INTO `" + getTablePrefix() + "_currencies` (`uuid`, `name_singular`, `default_balance`, `max_balance`, `symbol`, `decimals_supported`, `is_default`, `payable`, `color`, `exchange_rate`) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) ON DUPLICATE KEY UPDATE `uuid` = VALUES(`uuid`), `name_singular` = VALUES(`name_singular`), `default_balance` = VALUES(`default_balance`), `max_balance` = VALUES(`max_balance`), `symbol` = VALUES(`symbol`), `decimals_supported` = VALUES(`decimals_supported`), `is_default` = VALUES(`is_default`), `payable` = VALUES(`payable`), `color` = VALUES(`color`), `exchange_rate` = VALUES(`exchange_rate`)";
 
     // --- Cached Top ---
     private final LinkedHashMap<UUID, CachedTopList> topList = new LinkedHashMap<>();
@@ -78,7 +78,7 @@ public final class MySQLStorage extends DataStorage {
     }
 
     private void setupTables(Connection connection) throws SQLException {
-        try (PreparedStatement ps = connection.prepareStatement("CREATE TABLE IF NOT EXISTS " + this.currencyTable + " (uuid VARCHAR(255) NOT NULL PRIMARY KEY, name_singular VARCHAR(255), name_plural VARCHAR(255), default_balance DECIMAL, max_balance DECIMAL, symbol VARCHAR(10), decimals_supported INT, is_default INT, payable INT, color VARCHAR(255), exchange_rate DECIMAL);")) {
+        try (PreparedStatement ps = connection.prepareStatement("CREATE TABLE IF NOT EXISTS " + this.currencyTable + " (uuid VARCHAR(255) NOT NULL PRIMARY KEY, name_singular VARCHAR(255), default_balance DECIMAL, max_balance DECIMAL, symbol VARCHAR(10), decimals_supported INT, is_default INT, payable INT, color VARCHAR(255), exchange_rate DECIMAL);")) {
             ps.execute();
         }
         try (PreparedStatement ps = connection.prepareStatement("CREATE TABLE IF NOT EXISTS " + this.accountsTable + " (nickname VARCHAR(255), uuid VARCHAR(255) NOT NULL PRIMARY KEY, payable INT, balance_data LONGTEXT NULL);")) {
@@ -134,6 +134,12 @@ public final class MySQLStorage extends DataStorage {
                     stmt.execute();
 
                     UtilServer.consoleLog("Altered table " + this.currencyTable + " to support the new max_balance variable.");
+                }
+                if (currencyTableColumns.contains("name_plural")) {
+                    stmt = connection.prepareStatement("ALTER TABLE " + this.currencyTable + " DROP COLUMN `name_plural`");
+                    stmt.execute();
+
+                    UtilServer.consoleLog("Altered table " + this.currencyTable + " to remove plural name of currencies.");
                 }
             }
 
@@ -219,7 +225,6 @@ public final class MySQLStorage extends DataStorage {
             PreparedStatement stmt = connection.prepareStatement(SAVE_CURRENCY);
             stmt.setString(1, currency.getUuid().toString());
             stmt.setString(2, currency.getSingular());
-            stmt.setString(3, currency.getPlural());
             stmt.setDouble(4, currency.getDefaultBalance());
             stmt.setDouble(5, currency.getMaxBalance());
             stmt.setString(6, currency.getSymbolNullable());
@@ -480,7 +485,6 @@ public final class MySQLStorage extends DataStorage {
     private Currency loadCurrencyFromDatabase(ResultSet resultSet) throws SQLException {
         UUID uuid = UUID.fromString(resultSet.getString("uuid"));
         String singular = resultSet.getString("name_singular");
-        String plural = resultSet.getString("name_plural");
         double defaultBalance = resultSet.getDouble("default_balance");
         double maximumBalance = resultSet.getDouble("max_balance");
         String symbol = resultSet.getString("symbol");
@@ -492,7 +496,6 @@ public final class MySQLStorage extends DataStorage {
 
         Currency currency = new Currency(uuid);
         currency.setSingular(singular);
-        currency.setPlural(plural);
         currency.setDefaultBalance(defaultBalance);
         currency.setMaximumBalance(maximumBalance);
         currency.setSymbol(symbol);

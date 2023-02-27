@@ -51,8 +51,7 @@ public class PayCommand extends AbstractCommand {
 
     @NonnullByDefault
     private void pay(Player sender, Player targetPlayer, double amount, Currency currency) {
-        if (!sender.hasPermission("gemseconomy.command.pay." + currency.getPlural().toLowerCase()) &&
-            !sender.hasPermission("gemseconomy.command.pay." + currency.getSingular().toLowerCase())) {
+        if (!sender.hasPermission("gemseconomy.command.pay." + currency.getSingular().toLowerCase())) {
             GemsEconomy.lang().sendComponent(sender, GemsEconomy.lang()
                 .component(sender, "msg_pay_no_permission")
                 .replaceText(CURRENCY_REPLACEMENT.apply(currency.getDisplayName()))

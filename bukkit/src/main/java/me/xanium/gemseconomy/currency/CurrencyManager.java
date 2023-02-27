@@ -30,7 +30,7 @@ public class CurrencyManager {
 
     public @Nullable Currency getCurrency(String name) {
         for (Currency currency : this.currencies.values()) {
-            if (currency.getSingular().equalsIgnoreCase(name) || currency.getPlural().equalsIgnoreCase(name)) {
+            if (currency.getSingular().equalsIgnoreCase(name)) {
                 return currency;
             }
         }
@@ -53,16 +53,15 @@ public class CurrencyManager {
      * Creates a new Currency and saves it to database.
      *
      * @param singular the singular form of the new Currency
-     * @param plural   the plural form of the new Currency
      *
      * @return the new Currency, or <code>null</code> if already existed
      */
-    public @Nullable Currency createCurrency(String singular, String plural) {
-        if (currencyExist(singular) || currencyExist(plural)) {
+    public @Nullable Currency createCurrency(String singular) {
+        if (currencyExist(singular)) {
             return null;
         }
 
-        Currency currency = new Currency(UUID.randomUUID(), singular, plural);
+        Currency currency = new Currency(UUID.randomUUID(), singular);
         currency.setExchangeRate(1.0);
 
         if (this.currencies.size() == 0) {

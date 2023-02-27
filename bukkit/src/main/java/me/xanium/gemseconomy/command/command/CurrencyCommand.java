@@ -34,13 +34,11 @@ public class CurrencyCommand extends AbstractCommand {
         Command<CommandSender> createCurrency = builder
             .literal("create")
             .argument(StringArgument.of("singular"))
-            .argument(StringArgument.of("plural"))
             .handler(context -> {
                 CommandSender sender = context.getSender();
                 String singular = context.get("singular");
-                String plural = context.get("plural");
 
-                Currency currency = GemsEconomy.getInstance().getCurrencyManager().createCurrency(singular, plural);
+                Currency currency = GemsEconomy.getInstance().getCurrencyManager().createCurrency(singular);
                 if (currency != null) {
                     GemsEconomy.lang().sendComponent(sender, GemsEconomy.lang()
                         .component(sender, "msg_created_currency")
@@ -77,10 +75,6 @@ public class CurrencyCommand extends AbstractCommand {
                     .replaceText(config -> {
                         config.matchLiteral("{singular}");
                         config.replacement(Component.text(currency.getSingular(), currency.getColor()));
-                    })
-                    .replaceText(config -> {
-                        config.matchLiteral("{plural}");
-                        config.replacement(Component.text(currency.getPlural(), currency.getColor()));
                     })
                 );
                 GemsEconomy.lang().sendComponent(sender, "msg_currency_default_balance", "default_balance", Double.toString(currency.getDefaultBalance()));

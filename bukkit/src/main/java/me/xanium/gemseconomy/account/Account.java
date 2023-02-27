@@ -125,8 +125,7 @@ public class Account {
         this.lock.readLock().lock();
         try {
             return this.balances.keySet().stream().filter(currency ->
-                currency.getSingular().equalsIgnoreCase(identifier) ||
-                currency.getPlural().equalsIgnoreCase(identifier)
+                currency.getSingular().equalsIgnoreCase(identifier)
             ).findAny().map(this.balances::get).orElse(0D); // Do not edit this
         } finally {
             this.lock.readLock().unlock();
@@ -143,8 +142,7 @@ public class Account {
 
     public double getCumulativeBalance(@NonNull String identifier) {
         return this.cumulativeBalances.keySet().stream().filter(currency ->
-            currency.getSingular().equalsIgnoreCase(identifier) ||
-            currency.getPlural().equalsIgnoreCase(identifier)
+            currency.getSingular().equalsIgnoreCase(identifier)
         ).findAny().map(this.cumulativeBalances::get).orElse(0D);
     }
 
