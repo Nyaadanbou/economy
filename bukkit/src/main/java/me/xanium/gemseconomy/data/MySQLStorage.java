@@ -31,7 +31,6 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 import static java.util.Objects.requireNonNull;
-import static java.util.Objects.requireNonNullElse;
 
 public final class MySQLStorage extends DataStorage {
 
@@ -41,7 +40,7 @@ public final class MySQLStorage extends DataStorage {
 
     // --- SQL Statements ---
     private final String SAVE_ACCOUNT = "INSERT INTO `" + getTablePrefix() + "_accounts` (`nickname`, `uuid`, `payable`, `balance_data`, `balance_acc`) VALUES(?, ?, ?, ?, ?) ON DUPLICATE KEY UPDATE `nickname` = VALUES(`nickname`), `uuid` = VALUES(`uuid`), `payable` = VALUES(`payable`), `balance_data` = VALUES(`balance_data`), `balance_acc` = VALUES(`balance_acc`)";
-    private final String SAVE_CURRENCY = "INSERT INTO `" + getTablePrefix() + "_currencies` (`uuid`, `name`, `default_balance`, `max_balance`, `symbol`, `decimals_supported`, `is_default`, `payable`, `color`, `exchange_rate`) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) ON DUPLICATE KEY UPDATE `uuid` = VALUES(`uuid`), `name` = VALUES(`name`), `default_balance` = VALUES(`default_balance`), `max_balance` = VALUES(`max_balance`), `symbol` = VALUES(`symbol`), `decimals_supported` = VALUES(`decimals_supported`), `is_default` = VALUES(`is_default`), `payable` = VALUES(`payable`), `color` = VALUES(`color`), `exchange_rate` = VALUES(`exchange_rate`)";
+    private final String SAVE_CURRENCY = "INSERT INTO `" + getTablePrefix() + "_currencies` (`uuid`, `name`, `default_balance`, `max_balance`, `symbol`, `decimals_supported`, `is_default`, `payable`, `color`, `exchange_rate`) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?) ON DUPLICATE KEY UPDATE `uuid` = VALUES(`uuid`), `name` = VALUES(`name`), `default_balance` = VALUES(`default_balance`), `max_balance` = VALUES(`max_balance`), `symbol` = VALUES(`symbol`), `decimals_supported` = VALUES(`decimals_supported`), `is_default` = VALUES(`is_default`), `payable` = VALUES(`payable`), `color` = VALUES(`color`), `exchange_rate` = VALUES(`exchange_rate`)";
 
     // --- Cached Top ---
     private final LinkedHashMap<UUID, CachedTopList> topList = new LinkedHashMap<>();
@@ -78,8 +77,8 @@ public final class MySQLStorage extends DataStorage {
 
     private void setupTables(Connection connection) throws SQLException {
         try (
-            PreparedStatement ps1 = connection.prepareStatement("CREATE TABLE IF NOT EXISTS " + this.currencyTable + " (uuid VARCHAR(255) NOT NULL PRIMARY KEY, name VARCHAR(255), default_balance DECIMAL, max_balance DECIMAL, symbol VARCHAR(10), decimals_supported INT, is_default INT, payable INT, color VARCHAR(255), exchange_rate DECIMAL);");
-            PreparedStatement ps2 = connection.prepareStatement("CREATE TABLE IF NOT EXISTS " + this.accountsTable + " (nickname VARCHAR(255), uuid VARCHAR(255) NOT NULL PRIMARY KEY, payable INT, balance_data LONGTEXT NULL);")
+            PreparedStatement ps1 = connection.prepareStatement("CREATE TABLE IF NOT EXISTS " + this.currencyTable + " (uuid VARCHAR(255) NOT NULL PRIMARY KEY, name VARCHAR(255), default_balance DECIMAL, max_balance DECIMAL, symbol VARCHAR(255), decimals_supported TINYINT, is_default TINYINT, payable TINYINT, color VARCHAR(255), exchange_rate DECIMAL);");
+            PreparedStatement ps2 = connection.prepareStatement("CREATE TABLE IF NOT EXISTS " + this.accountsTable + " (nickname VARCHAR(255), uuid VARCHAR(255) NOT NULL PRIMARY KEY, payable TINYINT, balance_data LONGTEXT NULL);")
         ) {
             ps1.execute();
             ps2.execute();
@@ -246,14 +245,14 @@ public final class MySQLStorage extends DataStorage {
         ) {
             stmt.setString(1, currency.getUuid().toString());
             stmt.setString(2, currency.getName());
-            stmt.setDouble(4, currency.getDefaultBalance());
-            stmt.setDouble(5, currency.getMaxBalance());
-            stmt.setString(6, currency.getSymbolNullable());
-            stmt.setInt(7, currency.isDecimalSupported() ? 1 : 0);
-            stmt.setInt(8, currency.isDefaultCurrency() ? 1 : 0);
-            stmt.setInt(9, currency.isPayable() ? 1 : 0);
-            stmt.setString(10, currency.getColor().asHexString());
-            stmt.setDouble(11, currency.getExchangeRate());
+            stmt.setDouble(3, currency.getDefaultBalance());
+            stmt.setDouble(4, currency.getMaxBalance());
+            stmt.setString(5, currency.getSymbolNullable());
+            stmt.setInt(6, currency.isDecimalSupported() ? 1 : 0);
+            stmt.setInt(7, currency.isDefaultCurrency() ? 1 : 0);
+            stmt.setInt(8, currency.isPayable() ? 1 : 0);
+            stmt.setString(9, currency.getColor().asHexString());
+            stmt.setDouble(10, currency.getExchangeRate());
             stmt.execute();
         } catch (SQLException e) {
             e.printStackTrace();
@@ -519,7 +518,7 @@ public final class MySQLStorage extends DataStorage {
         boolean supportDecimals = resultSet.getInt("decimals_supported") == 1;
         boolean defaultCurrency = resultSet.getInt("is_default") == 1;
         boolean payable = resultSet.getInt("payable") == 1;
-        TextColor color = requireNonNullElse(TextColor.fromHexString(resultSet.getString("color")), NamedTextColor.WHITE);
+        TextColor color = Optional.ofNullable(resultSet.getString("color")).map(TextColor::fromHexString).orElse(NamedTextColor.WHITE);
         double exchangeRate = resultSet.getDouble("exchange_rate");
 
         Currency currency = new Currency(uuid);
