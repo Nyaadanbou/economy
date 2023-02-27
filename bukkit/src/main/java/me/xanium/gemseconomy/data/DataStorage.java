@@ -22,7 +22,6 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.UUID;
-import java.util.function.Consumer;
 
 public abstract class DataStorage {
 
@@ -73,7 +72,8 @@ public abstract class DataStorage {
     public abstract void close();
 
     /**
-     * Gets the balance top list of given currency, then performs an action to the fetched top list.
+     * Gets the balance top list of given currency asynchronously and returns a {@link Promise} which contains the
+     * calculated top list.
      *
      * @param currency the Currency from which the top list is derived
      * @param start    the start index of the top list
@@ -204,9 +204,8 @@ public abstract class DataStorage {
     /**
      * @see #loadAccount(UUID)
      */
-    public void loadAccount(final @NonNull UUID uuid, final @NonNull Consumer<Account> action) {
-        Account account = loadAccount(uuid);
-        action.accept(account);
+    public Promise<Account> loadAccountAsync(final @NonNull UUID uuid) {
+        return Promise.supplyingAsync(() -> loadAccount(uuid));
     }
 
 }

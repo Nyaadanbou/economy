@@ -1,7 +1,6 @@
 package me.xanium.gemseconomy.command.command;
 
 import cloud.commandframework.Command;
-import me.lucko.helper.utils.annotation.NonnullByDefault;
 import me.xanium.gemseconomy.GemsEconomy;
 import me.xanium.gemseconomy.account.Account;
 import me.xanium.gemseconomy.command.AbstractCommand;
@@ -10,6 +9,9 @@ import me.xanium.gemseconomy.command.argument.AccountArgument;
 import me.xanium.gemseconomy.currency.Currency;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
+import org.checkerframework.framework.qual.DefaultQualifier;
 
 import java.util.List;
 import java.util.Optional;
@@ -17,6 +19,7 @@ import java.util.Optional;
 import static me.xanium.gemseconomy.GemsMessages.ACCOUNT_REPLACEMENT;
 import static me.xanium.gemseconomy.GemsMessages.AMOUNT_REPLACEMENT;
 
+@DefaultQualifier(NonNull.class)
 public class BalanceCommand extends AbstractCommand {
 
     public BalanceCommand(GemsEconomy plugin, CommandManager manager) {
@@ -25,7 +28,7 @@ public class BalanceCommand extends AbstractCommand {
 
     @Override
     public void register() {
-        Command<CommandSender> balance = manager
+        Command<CommandSender> balance = this.manager
             .commandBuilder("balance", "bal", "money")
             .permission("gemseconomy.command.balance")
             .argument(AccountArgument.optional("account"))
@@ -34,7 +37,7 @@ public class BalanceCommand extends AbstractCommand {
                 Optional<Account> account = context.getOptional("account");
                 if (sender instanceof Player player) {
                     if (account.isEmpty()) { // Player did not specify account, so view the account of their own
-                        Account ownAccount = GemsEconomy.getInstance().getAccountManager().fetchAccount(player);
+                        @Nullable Account ownAccount = GemsEconomy.getInstance().getAccountManager().fetchAccount(player);
                         if (ownAccount == null) { // Double check in case the player's account is not loaded for some reason
                             GemsEconomy.lang().sendComponent(sender, "err_account_missing");
                             return;
@@ -57,10 +60,9 @@ public class BalanceCommand extends AbstractCommand {
             })
             .build();
 
-        manager.register(List.of(balance));
+        this.manager.register(List.of(balance));
     }
 
-    @NonnullByDefault
     private void sendBalance(CommandSender sender, Account account) {
         int currencies = GemsEconomy.getInstance().getCurrencyManager().getCurrencies().size();
         if (currencies == 0) {
@@ -70,7 +72,7 @@ public class BalanceCommand extends AbstractCommand {
             double balance = account.getBalance(currency);
             GemsEconomy.lang().sendComponent(sender, GemsEconomy.lang()
                 .component(sender, "msg_balance_current")
-                .replaceText(ACCOUNT_REPLACEMENT.apply(account.getNickname()))
+                .replaceText(ACCOUNT_REPLACEMENT.apply(account))
                 .replaceText(AMOUNT_REPLACEMENT.apply(currency, balance))
             );
         } else {

@@ -13,7 +13,8 @@ import org.bukkit.command.CommandSender;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import static me.xanium.gemseconomy.GemsMessages.*;
+import static me.xanium.gemseconomy.GemsMessages.AMOUNT_REPLACEMENT;
+import static me.xanium.gemseconomy.GemsMessages.CURRENCY_REPLACEMENT;
 
 public class BalanceTopCommand extends AbstractCommand {
 
@@ -25,7 +26,7 @@ public class BalanceTopCommand extends AbstractCommand {
 
     @Override
     public void register() {
-        Command<CommandSender> balanceTop = manager
+        Command<CommandSender> balanceTop = this.manager
             .commandBuilder("balancetop", "baltop")
             .permission("gemseconomy.command.baltop")
             .argument(CurrencyArgument.optional("currency"))
@@ -47,7 +48,7 @@ public class BalanceTopCommand extends AbstractCommand {
             })
             .build();
 
-        manager.register(List.of(balanceTop));
+        this.manager.register(List.of(balanceTop));
     }
 
     private void sendBalanceTop(CommandSender sender, Currency currency, int offset, int pageNum) {
@@ -55,7 +56,7 @@ public class BalanceTopCommand extends AbstractCommand {
 
             GemsEconomy.lang().sendComponent(sender, GemsEconomy.lang()
                 .component(sender, "msg_balance_top_header")
-                .replaceText(CURRENCY_REPLACEMENT.apply(currency.getDisplayName()))
+                .replaceText(CURRENCY_REPLACEMENT.apply(currency))
                 .replaceText(config -> config.matchLiteral("{page}").replacement(Integer.toString(pageNum)))
             );
 
@@ -65,7 +66,7 @@ public class BalanceTopCommand extends AbstractCommand {
                 GemsEconomy.lang().sendComponent(sender, GemsEconomy.lang()
                     .component(sender, "msg_balance_top_entry")
                     .replaceText(AMOUNT_REPLACEMENT.apply(currency, balance))
-                    .replaceText(ACCOUNT_REPLACEMENT.apply(entry.getName()))
+                    .replaceText(config -> config.matchLiteral("{account}").replacement(entry.getName()))
                     .replaceText(config -> config.matchLiteral("{index}").replacement(index.toString()))
                 );
                 index.incrementAndGet();
@@ -76,7 +77,7 @@ public class BalanceTopCommand extends AbstractCommand {
             } else {
                 GemsEconomy.lang().sendComponent(sender, GemsEconomy.lang()
                     .component(sender, "msg_balance_top_next")
-                    .replaceText(CURRENCY_REPLACEMENT.apply(currency.getDisplayName()))
+                    .replaceText(CURRENCY_REPLACEMENT.apply(currency))
                     .replaceText(config -> config.matchLiteral("{page}").replacement(Integer.toString(pageNum + 1)))
                 );
             }

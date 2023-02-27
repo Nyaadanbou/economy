@@ -148,8 +148,8 @@ public class Currency {
         );
     }
 
-    public Component getDisplayName() {
-        return Component.text(this.name).color(this.color);
+    public String getDisplayName() {
+        return this.name;
     }
 
     public TextColor getColor() {

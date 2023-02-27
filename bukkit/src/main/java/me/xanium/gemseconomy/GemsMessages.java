@@ -1,6 +1,7 @@
 package me.xanium.gemseconomy;
 
 import de.themoep.utils.lang.bukkit.LanguageManager;
+import me.xanium.gemseconomy.account.Account;
 import me.xanium.gemseconomy.currency.Currency;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextReplacementConfig;
@@ -22,17 +23,17 @@ public class GemsMessages {
             : GemsEconomy.lang().component("msg_disabled")
         );
     };
-    public static final Function<String, Consumer<TextReplacementConfig.Builder>> ACCOUNT_REPLACEMENT = name -> config -> {
+    public static final Function<Account, Consumer<TextReplacementConfig.Builder>> ACCOUNT_REPLACEMENT = account -> config -> {
         config.matchLiteral("{account}");
-        config.replacement(name);
+        config.replacement(account.getNickname());
     };
-    public static final Function<Component, Consumer<TextReplacementConfig.Builder>> CURRENCY_REPLACEMENT = format -> config -> {
+    public static final Function<Currency, Consumer<TextReplacementConfig.Builder>> CURRENCY_REPLACEMENT = currency -> config -> {
         config.matchLiteral("{currency}");
-        config.replacement(format);
+        config.replacement(MiniMessage.miniMessage().deserialize(currency.getDisplayName()).color(currency.getColor()));
     };
     public static final BiFunction<Currency, Double, Consumer<TextReplacementConfig.Builder>> AMOUNT_REPLACEMENT = (currency, amount) -> config -> {
         config.matchLiteral("{amount}");
-        config.replacement(MiniMessage.miniMessage().deserialize(currency.fancyFormat(amount)));
+        config.replacement(MiniMessage.miniMessage().deserialize(currency.fancyFormat(amount)).color(currency.getColor()));
     };
 
     private final LanguageManager lang;
