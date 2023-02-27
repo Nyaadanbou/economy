@@ -2,7 +2,6 @@ package me.xanium.gemseconomy.command.command;
 
 import cloud.commandframework.Command;
 import cloud.commandframework.arguments.standard.IntegerArgument;
-import me.lucko.helper.utils.annotation.NonnullByDefault;
 import me.xanium.gemseconomy.GemsEconomy;
 import me.xanium.gemseconomy.command.AbstractCommand;
 import me.xanium.gemseconomy.command.CommandManager;
@@ -42,7 +41,6 @@ public class BalanceTopCommand extends AbstractCommand {
                     GemsEconomy.lang().sendComponent(sender, "err_balance_top_no_permission");
                     return;
                 }
-                @SuppressWarnings("ConstantConditions")
                 int page = Math.min(Math.max(context.getOrDefault("page", 1), 1), 100);
                 int offset = 10 * (page - 1);
                 sendBalanceTop(sender, currency, offset, page);
@@ -52,9 +50,8 @@ public class BalanceTopCommand extends AbstractCommand {
         manager.register(List.of(balanceTop));
     }
 
-    @NonnullByDefault
     private void sendBalanceTop(CommandSender sender, Currency currency, int offset, int pageNum) {
-        GemsEconomy.getInstance().getDataStore().getTopList(currency, offset, ACCOUNTS_PER_PAGE, result -> {
+        GemsEconomy.getInstance().getDataStore().getTopList(currency, offset, ACCOUNTS_PER_PAGE).thenAcceptSync(result -> {
 
             GemsEconomy.lang().sendComponent(sender, GemsEconomy.lang()
                 .component(sender, "msg_balance_top_header")
@@ -73,6 +70,7 @@ public class BalanceTopCommand extends AbstractCommand {
                 );
                 index.incrementAndGet();
             }
+
             if (result.isEmpty()) {
                 GemsEconomy.lang().sendComponent(sender, "err_balance_top_empty");
             } else {

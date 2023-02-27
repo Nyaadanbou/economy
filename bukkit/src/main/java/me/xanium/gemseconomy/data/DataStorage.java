@@ -8,6 +8,7 @@
 
 package me.xanium.gemseconomy.data;
 
+import me.lucko.helper.promise.Promise;
 import me.xanium.gemseconomy.GemsEconomy;
 import me.xanium.gemseconomy.account.Account;
 import me.xanium.gemseconomy.currency.CachedTopListEntry;
@@ -77,10 +78,11 @@ public abstract class DataStorage {
      * @param currency the Currency from which the top list is derived
      * @param start    the start index of the top list
      * @param amount   the amount of Account to fetch
-     * @param action   the action applied to the top list
+     *
+     * @return a promise
      */
     @Contract(pure = true)
-    public abstract void getTopList(final @NonNull Currency currency, int start, int amount, final @NonNull Consumer<LinkedList<CachedTopListEntry>> action);
+    public abstract Promise<LinkedList<CachedTopListEntry>> getTopList(final @NonNull Currency currency, int start, int amount);
 
     /**
      * Loads all currencies into memory from database.
