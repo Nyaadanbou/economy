@@ -9,8 +9,8 @@ plugins {
 version = "${project.version}".decorateVersion()
 
 dependencies {
-    compileOnly("com.zaxxer", "HikariCP", "5.0.1")
     compileOnly("net.luckperms:api:5.4")
+    compileOnly("com.zaxxer", "HikariCP", "5.0.1")
     compileOnly("com.velocitypowered", "velocity-api", "3.2.0-SNAPSHOT")
     annotationProcessor("com.velocitypowered", "velocity-api", "3.2.0-SNAPSHOT")
 }
