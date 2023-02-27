@@ -8,17 +8,16 @@
 
 package me.xanium.gemseconomy.currency;
 
+import me.xanium.gemseconomy.GemsEconomy;
 import me.xanium.gemseconomy.utils.UtilString;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextColor;
-import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
 
-import java.text.NumberFormat;
 import java.util.UUID;
 
 @SuppressWarnings("unused")
@@ -26,9 +25,9 @@ import java.util.UUID;
 public class Currency {
 
     private final UUID uuid;
-    @MonotonicNonNull private String singular;
-    @MonotonicNonNull private String plural;
-    @Nullable private String symbol;
+    private @MonotonicNonNull String singular;
+    private @MonotonicNonNull String plural;
+    private @Nullable String symbol;
     private TextColor color = NamedTextColor.WHITE;
     private boolean decimalSupported = true;
     private boolean payable = true;
@@ -65,100 +64,99 @@ public class Currency {
         this.exchangeRate = other.exchangeRate;
     }
 
-    public void setSingular(String singular) {
-        this.singular = singular;
-    }
-
-    public void setPlural(String plural) {
-        this.plural = plural;
-    }
-
-    public void setDefaultBalance(double defaultBalance) {
-        this.defaultBalance = defaultBalance;
-    }
-
-    public void setMaximumBalance(double maxBalance) {
-        this.maxBalance = maxBalance;
-    }
-
-    public UUID getUuid() {
-        return this.uuid;
-    }
+    ////
+    //// Balance Amount /////
+    ///
 
     public String getSingular() {
         return this.singular;
+    }
+
+    public void setSingular(String singular) {
+        this.singular = singular;
     }
 
     public String getPlural() {
         return this.plural;
     }
 
+    public void setPlural(String plural) {
+        this.plural = plural;
+    }
+
     public double getDefaultBalance() {
         return this.defaultBalance;
+    }
+
+    public void setDefaultBalance(double defaultBalance) {
+        this.defaultBalance = defaultBalance;
     }
 
     public double getMaxBalance() {
         return this.maxBalance == 0D ? Integer.MAX_VALUE : this.maxBalance;
     }
 
+    public void setMaximumBalance(double maxBalance) {
+        this.maxBalance = maxBalance;
+    }
+
+    ////
+    //// Balance Display ////
+    ////
+
+    /**
+     * @deprecated in favor of {@link #simpleFormat(double)}
+     */
+    @Deprecated
     public String format(double amount) {
-        StringBuilder amt = new StringBuilder();
-        if (this.getSymbol() != null) {
-            amt.append(this.getSymbol());
-        }
-        if (this.isDecimalSupported()) {
-            amt.append(UtilString.format(amount));
-        } else {
-            String s = String.valueOf(amount);
-            String[] ss = s.split("\\.");
-            if (ss.length > 0) {
-                s = ss[0];
-            }
-            amt.append(NumberFormat.getInstance().format(Double.parseDouble(s)));
-        }
-        amt.append(" ");
-        if (amount != 1.0) {
-            amt.append(this.getPlural().replace("_", " "));
-        } else {
-            amt.append(this.getSingular().replace("_", " "));
-        }
-        return amt.toString();
+        return simpleFormat(amount);
     }
 
-    public Component componentFormat(double amount) {
-        return Component.text(format(amount)).color(color);
+    /**
+     * Gets a plain string describing the balance amount.
+     * <p>
+     * This string is used for logging or anywhere that don't support {@link Component}.
+     *
+     * @param amount the balance amount
+     *
+     * @return a plain string describing the balance amount
+     */
+    public String simpleFormat(double amount) {
+        String amountString = UtilString.format(amount, this.decimalSupported);
+        String nameString = amount != 1.0
+            ? this.getPlural().replace("_", " ")
+            : this.getSingular().replace("_", " ");
+        return GemsEconomy.lang().raw("msg_balance_simple_format",
+            "amount", amountString,
+            "name", nameString
+        );
     }
 
-    public String getDisplayNameLegacy() {
-        return LegacyComponentSerializer.legacyAmpersand().serialize(getDisplayName());
+    /**
+     * Gets a MiniMessage string describing the balance amount.
+     * <p>
+     * Since this is a MiniMessage string, it is meant to be used for display that support {@link Component}. The caller
+     * of this method should deserialize the MiniMessage string on their own.
+     *
+     * @param amount the balance amount
+     *
+     * @return a MiniMessage string describing the balance amount
+     */
+    public String fancyFormat(double amount) {
+        String amountString = UtilString.format(amount, this.decimalSupported);
+        String symbolString = getSymbolOrEmpty();
+        String nameString = amount != 1.0
+            ? this.getPlural().replace("_", " ")
+            : this.getSingular().replace("_", " ");
+        return GemsEconomy.lang().raw("msg_balance_fancy_format",
+            "amount", amountString,
+            "name", nameString,
+            "symbol", symbolString
+        );
     }
 
     public Component getDisplayName() {
-        return Component.text(singular).color(color);
-    }
-
-    public boolean isDefaultCurrency() {
-        return this.defaultCurrency;
-    }
-
-    public void setDefaultCurrency(boolean defaultCurrency) {
-        this.defaultCurrency = defaultCurrency;
-    }
-
-    public boolean isPayable() {
-        return this.payable;
-    }
-
-    public void setPayable(boolean payable) {
-        this.payable = payable;
-    }
-
-    public boolean isDecimalSupported() {
-        return this.decimalSupported;
-    }
-
-    public void setDecimalSupported(boolean decimalSupported) {
-        this.decimalSupported = decimalSupported;
+        return Component.text(this.singular).color(this.color);
     }
 
     public TextColor getColor() {
@@ -169,16 +167,57 @@ public class Currency {
         this.color = color;
     }
 
+    @Deprecated
     public @Nullable String getSymbol() {
         return this.symbol;
+    }
+
+    public @Nullable String getSymbolNullable() {
+        return this.symbol;
+    }
+
+    public String getSymbolOrEmpty() {
+        return this.symbol != null ? this.symbol : "";
     }
 
     public void setSymbol(@Nullable String symbol) {
         this.symbol = symbol;
     }
 
+    ////
+    //// Other ////
+    ////
+
+    public UUID getUuid() {
+        return this.uuid;
+    }
+
+    public boolean isDefaultCurrency() {
+        return this.defaultCurrency;
+    }
+
+    public void setDefaultCurrency(boolean defaultCurrency) {
+        this.defaultCurrency = defaultCurrency;
+    }
+
+    public boolean isDecimalSupported() {
+        return this.decimalSupported;
+    }
+
+    public void setDecimalSupported(boolean decimal) {
+        this.decimalSupported = decimal;
+    }
+
+    public boolean isPayable() {
+        return this.payable;
+    }
+
+    public void setPayable(boolean payable) {
+        this.payable = payable;
+    }
+
     public double getExchangeRate() {
-        return exchangeRate;
+        return this.exchangeRate;
     }
 
     public void setExchangeRate(double exchangeRate) {
@@ -189,11 +228,11 @@ public class Currency {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         final Currency currency = (Currency) o;
-        return uuid.equals(currency.uuid);
+        return this.uuid.equals(currency.uuid);
     }
 
     @Override public int hashCode() {
-        return uuid.hashCode();
+        return this.uuid.hashCode();
     }
 
 }

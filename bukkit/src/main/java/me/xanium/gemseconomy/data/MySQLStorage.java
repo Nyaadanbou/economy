@@ -222,7 +222,7 @@ public final class MySQLStorage extends DataStorage {
             stmt.setString(3, currency.getPlural());
             stmt.setDouble(4, currency.getDefaultBalance());
             stmt.setDouble(5, currency.getMaxBalance());
-            stmt.setString(6, currency.getSymbol());
+            stmt.setString(6, currency.getSymbolNullable());
             stmt.setInt(7, currency.isDecimalSupported() ? 1 : 0);
             stmt.setInt(8, currency.isDefaultCurrency() ? 1 : 0);
             stmt.setInt(9, currency.isPayable() ? 1 : 0);

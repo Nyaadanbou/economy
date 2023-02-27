@@ -119,9 +119,10 @@ public class PayCommand extends AbstractCommand {
         myselfAccount.withdraw(currency, amount);
         targetAccount.deposit(currency, amount);
 
-        GemsEconomy.getInstance().getEconomyLogger().log("[PAYMENT] " + myselfAccount.getDisplayName() +
-            " (New bal: " + currency.format(myselfAccount.getBalance(currency)) + ") -> paid " + targetAccount.getDisplayName() +
-            " (New bal: " + currency.format(targetAccount.getBalance(currency)) + ") - An amount of " + currency.format(amount)
+        GemsEconomy.getInstance().getEconomyLogger().log(
+            "[PAYMENT] " + myselfAccount.getDisplayName() +
+            " (New bal: " + currency.simpleFormat(myselfAccount.getBalance(currency)) + ") -> paid " + targetAccount.getDisplayName() +
+            " (New bal: " + currency.simpleFormat(targetAccount.getBalance(currency)) + ") - An amount of " + currency.simpleFormat(amount)
         );
 
         GemsEconomy.lang().sendComponent(targetPlayer, GemsEconomy.lang()

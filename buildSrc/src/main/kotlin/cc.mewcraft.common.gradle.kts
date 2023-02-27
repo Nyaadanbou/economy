@@ -17,6 +17,7 @@ repositories {
     maven("https://repo.papermc.io/repository/maven-public/") {
         content {
             includeGroup("io.papermc.paper")
+            includeGroup("com.velocitypowered")
         }
     }
     maven("https://jitpack.io") {
@@ -39,4 +40,8 @@ repositories {
 
 dependencies {
     compileOnly("org.jetbrains:annotations:24.0.0")
+}
+
+java {
+    toolchain.languageVersion.set(JavaLanguageVersion.of(17))
 }

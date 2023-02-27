@@ -18,20 +18,20 @@ public class InternalCommand extends AbstractCommand {
     @Override
     public void register() {
         Command.Builder<CommandSender> builder = manager
-                .commandBuilder("gemseconomy");
+            .commandBuilder("gemseconomy");
 
         Command<CommandSender> reloadLanguages = builder
-                .literal("reload")
-                .literal("lang", "languages")
-                .permission("gemseconomy.command.reload")
-                .handler(context -> {
-                    CommandSender sender = context.getSender();
-                    GemsEconomy.getInstance().reloadLanguages();
-                    GemsEconomy.lang().sendComponent(sender, "msg_reloaded_lang",
-                            "plugin", GemsEconomy.getInstance().getDescription().getName(),
-                            "version", GemsEconomy.getInstance().getDescription().getVersion());
-                })
-                .build();
+            .literal("reload")
+            .literal("lang", "languages")
+            .permission("gemseconomy.command.reload")
+            .handler(context -> {
+                CommandSender sender = context.getSender();
+                GemsEconomy.getInstance().reloadLanguages();
+                GemsEconomy.lang().sendComponent(sender, "msg_reloaded_lang",
+                    "plugin", GemsEconomy.getInstance().getDescription().getName(),
+                    "version", GemsEconomy.getInstance().getDescription().getVersion());
+            })
+            .build();
 
         manager.register(List.of(reloadLanguages));
     }

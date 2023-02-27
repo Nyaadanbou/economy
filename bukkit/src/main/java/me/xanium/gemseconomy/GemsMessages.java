@@ -15,21 +15,24 @@ import java.util.function.Function;
 
 public class GemsMessages {
 
-    public static final Function<Boolean, Consumer<TextReplacementConfig.Builder>> STATUS_REPLACEMENT = (bool) -> config -> {
+    public static final Function<Boolean, Consumer<TextReplacementConfig.Builder>> STATUS_REPLACEMENT = bool -> config -> {
         config.matchLiteral("{status}");
-        config.replacement(bool ? GemsEconomy.lang().component("msg_enabled") : GemsEconomy.lang().component("msg_disabled"));
+        config.replacement(bool
+            ? GemsEconomy.lang().component("msg_enabled")
+            : GemsEconomy.lang().component("msg_disabled")
+        );
     };
-    public static final Function<String, Consumer<TextReplacementConfig.Builder>> ACCOUNT_REPLACEMENT = (name) -> config -> {
+    public static final Function<String, Consumer<TextReplacementConfig.Builder>> ACCOUNT_REPLACEMENT = name -> config -> {
         config.matchLiteral("{account}");
         config.replacement(name);
     };
-    public static final Function<Component, Consumer<TextReplacementConfig.Builder>> CURRENCY_REPLACEMENT = (format) -> config -> {
+    public static final Function<Component, Consumer<TextReplacementConfig.Builder>> CURRENCY_REPLACEMENT = format -> config -> {
         config.matchLiteral("{currency}");
         config.replacement(format);
     };
     public static final BiFunction<Currency, Double, Consumer<TextReplacementConfig.Builder>> AMOUNT_REPLACEMENT = (currency, amount) -> config -> {
         config.matchLiteral("{amount}");
-        config.replacement(currency.componentFormat(amount));
+        config.replacement(MiniMessage.miniMessage().deserialize(currency.fancyFormat(amount)));
     };
 
     private final LanguageManager lang;

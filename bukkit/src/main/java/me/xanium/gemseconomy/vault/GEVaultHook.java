@@ -37,7 +37,7 @@ public class GEVaultHook extends AbstractEconomy {
     @Override
     public String format(double amount) {
         Currency currency = GemsEconomy.getInstance().getCurrencyManager().getDefaultCurrency();
-        return currency.format(amount);
+        return currency.simpleFormat(amount);
     }
 
     @Override

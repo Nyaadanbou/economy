@@ -13,5 +13,5 @@ public abstract class AbstractCommand {
     }
 
     abstract public void register();
-    
+
 }

@@ -22,11 +22,11 @@ import java.util.function.BiFunction;
 public class TextColorArgument extends CommandArgument<CommandSender, TextColor> {
 
     public TextColorArgument(
-            boolean required,
-            String name,
-            String defaultValue,
-            @Nullable BiFunction<CommandContext<CommandSender>, String, List<String>> suggestionsProvider,
-            ArgumentDescription defaultDescription) {
+        boolean required,
+        String name,
+        String defaultValue,
+        @Nullable BiFunction<CommandContext<CommandSender>, String, List<String>> suggestionsProvider,
+        ArgumentDescription defaultDescription) {
         super(required, name, new TextColorArgument.Parser(), defaultValue, TextColor.class, suggestionsProvider, defaultDescription);
     }
 
@@ -46,8 +46,8 @@ public class TextColorArgument extends CommandArgument<CommandSender, TextColor>
 
         @Override
         public ArgumentParseResult<TextColor> parse(
-                final CommandContext<CommandSender> commandContext,
-                final Queue<String> inputQueue
+            final CommandContext<CommandSender> commandContext,
+            final Queue<String> inputQueue
         ) {
             String input = inputQueue.peek();
             if (input == null) {
@@ -72,8 +72,8 @@ public class TextColorArgument extends CommandArgument<CommandSender, TextColor>
 
         @Override
         public List<String> suggestions(
-                final CommandContext<CommandSender> commandContext,
-                final String input
+            final CommandContext<CommandSender> commandContext,
+            final String input
         ) {
             return NamedTextColor.NAMES.keys().stream().toList();
         }
@@ -87,11 +87,11 @@ public class TextColorArgument extends CommandArgument<CommandSender, TextColor>
         @Override
         public TextColorArgument build() {
             return new TextColorArgument(
-                    this.isRequired(),
-                    this.getName(),
-                    this.getDefaultValue(),
-                    this.getSuggestionsProvider(),
-                    this.getDefaultDescription()
+                this.isRequired(),
+                this.getName(),
+                this.getDefaultValue(),
+                this.getSuggestionsProvider(),
+                this.getDefaultDescription()
             );
         }
     }

@@ -23,11 +23,11 @@ import java.util.function.BiFunction;
 public class AmountArgument extends CommandArgument<CommandSender, Double> {
 
     public AmountArgument(
-            boolean required,
-            String name,
-            String defaultValue,
-            @Nullable BiFunction<CommandContext<CommandSender>, String, List<String>> suggestionsProvider,
-            ArgumentDescription defaultDescription) {
+        boolean required,
+        String name,
+        String defaultValue,
+        @Nullable BiFunction<CommandContext<CommandSender>, String, List<String>> suggestionsProvider,
+        ArgumentDescription defaultDescription) {
         super(required, name, new Parser(), defaultValue, Double.class, suggestionsProvider, defaultDescription);
     }
 
@@ -47,8 +47,8 @@ public class AmountArgument extends CommandArgument<CommandSender, Double> {
 
         @Override
         public ArgumentParseResult<Double> parse(
-                final CommandContext<CommandSender> commandContext,
-                final Queue<String> inputQueue
+            final CommandContext<CommandSender> commandContext,
+            final Queue<String> inputQueue
         ) {
             CommandSender sender = commandContext.getSender();
             String input = inputQueue.peek();
@@ -79,8 +79,8 @@ public class AmountArgument extends CommandArgument<CommandSender, Double> {
 
         @Override
         public List<String> suggestions(
-                final CommandContext<CommandSender> commandContext,
-                final String input
+            final CommandContext<CommandSender> commandContext,
+            final String input
         ) {
             return List.of("1", "10", "100", "1000");
         }
@@ -93,7 +93,7 @@ public class AmountArgument extends CommandArgument<CommandSender, Double> {
                     validateInput(sender, amount);
                 } catch (NumberFormatException ex) {
                     return ArgumentParseResult.failure(new IllegalArgumentException(
-                            GemsEconomy.lang().legacy(sender, "err_invalid_amount")
+                        GemsEconomy.lang().legacy(sender, "err_invalid_amount")
                     ));
                 }
             } else {
@@ -102,7 +102,7 @@ public class AmountArgument extends CommandArgument<CommandSender, Double> {
                     validateInput(sender, amount);
                 } catch (NumberFormatException ex) {
                     return ArgumentParseResult.failure(new IllegalArgumentException(
-                            GemsEconomy.lang().legacy(sender, "err_invalid_amount")
+                        GemsEconomy.lang().legacy(sender, "err_invalid_amount")
                     ));
                 }
             }
@@ -128,11 +128,11 @@ public class AmountArgument extends CommandArgument<CommandSender, Double> {
         @Override
         public AmountArgument build() {
             return new AmountArgument(
-                    this.isRequired(),
-                    this.getName(),
-                    this.getDefaultValue(),
-                    this.getSuggestionsProvider(),
-                    this.getDefaultDescription()
+                this.isRequired(),
+                this.getName(),
+                this.getDefaultValue(),
+                this.getSuggestionsProvider(),
+                this.getDefaultDescription()
             );
         }
     }

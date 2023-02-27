@@ -23,11 +23,11 @@ import java.util.function.BiFunction;
 public class CurrencyArgument extends CommandArgument<CommandSender, Currency> {
 
     public CurrencyArgument(
-            boolean required,
-            String name,
-            String defaultValue,
-            @Nullable BiFunction<@NonNull CommandContext<CommandSender>, String, List<String>> suggestionsProvider,
-            ArgumentDescription defaultDescription) {
+        boolean required,
+        String name,
+        String defaultValue,
+        @Nullable BiFunction<@NonNull CommandContext<CommandSender>, String, List<String>> suggestionsProvider,
+        ArgumentDescription defaultDescription) {
         super(required, name, new Parser(), defaultValue, Currency.class, suggestionsProvider, defaultDescription);
     }
 
@@ -46,8 +46,8 @@ public class CurrencyArgument extends CommandArgument<CommandSender, Currency> {
     public static final class Parser implements ArgumentParser<CommandSender, Currency> {
         @Override
         public ArgumentParseResult<Currency> parse(
-                final CommandContext<CommandSender> commandContext,
-                final Queue<String> inputQueue
+            final CommandContext<CommandSender> commandContext,
+            final Queue<String> inputQueue
         ) {
             CommandSender sender = commandContext.getSender();
             String input = inputQueue.peek();
@@ -62,14 +62,14 @@ public class CurrencyArgument extends CommandArgument<CommandSender, Currency> {
             }
 
             return ArgumentParseResult.failure(new IllegalArgumentException(
-                    GemsEconomy.lang().legacy(sender, "err_unknown_currency")
+                GemsEconomy.lang().legacy(sender, "err_unknown_currency")
             ));
         }
 
         @Override
         public List<String> suggestions(
-                final CommandContext<CommandSender> commandContext,
-                final String input
+            final CommandContext<CommandSender> commandContext,
+            final String input
         ) {
             // Sender must have the permission:
             // gemseconomy.currency.<singular>.completion
@@ -95,11 +95,11 @@ public class CurrencyArgument extends CommandArgument<CommandSender, Currency> {
         @Override
         public CurrencyArgument build() {
             return new CurrencyArgument(
-                    this.isRequired(),
-                    this.getName(),
-                    this.getDefaultValue(),
-                    this.getSuggestionsProvider(),
-                    this.getDefaultDescription()
+                this.isRequired(),
+                this.getName(),
+                this.getDefaultValue(),
+                this.getSuggestionsProvider(),
+                this.getDefaultDescription()
             );
         }
     }

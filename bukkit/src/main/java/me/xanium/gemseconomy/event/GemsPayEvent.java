@@ -28,28 +28,28 @@ public class GemsPayEvent extends Event implements Cancellable {
     }
 
     public Currency getCurrency() {
-        return currency;
+        return this.currency;
     }
 
     public Account getPayer() {
-        return payer;
+        return this.payer;
     }
 
     public Account getReceived() {
-        return received;
+        return this.received;
     }
 
     public double getAmount() {
-        return amount;
+        return this.amount;
     }
 
-    public String getAmountFormatted(){
-        return getCurrency().format(getAmount());
+    public String getAmountFormatted() {
+        return getCurrency().simpleFormat(getAmount());
     }
 
     @Override
     public boolean isCancelled() {
-        return cancel;
+        return this.cancel;
     }
 
     @Override
