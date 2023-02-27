@@ -22,7 +22,6 @@ import me.xanium.gemseconomy.logging.EconomyLogger;
 import me.xanium.gemseconomy.message.Messenger;
 import me.xanium.gemseconomy.utils.UtilServer;
 import me.xanium.gemseconomy.vault.VaultHandler;
-import net.kyori.adventure.platform.bukkit.BukkitAudiences;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.util.logging.Level;
@@ -34,7 +33,6 @@ public class GemsEconomy extends ExtendedJavaPlugin {
     private static GemsEconomy INSTANCE;
 
     private GemsMessages messages;
-    private BukkitAudiences audiences;
     private GemsEconomyAPI api;
     private DataStorage dataStorage = null;
     private AccountManager accountManager;
@@ -99,7 +97,6 @@ public class GemsEconomy extends ExtendedJavaPlugin {
 
     @Override
     public void enable() {
-        this.audiences = bind(BukkitAudiences.create(this));
         this.messenger = bind(Messenger.get());
 
         registerListener(new EconomyListener()).bindWith(this);
@@ -135,10 +132,6 @@ public class GemsEconomy extends ExtendedJavaPlugin {
 
     public void reloadDataStorage() {
         // TODO support reloading data storage
-    }
-
-    public BukkitAudiences getAudiences() {
-        return this.audiences;
     }
 
     public DataStorage getDataStore() {

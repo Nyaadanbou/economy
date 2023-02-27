@@ -13,7 +13,6 @@ import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
-@SuppressWarnings("unused")
 public class GemsMessages {
 
     public static final Function<Boolean, Consumer<TextReplacementConfig.Builder>> STATUS_REPLACEMENT = (bool) -> config -> {
@@ -41,10 +40,6 @@ public class GemsMessages {
         this.lang.setPlaceholderSuffix("}");
     }
 
-    public LanguageManager internal() {
-        return lang;
-    }
-
     public String raw(CommandSender sender, String key, String... subst) {
         if (subst.length == 0) {
             return this.lang.getConfig(sender).get(key);
@@ -57,14 +52,6 @@ public class GemsMessages {
         return raw(null, key, subst);
     }
 
-    public Component component(CommandSender sender, String key, String... subst) {
-        return MiniMessage.miniMessage().deserialize(raw(sender, key, subst));
-    }
-
-    public Component component(String key, String... subst) {
-        return component(null, key, subst);
-    }
-
     public String legacy(CommandSender sender, String key, String... subst) {
         return LegacyComponentSerializer.legacySection().serialize(component(sender, key, subst));
     }
@@ -73,20 +60,20 @@ public class GemsMessages {
         return legacy(null, key, subst);
     }
 
+    public Component component(CommandSender sender, String key, String... subst) {
+        return MiniMessage.miniMessage().deserialize(raw(sender, key, subst));
+    }
+
+    public Component component(String key, String... subst) {
+        return component(null, key, subst);
+    }
+
     public void sendComponent(CommandSender sender, String key, String... subst) {
-        GemsEconomy.getInstance().getAudiences().sender(sender).sendMessage(component(sender, key, subst));
+        sender.sendMessage(component(sender, key, subst));
     }
 
     public void sendComponent(CommandSender sender, Component component) {
-        GemsEconomy.getInstance().getAudiences().sender(sender).sendMessage(component);
-    }
-
-    public void sendActionBar(CommandSender sender, String key, String... subst) {
-        GemsEconomy.getInstance().getAudiences().sender(sender).sendActionBar(component(sender, key, subst));
-    }
-
-    public void sendActionBar(CommandSender sender, Component component) {
-        GemsEconomy.getInstance().getAudiences().sender(sender).sendActionBar(component);
+        sender.sendMessage(component);
     }
 
 }

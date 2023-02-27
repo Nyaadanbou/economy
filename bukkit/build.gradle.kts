@@ -14,28 +14,22 @@ plugins {
 version = "${project.version}".decorateVersion()
 
 dependencies {
-    // Server API
+    // The server API
     compileOnly("io.papermc.paper", "paper-api", "1.19.3-R0.1-SNAPSHOT")
-
-    // Will be downloaded upon plugin startup
-    compileOnly("com.zaxxer", "HikariCP", "5.0.1")
 
     // 3rd party plugins
     compileOnlyApi("me.lucko", "helper", "5.6.13")
-    compileOnly("com.github.MilkBowl", "VaultAPI", "1.7") { isTransitive = false }
-    val connectorVersion = "1.5-SNAPSHOT"
-    compileOnly("de.themoep.connectorplugin", "core", connectorVersion)
-    compileOnly("de.themoep.connectorplugin", "bukkit", connectorVersion)
+    compileOnly("de.themoep.connectorplugin", "core", "1.5-SNAPSHOT")
+    compileOnly("de.themoep.connectorplugin", "bukkit", "1.5-SNAPSHOT")
+    compileOnly("com.github.MilkBowl", "VaultAPI", "1.7") {
+        exclude("org.bukkit")
+    }
 
-    // Libraries that needs to be shaded
-    implementation("net.kyori", "adventure-api", "4.12.0")
-    implementation("net.kyori", "adventure-text-minimessage", "4.12.0")
-    implementation("net.kyori", "adventure-platform-bukkit", "4.1.2")
-    implementation("de.themoep.utils", "lang-bukkit", "1.3-SNAPSHOT")
-
-    val cloudVersion = "1.8.0"
-    implementation("cloud.commandframework", "cloud-paper", cloudVersion)
-    implementation("cloud.commandframework", "cloud-minecraft-extras", cloudVersion)
+    // External libraries (will be downloaded upon server startup)
+    compileOnly("com.zaxxer", "HikariCP", "5.0.1")
+    compileOnly("de.themoep.utils", "lang-bukkit", "1.3-SNAPSHOT")
+    compileOnly("cloud.commandframework", "cloud-paper", "1.8.1")
+    compileOnly("cloud.commandframework", "cloud-minecraft-extras", "1.8.1")
 }
 
 // TODO remove/replace it with paper plugin specifications
@@ -44,7 +38,7 @@ bukkit {
     name = rootProject.name
     version = "${project.version}"
     apiVersion = "1.17"
-    authors = listOf("Xanium", "Nailm")
+    authors = listOf("Nailm", "other contributors")
     depend = listOf("helper", "MewCore")
     softDepend = listOf("Vault", "ConnectorPlugin")
     load = STARTUP
@@ -53,36 +47,20 @@ bukkit {
 }
 
 tasks {
-    jar {
-        archiveClassifier.set("nonshade")
-    }
     assemble {
         dependsOn(shadowJar)
     }
     shadowJar {
-        minimize()
         archiveFileName.set("${rootProject.name}-${project.version}.jar")
-        archiveClassifier.set("")
-        sequenceOf(
-            "net.kyori",
-            "cloud.commandframework",
-            "io.leangen.geantyref",
-            "de.themoep.utils",
-            "org.apiguardian",
-            "org.checkerframework",
-            "org.jetbrains",
-            "org.intellij",
-            "org.slf4j"
-        ).forEach {
-            relocate(it, "me.xanium.gemseconomy.shade.$it")
-        }
+        archiveClassifier.set("shaded")
     }
     processResources {
         filesMatching("**/paper-plugin.yml") {
-            expand(mapOf(
+            val map = mapOf(
                 "version" to "${project.version}",
                 "description" to project.description
-            ))
+            )
+            expand(map)
         }
     }
     task("deployToServer") {

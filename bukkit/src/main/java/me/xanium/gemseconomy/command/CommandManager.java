@@ -11,6 +11,7 @@ import cloud.commandframework.exceptions.NoPermissionException;
 import cloud.commandframework.execution.AsynchronousCommandExecutionCoordinator;
 import cloud.commandframework.keys.CloudKey;
 import cloud.commandframework.keys.SimpleCloudKey;
+import cloud.commandframework.minecraft.extras.AudienceProvider;
 import cloud.commandframework.minecraft.extras.MinecraftExceptionHandler;
 import cloud.commandframework.paper.PaperCommandManager;
 import io.leangen.geantyref.TypeToken;
@@ -130,7 +131,7 @@ public class CommandManager extends PaperCommandManager<CommandSender> {
                 }
             )
             .withCommandExecutionHandler()
-            .apply(this, sender -> GemsEconomy.getInstance().getAudiences().sender(sender));
+            .apply(this, AudienceProvider.nativeAudience());
 
         // ---- Register all commands ----
         Stream.of(
