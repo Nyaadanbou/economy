@@ -50,7 +50,7 @@ public class EconomyListener implements Listener, Terminable {
         });
     }
 
-    @EventHandler
+    // @EventHandler // don't flush account when quit to avoid database traffic
     public void onQuit(PlayerQuitEvent event) {
         this.plugin.getAccountManager().flushAccount(event.getPlayer().getUniqueId());
     }
