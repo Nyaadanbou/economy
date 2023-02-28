@@ -400,7 +400,6 @@ public final class MySQLStorage extends DataStorage {
                         continue; // Should rarely happen, but anyway
                     balances.add(new TransientBalance(rs.getString("nickname"), bal.doubleValue()));
                 }
-
             } catch (SQLException | ParseException ex) {
                 ex.printStackTrace();
             }

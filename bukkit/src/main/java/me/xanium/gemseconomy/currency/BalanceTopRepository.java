@@ -24,19 +24,20 @@ public class BalanceTopRepository {
         this.topLists = CacheBuilder.newBuilder()
             .expireAfterWrite(Duration.ofMinutes(5))
             .build(CacheLoader.from(uuid -> {
-                Currency currency = BalanceTopRepository.this.plugin.getCurrencyManager().getCurrency(uuid);
+                Currency currency = this.plugin.getCurrencyManager().getCurrency(uuid);
 
                 if (currency == null)
                     return Promise.completed(BalanceTop.EMPTY); // should not happen, but anyway
 
-                List<TransientBalance> balances = BalanceTopRepository.this.plugin.getDataStore()
-                    .getTransientBalances(currency)
-                    .join()
-                    .stream()
-                    .filter(bal -> bal.amount() >= 1) // ignore "ghost" accounts
-                    .toList();
-
-                return Promise.supplyingAsync(() -> new BalanceTop(balances));
+                return Promise.supplyingAsync(() -> {
+                    List<TransientBalance> balances = this.plugin.getDataStore()
+                        .getTransientBalances(currency)
+                        .join()
+                        .stream()
+                        .filter(bal -> bal.amount() >= 1) // ignore "ghost" accounts
+                        .toList();
+                    return new BalanceTop(balances);
+                });
             }));
     }
 
