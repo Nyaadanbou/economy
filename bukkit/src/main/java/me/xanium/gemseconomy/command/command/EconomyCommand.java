@@ -98,7 +98,8 @@ public class EconomyCommand extends AbstractCommand {
             .literal("flush")
             .handler(context -> {
                 GemsEconomy.getInstance().getAccountManager().flushAccounts();
-                context.getSender().sendMessage("All cache flushed!");
+                GemsEconomy.getInstance().getBalanceTopRepository().flushLists();
+                context.getSender().sendMessage("All caches flushed!");
             })
             .build();
 

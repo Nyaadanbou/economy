@@ -11,7 +11,6 @@ package me.xanium.gemseconomy.data;
 import me.lucko.helper.promise.Promise;
 import me.xanium.gemseconomy.GemsEconomy;
 import me.xanium.gemseconomy.account.Account;
-import me.xanium.gemseconomy.currency.CachedTopListEntry;
 import me.xanium.gemseconomy.currency.Currency;
 import me.xanium.gemseconomy.listener.EconomyListener;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -19,7 +18,6 @@ import org.checkerframework.checker.nullness.qual.Nullable;
 import org.jetbrains.annotations.Contract;
 
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.UUID;
 
@@ -72,19 +70,6 @@ public abstract class DataStorage {
     public abstract void close();
 
     /**
-     * Gets the balance top list of given currency asynchronously and returns a {@link Promise} which contains the
-     * calculated top list.
-     *
-     * @param currency the Currency from which the top list is derived
-     * @param start    the start index of the top list
-     * @param amount   the amount of Account to fetch
-     *
-     * @return a promise
-     */
-    @Contract(pure = true)
-    public abstract Promise<LinkedList<CachedTopListEntry>> getTopList(final @NonNull Currency currency, int start, int amount);
-
-    /**
      * Loads all currencies into memory from database.
      */
     public abstract void loadCurrencies();
@@ -117,20 +102,20 @@ public abstract class DataStorage {
      * <p>
      * This method will return null if given name doesn't exist in database.
      *
-     * @param name the account name
+     * @param name the Account name
      *
-     * @return an account with given name
+     * @return an Account with given name
      */
     public abstract @Nullable Account loadAccount(final @NonNull String name);
 
     /**
-     * Loads an account with the specific uuid from database, and returns it.
+     * Loads an Account with the specific uuid from database, and returns it.
      * <p>
      * This method will return null if given uuid doesn't exist in database.
      *
-     * @param uuid the account uuid
+     * @param uuid the Account uuid
      *
-     * @return an account with the specific uuid
+     * @return an Account with the specific uuid
      */
     public abstract @Nullable Account loadAccount(final @NonNull UUID uuid);
 
@@ -157,7 +142,7 @@ public abstract class DataStorage {
     /**
      * Deletes given Account from database.
      *
-     * @param account the account to delete from database
+     * @param account the Account to delete from database
      */
     @Contract(pure = true)
     public abstract void deleteAccount(final @NonNull Account account);
@@ -165,23 +150,37 @@ public abstract class DataStorage {
     /**
      * Deletes the Account with given uuid from database.
      *
-     * @param uuid the account with given uuid to delete from database
+     * @param uuid the Account with given uuid to delete from database
      */
     public abstract void deleteAccount(final @NonNull UUID uuid);
 
     /**
      * Deletes the Account with given name from database.
      *
-     * @param name the account with given name to delete from database
+     * @param name the Account with given name to delete from database
      */
     public abstract void deleteAccount(final @NonNull String name);
 
     /**
-     * Loads, and returns all the accounts in database.
+     * Loads, and returns ALL Accounts in database.
      *
-     * @return all the accounts in database
+     * @return all Accounts in database
      */
     public abstract @NonNull List<Account> getOfflineAccounts();
+
+    /**
+     * Gets a {@link Promise} containing list of ALL offline balances for specific Currency.
+     * <p>
+     * The implementation should not store any data in memory for long time.
+     *
+     * @param currency the currency which the balances are fetched from
+     *
+     * @return a promise
+     */
+    @Contract(pure = true)
+    public @NonNull Promise<List<TransientBalance>> getTransientBalances(final @NonNull Currency currency) {
+        return Promise.completed(new ArrayList<>());
+    }
 
     /**
      * Returns the storage type of this database.

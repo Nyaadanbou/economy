@@ -40,6 +40,7 @@ msg_balance_acc_current: '<gray><green>{account}</green> 累计获得: {amount}<
 msg_balance_acc_multiple: '<gray><green>{account}</green> 累计获得: </gray>'
 msg_balance_list: '  <dark_gray>▸</dark_gray> {amount}'
 err_balance_none: '<gray><green>{account}</green> 没有余额可以显示.</gray>'
+msg_balance_top_computing: '<gray>正在努力加载排行榜, 请稍后...</gray>'
 msg_balance_top_header: '<white>----- 排行榜之 {currency} <gray>(页码 {page})</gray> -----</white>'
 msg_balance_top_entry: '<green><b>{index}.</b></green> {account} <gray>-</gray> {amount}'
 err_balance_top_empty: '<gray>没有要显示的账户.'

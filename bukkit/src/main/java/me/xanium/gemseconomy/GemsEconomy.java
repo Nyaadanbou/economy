@@ -14,6 +14,7 @@ import me.xanium.gemseconomy.api.GemsEconomyAPI;
 import me.xanium.gemseconomy.command.CommandManager;
 import me.xanium.gemseconomy.currency.Currency;
 import me.xanium.gemseconomy.currency.CurrencyManager;
+import me.xanium.gemseconomy.currency.BalanceTopRepository;
 import me.xanium.gemseconomy.data.DataStorage;
 import me.xanium.gemseconomy.data.MySQLStorage;
 import me.xanium.gemseconomy.data.StorageType;
@@ -37,6 +38,7 @@ public class GemsEconomy extends ExtendedJavaPlugin {
     private DataStorage dataStorage = null;
     private AccountManager accountManager;
     private CurrencyManager currencyManager;
+    private BalanceTopRepository balanceTopRepository;
     private VaultHandler vaultHandler;
     private EconomyLogger economyLogger;
     private Messenger messenger;
@@ -78,6 +80,7 @@ public class GemsEconomy extends ExtendedJavaPlugin {
         this.accountManager = new AccountManager(this);
         this.currencyManager = new CurrencyManager(this);
         this.economyLogger = new EconomyLogger(this);
+        this.balanceTopRepository = new BalanceTopRepository(this);
 
         initializeDataStore(StorageType.valueOf(requireNonNull(getConfig().getString("storage")).toUpperCase()));
 
@@ -136,6 +139,10 @@ public class GemsEconomy extends ExtendedJavaPlugin {
 
     public DataStorage getDataStore() {
         return this.dataStorage;
+    }
+
+    public BalanceTopRepository getBalanceTopRepository() {
+        return this.balanceTopRepository;
     }
 
     public CurrencyManager getCurrencyManager() {

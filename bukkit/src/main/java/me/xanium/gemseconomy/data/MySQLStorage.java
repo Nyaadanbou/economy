@@ -13,8 +13,6 @@ import com.zaxxer.hikari.HikariDataSource;
 import me.lucko.helper.promise.Promise;
 import me.xanium.gemseconomy.GemsEconomy;
 import me.xanium.gemseconomy.account.Account;
-import me.xanium.gemseconomy.currency.CachedTopList;
-import me.xanium.gemseconomy.currency.CachedTopListEntry;
 import me.xanium.gemseconomy.currency.Currency;
 import me.xanium.gemseconomy.utils.UtilServer;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -28,7 +26,6 @@ import org.json.simple.parser.ParseException;
 
 import java.sql.*;
 import java.util.*;
-import java.util.stream.Collectors;
 
 import static java.util.Objects.requireNonNull;
 
@@ -41,10 +38,6 @@ public final class MySQLStorage extends DataStorage {
     // --- SQL Statements ---
     private final String SAVE_ACCOUNT = "INSERT INTO `" + getTablePrefix() + "_accounts` (`nickname`, `uuid`, `payable`, `balance_data`, `balance_acc`) VALUES(?, ?, ?, ?, ?) ON DUPLICATE KEY UPDATE `nickname` = VALUES(`nickname`), `uuid` = VALUES(`uuid`), `payable` = VALUES(`payable`), `balance_data` = VALUES(`balance_data`), `balance_acc` = VALUES(`balance_acc`)";
     private final String SAVE_CURRENCY = "INSERT INTO `" + getTablePrefix() + "_currencies` (`uuid`, `name`, `default_balance`, `max_balance`, `symbol`, `decimals_supported`, `is_default`, `payable`, `color`, `exchange_rate`) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?) ON DUPLICATE KEY UPDATE `uuid` = VALUES(`uuid`), `name` = VALUES(`name`), `default_balance` = VALUES(`default_balance`), `max_balance` = VALUES(`max_balance`), `symbol` = VALUES(`symbol`), `decimals_supported` = VALUES(`decimals_supported`), `is_default` = VALUES(`is_default`), `payable` = VALUES(`payable`), `color` = VALUES(`color`), `exchange_rate` = VALUES(`exchange_rate`)";
-
-    // --- Cached Top ---
-    private final LinkedHashMap<UUID, CachedTopList> topList = new LinkedHashMap<>();
-
 
     // --- Hikari ---
     private @MonotonicNonNull HikariDataSource hikari;
@@ -75,13 +68,13 @@ public final class MySQLStorage extends DataStorage {
         return requireNonNull(GemsEconomy.getInstance().getConfig().getString("mysql.prefix"));
     }
 
-    private void setupTables(Connection connection) throws SQLException {
+    private void setupTables(Connection conn) throws SQLException {
         try (
-            PreparedStatement ps1 = connection.prepareStatement("CREATE TABLE IF NOT EXISTS " + this.currencyTable + " (uuid VARCHAR(255) NOT NULL PRIMARY KEY, name VARCHAR(255), default_balance DECIMAL, max_balance DECIMAL, symbol VARCHAR(255), decimals_supported TINYINT, is_default TINYINT, payable TINYINT, color VARCHAR(255), exchange_rate DECIMAL);");
-            PreparedStatement ps2 = connection.prepareStatement("CREATE TABLE IF NOT EXISTS " + this.accountsTable + " (nickname VARCHAR(255), uuid VARCHAR(255) NOT NULL PRIMARY KEY, payable TINYINT, balance_data LONGTEXT NULL);")
+            PreparedStatement stmt1 = conn.prepareStatement("CREATE TABLE IF NOT EXISTS " + this.currencyTable + " (uuid VARCHAR(255) NOT NULL PRIMARY KEY, name VARCHAR(255), default_balance DECIMAL, max_balance DECIMAL, symbol VARCHAR(255), decimals_supported TINYINT, is_default TINYINT, payable TINYINT, color VARCHAR(255), exchange_rate DECIMAL);");
+            PreparedStatement stmt2 = conn.prepareStatement("CREATE TABLE IF NOT EXISTS " + this.accountsTable + " (nickname VARCHAR(255), uuid VARCHAR(255) NOT NULL PRIMARY KEY, payable TINYINT, balance_data LONGTEXT NULL);")
         ) {
-            ps1.execute();
-            ps2.execute();
+            stmt1.execute();
+            stmt2.execute();
         }
     }
 
@@ -90,13 +83,12 @@ public final class MySQLStorage extends DataStorage {
         this.hikari = new HikariDataSource(this.hikariConfig);
 
         try (
-            Connection connection = this.hikari.getConnection()
+            Connection conn = this.hikari.getConnection()
         ) {
-            setupTables(connection);
+            setupTables(conn);
 
-            PreparedStatement stmt;
             Map<String, List<String>> structure = new HashMap<>();
-            DatabaseMetaData metaData = connection.getMetaData();
+            DatabaseMetaData metaData = conn.getMetaData();
             try (ResultSet tableResultSet = metaData.getTables(this.database, "public", null, new String[]{"TABLE"})) {
                 while (tableResultSet.next()) {
                     String tableCat = tableResultSet.getString("TABLE_CAT");
@@ -125,65 +117,87 @@ public final class MySQLStorage extends DataStorage {
             List<String> currencyTableColumns = structure.get(this.currencyTable);
             if (currencyTableColumns != null && !currencyTableColumns.isEmpty()) {
                 if (!currencyTableColumns.contains("exchange_rate")) {
-                    stmt = connection.prepareStatement("ALTER TABLE " + this.currencyTable + " ADD exchange_rate DECIMAL NULL DEFAULT NULL AFTER `color`;");
-                    stmt.execute();
-                    stmt.close();
-
-                    UtilServer.consoleLog("Altered table " + this.currencyTable + " to support the new exchange_rate variable.");
+                    try (PreparedStatement stmt = conn.prepareStatement(
+                        "ALTER TABLE " + this.currencyTable + " ADD exchange_rate DECIMAL NULL DEFAULT NULL AFTER `color`;"
+                    )) {
+                        stmt.execute();
+                        UtilServer.consoleLog("Altered table " + this.currencyTable + " to support the new exchange_rate variable.");
+                    }
                 }
                 if (!currencyTableColumns.contains("max_balance")) {
-                    stmt = connection.prepareStatement("ALTER TABLE " + this.currencyTable + " ADD max_balance DECIMAL NULL DEFAULT NULL AFTER `default_balance`;");
-                    stmt.execute();
-                    stmt.close();
-
-                    UtilServer.consoleLog("Altered table " + this.currencyTable + " to support the new max_balance variable.");
+                    try (PreparedStatement stmt = conn.prepareStatement(
+                        "ALTER TABLE " + this.currencyTable + " ADD max_balance DECIMAL NULL DEFAULT NULL AFTER `default_balance`;"
+                    )) {
+                        stmt.execute();
+                        UtilServer.consoleLog("Altered table " + this.currencyTable + " to support the new max_balance variable.");
+                    }
                 }
                 if (currencyTableColumns.contains("name_singular")) {
-                    stmt = connection.prepareStatement("ALTER TABLE " + this.currencyTable + " RENAME COLUMN `name_singular` TO `name`");
-                    stmt.execute();
-                    stmt.close();
-
-                    UtilServer.consoleLog("Altered table " + this.currencyTable + " to rename 'name_singular' to just 'name'.");
+                    try (PreparedStatement stmt = conn.prepareStatement(
+                        "ALTER TABLE " + this.currencyTable + " RENAME COLUMN `name_singular` TO `name`"
+                    )) {
+                        stmt.execute();
+                        UtilServer.consoleLog("Altered table " + this.currencyTable + " to rename 'name_singular' to just 'name'.");
+                    }
                 }
                 if (currencyTableColumns.contains("name_plural")) {
-                    stmt = connection.prepareStatement("ALTER TABLE " + this.currencyTable + " DROP COLUMN `name_plural`");
-                    stmt.execute();
-                    stmt.close();
-
-                    UtilServer.consoleLog("Altered table " + this.currencyTable + " to remove plural name of currencies.");
+                    try (PreparedStatement stmt = conn.prepareStatement(
+                        "ALTER TABLE " + this.currencyTable + " DROP COLUMN `name_plural`"
+                    )) {
+                        stmt.execute();
+                        UtilServer.consoleLog("Altered table " + this.currencyTable + " to remove plural name of currencies.");
+                    }
                 }
             }
 
             List<String> accountTableColumns = structure.get(this.accountsTable);
             if (accountTableColumns != null && !accountTableColumns.isEmpty()) {
                 if (!accountTableColumns.contains("balance_data")) {
-                    stmt = connection.prepareStatement("ALTER TABLE " + this.accountsTable + " ADD balance_data LONGTEXT NULL DEFAULT '{}' AFTER `payable`;");
-                    stmt.execute();
+                    try (PreparedStatement stmt = conn.prepareStatement(
+                        "ALTER TABLE " + this.accountsTable + " ADD balance_data LONGTEXT NULL DEFAULT '{}' AFTER `payable`;"
+                    )) {
+                        stmt.execute();
+                    }
 
-                    stmt = connection.prepareStatement("ALTER TABLE " + this.accountsTable + " DROP COLUMN `id`");
-                    stmt.execute();
+                    try (PreparedStatement stmt = conn.prepareStatement(
+                        "ALTER TABLE " + this.accountsTable + " DROP COLUMN `id`"
+                    )) {
+                        stmt.execute();
+                    }
 
-                    stmt = connection.prepareStatement("TRUNCATE TABLE " + this.accountsTable);
-                    stmt.execute();
+                    try (PreparedStatement stmt = conn.prepareStatement(
+                        "TRUNCATE TABLE " + this.accountsTable
+                    )) {
+                        stmt.execute();
+                    }
 
-                    stmt = connection.prepareStatement("ALTER TABLE " + this.accountsTable + " ADD PRIMARY KEY (uuid)");
-                    stmt.execute();
+                    try (PreparedStatement stmt = conn.prepareStatement(
+                        "ALTER TABLE " + this.accountsTable + " ADD PRIMARY KEY (uuid)"
+                    )) {
+                        stmt.execute();
+                    }
 
-                    stmt = connection.prepareStatement("ALTER TABLE " + this.currencyTable + " DROP COLUMN `id`");
-                    stmt.execute();
+                    try (PreparedStatement stmt = conn.prepareStatement(
+                        "ALTER TABLE " + this.currencyTable + " DROP COLUMN `id`"
+                    )) {
+                        stmt.execute();
+                    }
 
-                    stmt = connection.prepareStatement("ALTER TABLE " + this.currencyTable + " ADD PRIMARY KEY (uuid)");
-                    stmt.execute();
-                    stmt.close();
+                    try (PreparedStatement stmt = conn.prepareStatement(
+                        "ALTER TABLE " + this.currencyTable + " ADD PRIMARY KEY (uuid)"
+                    )) {
+                        stmt.execute();
+                    }
 
                     UtilServer.consoleLog("Altered tables " + this.accountsTable + " to support the new balance data saving");
                 }
                 if (!accountTableColumns.contains("balance_acc")) {
-                    stmt = connection.prepareStatement("ALTER TABLE " + this.accountsTable + " ADD balance_acc LONGTEXT NULL DEFAULT '{}' AFTER `balance_data`;");
-                    stmt.execute();
-                    stmt.close();
-
-                    UtilServer.consoleLog("Altered table " + this.accountsTable + " to support the records of accumulated balance");
+                    try (PreparedStatement stmt = conn.prepareStatement(
+                        "ALTER TABLE " + this.accountsTable + " ADD balance_acc LONGTEXT NULL DEFAULT '{}' AFTER `balance_data`;"
+                    )) {
+                        stmt.execute();
+                        UtilServer.consoleLog("Altered table " + this.accountsTable + " to support the records of accumulated balance");
+                    }
                 }
             }
         } catch (SQLException e) {
@@ -203,12 +217,12 @@ public final class MySQLStorage extends DataStorage {
         requireNonNull(this.hikari, "hikari");
         // TODO decouple it - make it return a set of currencies
         try (
-            Connection connection = getHikari().getConnection();
-            PreparedStatement stmt = connection.prepareStatement("SELECT * FROM " + this.currencyTable);
-            ResultSet resultSet = stmt.executeQuery()
+            Connection conn = getHikari().getConnection();
+            PreparedStatement stmt = conn.prepareStatement("SELECT * FROM " + this.currencyTable);
+            ResultSet rs = stmt.executeQuery()
         ) {
-            while (resultSet.next()) {
-                Currency currency = loadCurrencyFromDatabase(resultSet);
+            while (rs.next()) {
+                Currency currency = loadCurrencyFromDatabase(rs);
                 this.plugin.getCurrencyManager().addCurrencyIfAbsent(currency);
                 UtilServer.consoleLog("Loaded currency: %s (default_balance: %s, max_balance: %s, default_currency: %s, payable: %s)".formatted(
                     currency.getName(), currency.getDefaultBalance(), currency.getMaxBalance(), currency.isDefaultCurrency(), currency.isPayable()
@@ -222,13 +236,13 @@ public final class MySQLStorage extends DataStorage {
     @Override
     public @Nullable Currency loadCurrency(final @NonNull UUID uuid) {
         try (
-            Connection connection = getHikari().getConnection();
-            PreparedStatement stmt = connection.prepareStatement("SELECT * FROM " + this.currencyTable + " WHERE uuid = ? LIMIT 1;")
+            Connection conn = getHikari().getConnection();
+            PreparedStatement stmt = conn.prepareStatement("SELECT * FROM " + this.currencyTable + " WHERE uuid = ? LIMIT 1;")
         ) {
             stmt.setString(1, uuid.toString());
-            try (ResultSet resultSet = stmt.executeQuery()) {
-                if (resultSet.next()) {
-                    return loadCurrencyFromDatabase(resultSet);
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    return loadCurrencyFromDatabase(rs);
                 }
             }
         } catch (SQLException e) {
@@ -240,8 +254,8 @@ public final class MySQLStorage extends DataStorage {
     @Override
     public void saveCurrency(final @NonNull Currency currency) {
         try (
-            Connection connection = getHikari().getConnection();
-            PreparedStatement stmt = connection.prepareStatement(this.SAVE_CURRENCY)
+            Connection conn = getHikari().getConnection();
+            PreparedStatement stmt = conn.prepareStatement(this.SAVE_CURRENCY)
         ) {
             stmt.setString(1, currency.getUuid().toString());
             stmt.setString(2, currency.getName());
@@ -262,8 +276,8 @@ public final class MySQLStorage extends DataStorage {
     @Override
     public void deleteCurrency(final @NonNull Currency currency) {
         try (
-            Connection connection = getHikari().getConnection();
-            PreparedStatement stmt = connection.prepareStatement("DELETE FROM " + this.currencyTable + " WHERE uuid = ?")
+            Connection conn = getHikari().getConnection();
+            PreparedStatement stmt = conn.prepareStatement("DELETE FROM " + this.currencyTable + " WHERE uuid = ?")
         ) {
             stmt.setString(1, currency.getUuid().toString());
             stmt.execute();
@@ -273,81 +287,15 @@ public final class MySQLStorage extends DataStorage {
     }
 
     @Override
-    public Promise<LinkedList<CachedTopListEntry>> getTopList(final @NonNull Currency currency, int start, int amount) {
-        if (this.topList.containsKey(currency.getUuid())) {
-            return Promise.supplyingAsync(() -> {
-                CachedTopList cache = this.topList.get(currency.getUuid());
-                if (!cache.isExpired()) {
-                    LinkedList<CachedTopListEntry> searchResults = new LinkedList<>();
-                    int collected = 0;
-                    for (int i = start; i < cache.getResults().size(); i++) {
-                        if (collected == amount) break;
-                        searchResults.add(cache.getResults().get(i));
-                        collected++;
-                    }
-                    return searchResults;
-                }
-                return null;
-            });
-        }
-
-        return Promise.supplyingAsync(() -> {
-            JSONParser parser = new JSONParser();
-            LinkedHashMap<String, Double> cache = new LinkedHashMap<>();
-            try (
-                Connection connection = getHikari().getConnection();
-                PreparedStatement statement = connection.prepareStatement("SELECT * FROM " + this.accountsTable);
-                ResultSet resultSet = statement.executeQuery()
-            ) {
-                while (resultSet.next()) {
-                    String json = resultSet.getString("balance_data");
-
-                    Object obj = parser.parse(json);
-                    JSONObject data = (JSONObject) obj;
-                    Number bal = (Number) data.get(currency.getUuid().toString());
-                    if (bal == null || bal.doubleValue() < 1) continue;
-
-                    cache.put(resultSet.getString("nickname"), bal.doubleValue());
-                }
-
-                LinkedHashMap<String, Double> sorted = cache.entrySet()
-                    .stream()
-                    .sorted(Map.Entry.comparingByValue(Comparator.reverseOrder()))
-                    .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (e1, e2) -> e1, LinkedHashMap::new));
-                CachedTopList topList = new CachedTopList(currency, amount, System.currentTimeMillis());
-                LinkedList<CachedTopListEntry> list = new LinkedList<>();
-                for (String name : sorted.keySet()) {
-                    list.add(new CachedTopListEntry(name, sorted.get(name)));
-                    UtilServer.consoleLog(name + ": " + sorted.get(name));
-                }
-                topList.setResults(list);
-                this.topList.put(currency.getUuid(), topList);
-
-                LinkedList<CachedTopListEntry> searchResults = new LinkedList<>();
-                int collected = 0;
-                for (int i = start; i < sorted.size(); i++) {
-                    if (collected == amount) break;
-                    searchResults.add(list.get(i));
-                    collected++;
-                }
-                return searchResults;
-            } catch (SQLException | ParseException ex) {
-                ex.printStackTrace();
-            }
-            return null;
-        });
-    }
-
-    @Override
     public @Nullable Account loadAccount(final @NonNull String name) {
         try (
-            Connection connection = getHikari().getConnection();
-            PreparedStatement stmt = connection.prepareStatement("SELECT * FROM " + this.accountsTable + " WHERE nickname = ? LIMIT 1")
+            Connection conn = getHikari().getConnection();
+            PreparedStatement stmt = conn.prepareStatement("SELECT * FROM " + this.accountsTable + " WHERE nickname = ? LIMIT 1")
         ) {
             // Note: string comparisons are case-insensitive by default in the configuration of SQL server database
             stmt.setString(1, name);
-            try (ResultSet resultSet = stmt.executeQuery()) {
-                if (resultSet.next()) return loadAccountFromDatabase(resultSet);
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) return loadAccountFromDatabase(rs);
             }
         } catch (SQLException | ParseException e) {
             e.printStackTrace();
@@ -358,34 +306,17 @@ public final class MySQLStorage extends DataStorage {
     @Override
     public @Nullable Account loadAccount(final @NonNull UUID uuid) {
         try (
-            Connection connection = getHikari().getConnection();
-            PreparedStatement stmt = connection.prepareStatement("SELECT * FROM " + this.accountsTable + " WHERE uuid = ? LIMIT 1")
+            Connection conn = getHikari().getConnection();
+            PreparedStatement stmt = conn.prepareStatement("SELECT * FROM " + this.accountsTable + " WHERE uuid = ? LIMIT 1")
         ) {
             stmt.setString(1, uuid.toString());
-            try (ResultSet resultSet = stmt.executeQuery()) {
-                if (resultSet.next()) return loadAccountFromDatabase(resultSet);
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) return loadAccountFromDatabase(rs);
             }
         } catch (SQLException | ParseException e) {
             e.printStackTrace();
         }
         return null;
-    }
-
-    @Override
-    public @NonNull List<Account> getOfflineAccounts() {
-        List<Account> accounts = new ArrayList<>();
-
-        try (
-            Connection connection = getHikari().getConnection();
-            PreparedStatement stmt = connection.prepareStatement("SELECT * FROM " + this.accountsTable);
-            ResultSet rs = stmt.executeQuery()
-        ) {
-            while (rs.next()) accounts.add(loadAccount(UUID.fromString(rs.getString("uuid"))));
-        } catch (SQLException ex) {
-            ex.printStackTrace();
-        }
-
-        return accounts;
     }
 
     @Override
@@ -408,8 +339,8 @@ public final class MySQLStorage extends DataStorage {
     @Override
     public void deleteAccount(final @NonNull UUID uuid) {
         try (
-            Connection connection = getHikari().getConnection();
-            PreparedStatement stmt = connection.prepareStatement("DELETE FROM " + this.accountsTable + " WHERE uuid = ? LIMIT 1")
+            Connection conn = getHikari().getConnection();
+            PreparedStatement stmt = conn.prepareStatement("DELETE FROM " + this.accountsTable + " WHERE uuid = ? LIMIT 1")
         ) {
             stmt.setString(1, uuid.toString());
             stmt.execute();
@@ -423,8 +354,8 @@ public final class MySQLStorage extends DataStorage {
     @Override
     public void deleteAccount(final @NonNull String name) {
         try (
-            Connection connection = getHikari().getConnection();
-            PreparedStatement stmt = connection.prepareStatement("DELETE FROM " + this.accountsTable + " WHERE nickname = ? LIMIT 1")
+            Connection conn = getHikari().getConnection();
+            PreparedStatement stmt = conn.prepareStatement("DELETE FROM " + this.accountsTable + " WHERE nickname = ? LIMIT 1")
         ) {
             stmt.setString(1, name);
             stmt.execute();
@@ -435,14 +366,56 @@ public final class MySQLStorage extends DataStorage {
         }
     }
 
+    @Override
+    public @NonNull List<Account> getOfflineAccounts() {
+        List<Account> accounts = new ArrayList<>();
+
+        try (
+            Connection conn = getHikari().getConnection();
+            PreparedStatement stmt = conn.prepareStatement("SELECT * FROM " + this.accountsTable);
+            ResultSet rs = stmt.executeQuery()
+        ) {
+            while (rs.next()) accounts.add(loadAccount(UUID.fromString(rs.getString("uuid"))));
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        }
+
+        return accounts;
+    }
+
+    @Override
+    public @NonNull Promise<List<TransientBalance>> getTransientBalances(final @NonNull Currency currency) {
+        return Promise.supplyingAsync(() -> {
+            List<TransientBalance> balances = new ArrayList<>();
+            try (
+                Connection conn = getHikari().getConnection();
+                PreparedStatement stmt = conn.prepareStatement("SELECT * FROM " + this.accountsTable);
+                ResultSet rs = stmt.executeQuery()
+            ) {
+                while (rs.next()) {
+                    String json = rs.getString("balance_data");
+                    JSONObject data = (JSONObject) new JSONParser().parse(json);
+                    Number bal = (Number) data.get(currency.getUuid().toString());
+                    if (bal == null)
+                        continue; // Should rarely happen, but anyway
+                    balances.add(new TransientBalance(rs.getString("nickname"), bal.doubleValue()));
+                }
+
+            } catch (SQLException | ParseException ex) {
+                ex.printStackTrace();
+            }
+            return balances;
+        });
+    }
+
     /**
      * Common logics of saving an Account to database.
      */
     @SuppressWarnings("unchecked")
     private void saveAccountToDatabase(final @NonNull Account account) {
         try (
-            Connection connection = getHikari().getConnection();
-            PreparedStatement stmt = connection.prepareStatement(this.SAVE_ACCOUNT)
+            Connection conn = getHikari().getConnection();
+            PreparedStatement stmt = conn.prepareStatement(this.SAVE_ACCOUNT)
         ) {
 
             stmt.setString(1, account.getDisplayName()); // write nickname
@@ -470,16 +443,16 @@ public final class MySQLStorage extends DataStorage {
     /**
      * Common logics of loading an Account from database.
      */
-    private Account loadAccountFromDatabase(final ResultSet resultSet) throws SQLException, ParseException {
+    private Account loadAccountFromDatabase(final ResultSet rs) throws SQLException, ParseException {
         Account account = new Account(
-            UUID.fromString(resultSet.getString("uuid")),
-            resultSet.getString("nickname")
+            UUID.fromString(rs.getString("uuid")),
+            rs.getString("nickname")
         );
 
-        account.setCanReceiveCurrency(resultSet.getInt("payable") == 1);
+        account.setCanReceiveCurrency(rs.getInt("payable") == 1);
 
-        String balanceDataRaw = resultSet.getString("balance_data");
-        String balanceAccRaw = resultSet.getString("balance_acc");
+        String balanceDataRaw = rs.getString("balance_data");
+        String balanceAccRaw = rs.getString("balance_acc");
 
         JSONParser parser = new JSONParser();
         JSONObject balanceDataJson = (JSONObject) parser.parse(balanceDataRaw);
@@ -509,17 +482,17 @@ public final class MySQLStorage extends DataStorage {
     /**
      * Common logics of loading a Currency from database.
      */
-    private Currency loadCurrencyFromDatabase(ResultSet resultSet) throws SQLException {
-        UUID uuid = UUID.fromString(resultSet.getString("uuid"));
-        String name = resultSet.getString("name");
-        double defaultBalance = resultSet.getDouble("default_balance");
-        double maximumBalance = resultSet.getDouble("max_balance");
-        String symbol = resultSet.getString("symbol");
-        boolean supportDecimals = resultSet.getInt("decimals_supported") == 1;
-        boolean defaultCurrency = resultSet.getInt("is_default") == 1;
-        boolean payable = resultSet.getInt("payable") == 1;
-        TextColor color = Optional.ofNullable(resultSet.getString("color")).map(TextColor::fromHexString).orElse(NamedTextColor.WHITE);
-        double exchangeRate = resultSet.getDouble("exchange_rate");
+    private Currency loadCurrencyFromDatabase(ResultSet rs) throws SQLException {
+        UUID uuid = UUID.fromString(rs.getString("uuid"));
+        String name = rs.getString("name");
+        double defaultBalance = rs.getDouble("default_balance");
+        double maximumBalance = rs.getDouble("max_balance");
+        String symbol = rs.getString("symbol");
+        boolean supportDecimals = rs.getInt("decimals_supported") == 1;
+        boolean defaultCurrency = rs.getInt("is_default") == 1;
+        boolean payable = rs.getInt("payable") == 1;
+        TextColor color = Optional.ofNullable(rs.getString("color")).map(TextColor::fromHexString).orElse(NamedTextColor.WHITE);
+        double exchangeRate = rs.getDouble("exchange_rate");
 
         Currency currency = new Currency(uuid);
         currency.setName(name);
