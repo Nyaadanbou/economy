@@ -2,6 +2,7 @@ package me.xanium.gemseconomy.currency;
 
 import com.google.common.collect.Lists;
 import me.xanium.gemseconomy.data.TransientBalance;
+import me.xanium.gemseconomy.utils.UtilTime;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -22,11 +23,13 @@ public class BalanceTop {
     public static final int ENTRY_PER_PAGE = 10;
 
     private final List<List<TransientBalance>> partition;
+    private final String lastUpdate;
 
     BalanceTop(List<TransientBalance> results) {
         List<TransientBalance> sorted = new ArrayList<>(results);
         sorted.sort(Comparator.comparingDouble(TransientBalance::amount).reversed()); // sort entries
         this.partition = Lists.partition(sorted, ENTRY_PER_PAGE);
+        this.lastUpdate = UtilTime.now();
     }
 
     /**
@@ -45,5 +48,12 @@ public class BalanceTop {
      */
     public int getMaxPage() {
         return this.partition.size();
+    }
+
+    /**
+     * @return the formatted timestamp when last update
+     */
+    public String getLastUpdate() {
+        return this.lastUpdate;
     }
 }

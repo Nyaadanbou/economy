@@ -99,6 +99,9 @@ public class BalanceTopCommand extends AbstractCommand {
                 .replaceText(config -> config.matchLiteral("{page}").replacement(String.valueOf(pageBounded + 1)))
             );
         }
+
+        // send last update
+        GemsEconomy.lang().sendComponent(sender, "msg_balance_top_last_update", "time", balanceTop.getLastUpdate());
     }
 
 }

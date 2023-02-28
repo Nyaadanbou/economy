@@ -30,7 +30,8 @@ public class BalanceTopRepository {
                     return BalanceTop.EMPTY; // should not happen, but anyway
 
                 List<TransientBalance> balances = BalanceTopRepository.this.plugin.getDataStore()
-                    .getTransientBalances(currency).join()
+                    .getTransientBalances(currency)
+                    .join()
                     .stream()
                     .filter(bal -> bal.amount() >= 1) // ignore "ghost" accounts
                     .toList();
