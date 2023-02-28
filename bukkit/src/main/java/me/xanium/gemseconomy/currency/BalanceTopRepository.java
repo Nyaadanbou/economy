@@ -17,7 +17,7 @@ import java.util.UUID;
 public class BalanceTopRepository {
 
     private final GemsEconomy plugin;
-    private final LoadingCache<UUID, BalanceTop> topLists;
+    private final LoadingCache<UUID, Promise<BalanceTop>> topLists;
 
     public BalanceTopRepository(GemsEconomy plugin) {
         this.plugin = plugin;
@@ -27,7 +27,7 @@ public class BalanceTopRepository {
                 Currency currency = BalanceTopRepository.this.plugin.getCurrencyManager().getCurrency(uuid);
 
                 if (currency == null)
-                    return BalanceTop.EMPTY; // should not happen, but anyway
+                    return Promise.completed(BalanceTop.EMPTY); // should not happen, but anyway
 
                 List<TransientBalance> balances = BalanceTopRepository.this.plugin.getDataStore()
                     .getTransientBalances(currency)
@@ -36,7 +36,7 @@ public class BalanceTopRepository {
                     .filter(bal -> bal.amount() >= 1) // ignore "ghost" accounts
                     .toList();
 
-                return new BalanceTop(balances);
+                return Promise.supplyingAsync(() -> new BalanceTop(balances));
             }));
     }
 
@@ -48,7 +48,7 @@ public class BalanceTopRepository {
      * @return a promise which contains the results
      */
     public Promise<BalanceTop> computeByCurrency(Currency currency) {
-        return Promise.supplyingAsync(() -> this.topLists.getUnchecked(currency.getUuid()));
+        return this.topLists.getUnchecked(currency.getUuid());
     }
 
     /**

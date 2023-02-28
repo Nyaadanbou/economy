@@ -20,8 +20,6 @@ import static me.xanium.gemseconomy.GemsMessages.CURRENCY_REPLACEMENT;
 
 public class BalanceTopCommand extends AbstractCommand {
 
-    private Promise<?> topListPromise; // TODO create a promise for each currency
-
     public BalanceTopCommand(GemsEconomy plugin, CommandManager manager) {
         super(plugin, manager);
     }
@@ -47,13 +45,13 @@ public class BalanceTopCommand extends AbstractCommand {
                     return;
                 }
 
-                this.topListPromise = Promise.start()
-                    // tell player we're computing
-                    .thenRunSync(() -> GemsEconomy.lang().sendComponent(sender, GemsEconomy.lang().component(sender, "msg_balance_top_computing")))
-                    // start computing the results
-                    .thenComposeAsync(x -> this.plugin.getBalanceTopRepository().computeByCurrency(currency))
-                    // when it's done, send the results
-                    .thenAcceptSync(topList -> sendTopList(sender, currency, topList, page));
+                Promise<BalanceTop> promise = this.plugin.getBalanceTopRepository().computeByCurrency(currency);
+                if (promise.isDone()) { // it's completed - send the top list
+                    sendTopList(sender, currency, promise.join(), page);
+                } else { // tell sender we're still computing it
+                    GemsEconomy.lang().sendComponent(sender, GemsEconomy.lang().component(sender, "msg_balance_top_computing"));
+                    promise.thenAcceptSync(topList -> sendTopList(sender, currency, topList, page));
+                }
             })
             .build();
 
