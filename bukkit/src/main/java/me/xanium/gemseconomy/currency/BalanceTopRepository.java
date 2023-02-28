@@ -8,7 +8,6 @@ import me.xanium.gemseconomy.GemsEconomy;
 import me.xanium.gemseconomy.data.TransientBalance;
 
 import java.time.Duration;
-import java.util.List;
 import java.util.UUID;
 
 /**
@@ -29,15 +28,10 @@ public class BalanceTopRepository {
                 if (currency == null)
                     return Promise.completed(BalanceTop.EMPTY); // should not happen, but anyway
 
-                return Promise.supplyingAsync(() -> {
-                    List<TransientBalance> balances = this.plugin.getDataStore()
-                        .getTransientBalances(currency)
-                        .join()
-                        .stream()
-                        .filter(bal -> bal.amount() >= 1) // ignore "ghost" accounts
-                        .toList();
-                    return new BalanceTop(balances);
-                });
+                return this.plugin.getDataStore()
+                    .getTransientBalances(currency)
+                    .thenApplyAsync(result -> result.stream().filter(TransientBalance::significant).toList()) // ignore "ghost" accounts
+                    .thenApplyAsync(BalanceTop::new);
             }));
     }
 

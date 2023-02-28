@@ -14,4 +14,8 @@ import me.xanium.gemseconomy.currency.BalanceTopRepository;
  * @see BalanceTop
  * @see BalanceTopRepository
  */
-public record TransientBalance(String name, double amount) {}
+public record TransientBalance(String name, double amount) {
+    public boolean significant() {
+        return this.amount > 1;
+    }
+}
