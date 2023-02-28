@@ -11,7 +11,7 @@ public class CachedTopListEntry {
     }
 
     public String getName() {
-        return name;
+        return this.name;
     }
 
     public void setName(String name) {
@@ -19,7 +19,7 @@ public class CachedTopListEntry {
     }
 
     public double getAmount() {
-        return amount;
+        return this.amount;
     }
 
     public void setAmount(double amount) {
