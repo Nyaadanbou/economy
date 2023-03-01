@@ -70,9 +70,9 @@ public abstract class DataStorage {
     public abstract void close();
 
     /**
-     * Loads all currencies into memory from database.
+     * Loads, and returns all currencies from database.
      */
-    public abstract void loadCurrencies();
+    public abstract List<Currency> loadCurrencies();
 
     /**
      * Loads, and returns specific Currency from database.

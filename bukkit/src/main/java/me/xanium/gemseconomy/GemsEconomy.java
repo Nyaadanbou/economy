@@ -12,9 +12,9 @@ import me.lucko.helper.plugin.ExtendedJavaPlugin;
 import me.xanium.gemseconomy.account.AccountManager;
 import me.xanium.gemseconomy.api.GemsEconomyAPI;
 import me.xanium.gemseconomy.command.CommandManager;
+import me.xanium.gemseconomy.currency.BalanceTopRepository;
 import me.xanium.gemseconomy.currency.Currency;
 import me.xanium.gemseconomy.currency.CurrencyManager;
-import me.xanium.gemseconomy.currency.BalanceTopRepository;
 import me.xanium.gemseconomy.data.DataStorage;
 import me.xanium.gemseconomy.data.MySQLStorage;
 import me.xanium.gemseconomy.data.StorageType;
@@ -207,8 +207,8 @@ public class GemsEconomy extends ExtendedJavaPlugin {
             UtilServer.consoleLog("Initializing data store \"" + getDataStore().getStorageType() + "\"...");
             getDataStore().initialize();
 
-            UtilServer.consoleLog("Loading currencies...");
-            getDataStore().loadCurrencies();
+            UtilServer.consoleLog("Loading currencies from database...");
+            getDataStore().loadCurrencies().forEach(currency -> getCurrencyManager().addCurrency(currency));
             UtilServer.consoleLog("Loaded " + getCurrencyManager().getCurrencies().size() + " currencies!");
         } catch (Throwable e) {
             UtilServer.consoleLog("§cCannot load initial data from data storage.");

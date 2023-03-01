@@ -213,9 +213,9 @@ public final class MySQLStorage extends DataStorage {
     }
 
     @Override
-    public void loadCurrencies() {
+    public List<Currency> loadCurrencies() {
         requireNonNull(this.hikari, "hikari");
-        // TODO decouple it - make it return a set of currencies
+        List<Currency> currencies = new ArrayList<>();
         try (
             Connection conn = getHikari().getConnection();
             PreparedStatement stmt = conn.prepareStatement("SELECT * FROM " + this.currencyTable);
@@ -223,7 +223,7 @@ public final class MySQLStorage extends DataStorage {
         ) {
             while (rs.next()) {
                 Currency currency = loadCurrencyFromDatabase(rs);
-                this.plugin.getCurrencyManager().addCurrencyIfAbsent(currency);
+                currencies.add(currency);
                 UtilServer.consoleLog("Loaded currency: %s (default_balance: %s, max_balance: %s, default_currency: %s, payable: %s)".formatted(
                     currency.getName(), currency.getDefaultBalance(), currency.getMaxBalance(), currency.isDefaultCurrency(), currency.isPayable()
                 ));
@@ -231,6 +231,7 @@ public final class MySQLStorage extends DataStorage {
         } catch (SQLException e) {
             e.printStackTrace();
         }
+        return currencies;
     }
 
     @Override

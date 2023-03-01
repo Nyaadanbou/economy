@@ -41,27 +41,27 @@ public class RedisMessenger implements Messenger {
         });
         registerHandler(Action.UPDATE_ACCOUNT, (player, message) -> {
             UUID uuid = readUUID(message.getData());
-            plugin.getAccountManager().refreshAccount(uuid);
+            this.plugin.getAccountManager().refreshAccount(uuid);
             UtilServer.consoleLog("Received (source: %s) - Account updated: %s".formatted(message.getSendingServer(), uuid));
         });
         registerHandler(Action.DELETE_ACCOUNT, (player, message) -> {
             UUID uuid = readUUID(message.getData());
-            plugin.getAccountManager().flushAccount(uuid); // It's already deleted from database by sending server
+            this.plugin.getAccountManager().flushAccount(uuid); // It's already deleted from database by sending server
             UtilServer.consoleLog("Received (source: %s) - Account deleted: %s".formatted(message.getSendingServer(), uuid));
         });
         registerHandler(Action.CREATE_CURRENCY, (player, message) -> {
             UUID uuid = readUUID(message.getData());
-            plugin.getCurrencyManager().loadCurrencyOverride(uuid);
+            this.plugin.getCurrencyManager().updateCurrency(uuid, true);
             UtilServer.consoleLog("Received (source: %s) - Currency created: %s".formatted(message.getSendingServer(), uuid));
         });
         registerHandler(Action.UPDATE_CURRENCY, (player, message) -> {
             UUID uuid = readUUID(message.getData());
-            plugin.getCurrencyManager().updateCurrency(uuid);
+            this.plugin.getCurrencyManager().updateCurrency(uuid, false);
             UtilServer.consoleLog("Received (source: %s) - Currency updated: %s".formatted(message.getSendingServer(), uuid));
         });
         registerHandler(Action.DELETE_CURRENCY, (player, message) -> {
             UUID uuid = readUUID(message.getData());
-            plugin.getCurrencyManager().removeCurrency(uuid);
+            this.plugin.getCurrencyManager().removeCurrency(uuid);
             UtilServer.consoleLog("Received (source: %s) - Currency deleted: %s".formatted(message.getSendingServer(), uuid));
         });
     }

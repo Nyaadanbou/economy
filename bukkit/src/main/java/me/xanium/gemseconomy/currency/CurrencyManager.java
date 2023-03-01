@@ -24,8 +24,19 @@ public class CurrencyManager {
         this.currencies = new ConcurrentHashMap<>();
     }
 
+    /* ---------------- Getters ---------------- */
+
+    @Deprecated
     public boolean currencyExist(String name) {
         return getCurrency(name) != null;
+    }
+
+    public boolean hasCurrency(String name) {
+        return getCurrency(name) != null;
+    }
+
+    public @Nullable Currency getCurrency(UUID uuid) {
+        return this.currencies.get(uuid);
     }
 
     public @Nullable Currency getCurrency(String name) {
@@ -37,17 +48,19 @@ public class CurrencyManager {
         return null;
     }
 
-    public @Nullable Currency getCurrency(UUID uuid) {
-        return this.currencies.get(uuid);
-    }
-
-    public @NonNull Currency getDefaultCurrency() {
+    public Currency getDefaultCurrency() {
         for (Currency currency : this.currencies.values()) {
             if (currency.isDefaultCurrency())
                 return currency;
         }
         throw new IllegalStateException("No default currency is provided");
     }
+
+    public List<Currency> getCurrencies() {
+        return ImmutableList.copyOf(this.currencies.values());
+    }
+
+    /* ---------------- Setters ---------------- */
 
     /**
      * Creates a new Currency and saves it to database.
@@ -57,7 +70,7 @@ public class CurrencyManager {
      * @return the new Currency, or <code>null</code> if already existed
      */
     public @Nullable Currency createCurrency(String name) {
-        if (currencyExist(name)) {
+        if (hasCurrency(name)) {
             return null;
         }
 
@@ -68,7 +81,7 @@ public class CurrencyManager {
             currency.setDefaultCurrency(true);
         }
 
-        addCurrencyIfAbsent(currency);
+        addCurrency(currency);
 
         this.plugin.getDataStore().saveCurrency(currency);
         this.plugin.getMessenger().sendMessage(Action.CREATE_CURRENCY, currency.getUuid());
@@ -77,41 +90,14 @@ public class CurrencyManager {
     }
 
     /**
-     * Adds given Currency object to memory.
+     * Adds given Currency object to this manager.
      * <p>
      * If this manager already contains specific Currency, this method will do nothing.
      *
-     * @param currency a Currency
+     * @param currency a Currency object
      */
-    public void addCurrencyIfAbsent(Currency currency) {
+    public void addCurrency(Currency currency) {
         this.currencies.putIfAbsent(currency.getUuid(), currency);
-    }
-
-    /**
-     * Loads specific Currency from database, overriding any in memory.
-     *
-     * @param uuid the uuid of specific Currency
-     */
-    public void loadCurrencyOverride(UUID uuid) {
-        @Nullable Currency updated = this.plugin.getDataStore().loadCurrency(uuid);
-        if (updated != null) {
-            this.currencies.put(updated.getUuid(), updated);
-        }
-    }
-
-    /**
-     * Updates specific Currency in the memory so that it syncs with database.
-     * <p>
-     * This method is specifically used by {@link Messenger}.
-     *
-     * @param uuid the uuid of specific Currency
-     */
-    public void updateCurrency(UUID uuid) {
-        @Nullable Currency updated = this.plugin.getDataStore().loadCurrency(uuid);
-        @Nullable Currency loaded = this.currencies.get(uuid);
-        if (updated != null && loaded != null) {
-            loaded.update(updated); // This manager has specific Currency, but not synced with database
-        }
     }
 
     /**
@@ -125,22 +111,26 @@ public class CurrencyManager {
     }
 
     /**
-     * Clears the balance of specific Currency for <b>ALL</b> Accounts, i.e. set balance to 0.
+     * Updates specific Currency in this manager so that it syncs with database.
+     * <p>
+     * This method is specifically used by {@link Messenger}.
      *
-     * @param currency the Currency to clear balance
+     * @param uuid   the uuid of specific Currency
+     * @param create if true, it will create specific currency if not existing in this manager; otherwise false
      */
-    public void clearBalance(Currency currency) {
-        this.plugin.getAccountManager().getOfflineAccounts().forEach(account -> {
-            account.getBalances().put(currency, 0D);
-            this.plugin.getDataStore().saveAccount(account);
-            this.plugin.getMessenger().sendMessage(Action.UPDATE_ACCOUNT, account.getUuid());
-        });
+    public void updateCurrency(UUID uuid, boolean create) {
+        @Nullable Currency newCurrency = this.plugin.getDataStore().loadCurrency(uuid);
+        @Nullable Currency oldCurrency = getCurrency(uuid);
+        if (newCurrency != null) // only do something if the new currency is actually loaded
+            if (oldCurrency != null) {
+                oldCurrency.update(newCurrency); // This manager has specific Currency, but not synced with database
+            } else if (create) {
+                this.currencies.put(uuid, newCurrency); // This manager doesn't have specific Currency - just create it
+            }
     }
 
     /**
-     * Removes specified Currency.
-     * <p>
-     * This will also remove the Currency from <b>ALL</b> Accounts!
+     * Removes specified Currency from this manager, all Accounts, and database.
      *
      * @param currency the Currency to remove
      */
@@ -153,6 +143,7 @@ public class CurrencyManager {
                 account.getBalances().remove(currency);
                 this.plugin.getDataStore().saveAccount(account);
                 this.plugin.getMessenger().sendMessage(Action.UPDATE_ACCOUNT, account.getUuid());
+                this.plugin.getAccountManager().flushAccount(account.getUuid());
             });
 
         // Remove this currency from this manager
@@ -163,14 +154,29 @@ public class CurrencyManager {
         this.plugin.getMessenger().sendMessage(Action.DELETE_CURRENCY, currency.getUuid());
     }
 
+    /**
+     * The same as {@link #removeCurrency(Currency)} but it accepts a UUID.
+     * <p>
+     * If the UUID does not map to a Currency in this manager, this method will do nothing.
+     */
     public void removeCurrency(UUID uuid) {
         Currency currency = this.currencies.get(uuid);
         if (currency != null)
             removeCurrency(currency);
     }
 
-    public List<Currency> getCurrencies() {
-        return ImmutableList.copyOf(this.currencies.values());
+    /**
+     * Sets the balances of specific Currency to default value for <b>ALL</b> Accounts.
+     *
+     * @param currency the Currency to clear balance
+     */
+    public void clearBalance(Currency currency) {
+        this.plugin.getAccountManager().getOfflineAccounts().forEach(account -> {
+            account.getBalances().compute(currency, (c, d) -> c.getDefaultBalance());
+            this.plugin.getDataStore().saveAccount(account);
+            this.plugin.getMessenger().sendMessage(Action.UPDATE_ACCOUNT, account.getUuid());
+            this.plugin.getAccountManager().flushAccount(account.getUuid());
+        });
     }
 
 }
