@@ -92,7 +92,7 @@ public class CurrencyManager {
     /**
      * Adds given Currency object to this manager.
      * <p>
-     * If this manager already contains specific Currency, this method will do nothing.
+     * This method will do nothing if this manager already contains specific Currency.
      *
      * @param currency a Currency object
      */
@@ -125,7 +125,7 @@ public class CurrencyManager {
             if (oldCurrency != null) {
                 oldCurrency.update(newCurrency); // This manager has specific Currency, but not synced with database
             } else if (create) {
-                this.currencies.put(uuid, newCurrency); // This manager doesn't have specific Currency - just create it
+                addCurrency(newCurrency); // This manager doesn't have specific Currency - just create it
             }
     }
 
@@ -143,7 +143,6 @@ public class CurrencyManager {
                 account.getBalances().remove(currency);
                 this.plugin.getDataStore().saveAccount(account);
                 this.plugin.getMessenger().sendMessage(Action.UPDATE_ACCOUNT, account.getUuid());
-                this.plugin.getAccountManager().flushAccount(account.getUuid());
             });
 
         // Remove this currency from this manager
@@ -152,6 +151,9 @@ public class CurrencyManager {
         // Remove this currency from data storage
         this.plugin.getDataStore().deleteCurrency(currency);
         this.plugin.getMessenger().sendMessage(Action.DELETE_CURRENCY, currency.getUuid());
+
+        // Flush accounts in cache
+        this.plugin.getAccountManager().flushAccounts();
     }
 
     /**
@@ -175,8 +177,10 @@ public class CurrencyManager {
             account.getBalances().compute(currency, (c, d) -> c.getDefaultBalance());
             this.plugin.getDataStore().saveAccount(account);
             this.plugin.getMessenger().sendMessage(Action.UPDATE_ACCOUNT, account.getUuid());
-            this.plugin.getAccountManager().flushAccount(account.getUuid());
         });
+
+        // Flush accounts in cache
+        this.plugin.getAccountManager().flushAccounts();
     }
 
 }
