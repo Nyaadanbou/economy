@@ -15,6 +15,7 @@ import me.xanium.gemseconomy.event.GemsPayEvent;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
 
 import java.util.List;
@@ -69,14 +70,14 @@ public class PayCommand extends AbstractCommand {
         }
 
         // Check target account
-        Account targetAccount = GemsEconomy.getInstance().getAccountManager().fetchAccount(targetPlayer);
+        @Nullable Account targetAccount = GemsEconomy.getInstance().getAccountManager().fetchAccount(targetPlayer);
         if (targetAccount == null) {
             GemsEconomy.lang().sendComponent(sender, "err_player_is_null");
             return;
         }
 
         // Check if sender account missing
-        Account myselfAccount = GemsEconomy.getInstance().getAccountManager().fetchAccount(sender);
+        @Nullable Account myselfAccount = GemsEconomy.getInstance().getAccountManager().fetchAccount(sender);
         if (myselfAccount == null) {
             GemsEconomy.lang().sendComponent(sender, "err_account_missing");
             return;
