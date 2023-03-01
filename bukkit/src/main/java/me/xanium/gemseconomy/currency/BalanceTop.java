@@ -40,6 +40,8 @@ public class BalanceTop {
      * @return the entries at specific page index
      */
     public List<TransientBalance> getResultsAt(int page) {
+        if (this.partition.isEmpty())
+            return new ArrayList<>();
         return this.partition.get(page);
     }
 
