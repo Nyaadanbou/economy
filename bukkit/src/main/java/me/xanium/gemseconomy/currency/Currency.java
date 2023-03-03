@@ -61,9 +61,7 @@ public class Currency {
         this.exchangeRate = other.exchangeRate;
     }
 
-    ////
-    //// Balance Amount /////
-    ///
+    /* ---------------- Balance Amount ---------------- */
 
     /**
      * @deprecated use {@link #getName()} instead
@@ -97,9 +95,7 @@ public class Currency {
         this.maxBalance = maxBalance;
     }
 
-    ////
-    //// Balance Display ////
-    ////
+    /* ---------------- Balance Display ---------------- */
 
     /**
      * @deprecated in favor of {@link #simpleFormat(double)} or {@link #fancyFormat(double)}
@@ -177,9 +173,7 @@ public class Currency {
         this.symbol = symbol;
     }
 
-    ////
-    //// Other ////
-    ////
+    /* ---------------- Other ---------------- */
 
     public UUID getUuid() {
         return this.uuid;

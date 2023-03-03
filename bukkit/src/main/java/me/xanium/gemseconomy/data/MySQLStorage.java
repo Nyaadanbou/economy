@@ -114,6 +114,7 @@ public final class MySQLStorage extends DataStorage {
                 }
             }
 
+            // region Update old SQL tables
             List<String> currencyTableColumns = structure.get(this.currencyTable);
             if (currencyTableColumns != null && !currencyTableColumns.isEmpty()) {
                 if (!currencyTableColumns.contains("exchange_rate")) {
@@ -200,6 +201,7 @@ public final class MySQLStorage extends DataStorage {
                     }
                 }
             }
+            // endregion
         } catch (SQLException e) {
             e.printStackTrace();
         }

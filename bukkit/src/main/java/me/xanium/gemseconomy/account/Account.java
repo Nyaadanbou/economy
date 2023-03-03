@@ -18,6 +18,7 @@ import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
@@ -28,26 +29,32 @@ public class Account {
 
     private final @NonNull UUID uuid;
     private @MonotonicNonNull String nickname;
-    private final @NonNull Map<Currency, Double> balances = new ConcurrentHashMap<>(8);
-    private final @NonNull Map<Currency, Double> cumulativeBalances = new ConcurrentHashMap<>(4);
+    private final @NonNull Map<Currency, Double> balances;
+    private final @NonNull Map<Currency, Double> cumulativeBalances;
     private boolean canReceiveCurrency = true;
 
-    private final ReadWriteLock lock = new ReentrantReadWriteLock(); // Ensure thread safety
+    private final Map<Currency, ReadWriteLock> lockHolders;
 
     public Account(@NonNull UUID uuid, @Nullable String nickname) {
         this.uuid = uuid;
         this.nickname = nickname;
+
+        this.balances = new HashMap<>(8, 1f);
+        this.cumulativeBalances = new HashMap<>(8, 1f);
+
+        this.lockHolders = new ConcurrentHashMap<>(8, 1f); // Ensure thread safety
     }
 
     public boolean withdraw(@NonNull Currency currency, double amount) {
-        if (!hasEnough(currency, amount))
-            return false;
-
         GemsPreTransactionEvent preEvent = new GemsPreTransactionEvent(currency, this, amount, TransactionType.WITHDRAW);
         if (!preEvent.callEvent())
             return false;
 
-        this.lock.writeLock().lock();
+        if (!hasEnough(currency, amount))
+            return false;
+
+        ReadWriteLock lock = this.lockHolders.computeIfAbsent(currency, k -> new ReentrantReadWriteLock());
+        lock.writeLock().lock();
         try {
             double finalAmount = getBalance(currency) - amount;
             double cappedAmount = Math.min(finalAmount, currency.getMaxBalance());
@@ -56,7 +63,7 @@ public class Account {
             GemsEconomy.getInstance().getMessenger().sendMessage(Action.UPDATE_ACCOUNT, getUuid()); // Sync between servers
             GemsEconomy.getInstance().getEconomyLogger().log("[WITHDRAW] Account: " + getDisplayName() + " were withdrawn: " + currency.simpleFormat(amount) + " and now has " + currency.simpleFormat(cappedAmount));
         } finally {
-            this.lock.writeLock().unlock();
+            lock.writeLock().unlock();
         }
 
         GemsPostTransactionEvent postEvent = new GemsPostTransactionEvent(currency, this, amount, TransactionType.WITHDRAW);
@@ -73,7 +80,8 @@ public class Account {
         if (!preEvent.callEvent())
             return false;
 
-        this.lock.writeLock().lock();
+        ReadWriteLock lock = this.lockHolders.computeIfAbsent(currency, k -> new ReentrantReadWriteLock());
+        lock.writeLock().lock();
         try {
             double finalAmount = getBalance(currency) + amount;
             double cappedAmount = Math.min(finalAmount, currency.getMaxBalance());
@@ -83,7 +91,7 @@ public class Account {
             GemsEconomy.getInstance().getMessenger().sendMessage(Action.UPDATE_ACCOUNT, getUuid()); // Sync between servers
             GemsEconomy.getInstance().getEconomyLogger().log("[DEPOSIT] Account: " + getDisplayName() + " were deposited: " + currency.simpleFormat(amount) + " and now has " + currency.simpleFormat(cappedAmount));
         } finally {
-            this.lock.writeLock().unlock();
+            lock.writeLock().unlock();
         }
 
         GemsPostTransactionEvent postEvent = new GemsPostTransactionEvent(currency, this, amount, TransactionType.DEPOSIT);
@@ -97,7 +105,8 @@ public class Account {
         if (!preEvent.callEvent())
             return;
 
-        this.lock.writeLock().lock();
+        ReadWriteLock lock = this.lockHolders.computeIfAbsent(currency, k -> new ReentrantReadWriteLock());
+        lock.writeLock().lock();
         try {
             double cappedAmount = Math.min(amount, currency.getMaxBalance());
             this.balances.put(currency, cappedAmount); // Update balance
@@ -105,7 +114,7 @@ public class Account {
             GemsEconomy.getInstance().getMessenger().sendMessage(Action.UPDATE_ACCOUNT, getUuid()); // Sync between servers
             GemsEconomy.getInstance().getEconomyLogger().log("[BALANCE SET] Account: " + getDisplayName() + " were set to: " + currency.simpleFormat(cappedAmount));
         } finally {
-            this.lock.writeLock().unlock();
+            lock.writeLock().unlock();
         }
 
         GemsPostTransactionEvent postEvent = new GemsPostTransactionEvent(currency, this, amount, TransactionType.SET);
@@ -113,23 +122,23 @@ public class Account {
     }
 
     public double getBalance(@NonNull Currency currency) {
-        this.lock.readLock().lock();
+        ReadWriteLock lock = this.lockHolders.computeIfAbsent(currency, k -> new ReentrantReadWriteLock());
+        lock.readLock().lock();
         try {
             return this.balances.computeIfAbsent(currency, Currency::getDefaultBalance);
         } finally {
-            this.lock.readLock().unlock();
+            lock.readLock().unlock();
         }
     }
 
     public double getBalance(@NonNull String identifier) {
-        this.lock.readLock().lock();
-        try {
-            return this.balances.keySet().stream().filter(currency ->
-                currency.getName().equalsIgnoreCase(identifier)
-            ).findAny().map(this.balances::get).orElse(0D); // Do not edit this
-        } finally {
-            this.lock.readLock().unlock();
-        }
+        return this.balances
+            .keySet()
+            .stream()
+            .filter(currency -> currency.getName().equalsIgnoreCase(identifier))
+            .findAny()
+            .map(this::getBalance)
+            .orElse(0D);
     }
 
     public @NonNull Map<Currency, Double> getBalances() {
@@ -137,13 +146,23 @@ public class Account {
     }
 
     public double getCumulativeBalance(@NonNull Currency currency) {
-        return this.cumulativeBalances.computeIfAbsent(currency, ignored -> 0D);
+        ReadWriteLock lock = this.lockHolders.computeIfAbsent(currency, k -> new ReentrantReadWriteLock());
+        lock.readLock().lock();
+        try {
+            return this.cumulativeBalances.computeIfAbsent(currency, ignored -> 0D);
+        } finally {
+            lock.readLock().unlock();
+        }
     }
 
     public double getCumulativeBalance(@NonNull String identifier) {
-        return this.cumulativeBalances.keySet().stream().filter(currency ->
-            currency.getName().equalsIgnoreCase(identifier)
-        ).findAny().map(this.cumulativeBalances::get).orElse(0D);
+        return this.cumulativeBalances
+            .keySet()
+            .stream()
+            .filter(currency -> currency.getName().equalsIgnoreCase(identifier))
+            .findAny()
+            .map(this.cumulativeBalances::get)
+            .orElse(0D);
     }
 
     public @NonNull Map<Currency, Double> getCumulativeBalances() {
@@ -171,7 +190,13 @@ public class Account {
     }
 
     public boolean hasEnough(@NonNull Currency currency, double amount) {
-        return getBalance(currency) >= amount;
+        ReadWriteLock lock = this.lockHolders.computeIfAbsent(currency, k -> new ReentrantReadWriteLock());
+        lock.readLock().lock();
+        try {
+            return getBalance(currency) >= amount;
+        } finally {
+            lock.readLock().unlock();
+        }
     }
 
     public boolean canReceiveCurrency() {
