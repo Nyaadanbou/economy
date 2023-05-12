@@ -85,7 +85,7 @@ public class GemsEconomy extends ExtendedJavaPlugin {
         initializeDataStore(StorageType.valueOf(requireNonNull(getConfig().getString("storage")).toUpperCase()));
 
         if (this.currencyManager.getCurrencies().stream().noneMatch(Currency::isDefaultCurrency)) {
-            this.logger.severe("No default currency is provided");
+            this.getLogger().severe("No default currency is provided");
             getServer().getPluginManager().disablePlugin(this);
             return;
         }

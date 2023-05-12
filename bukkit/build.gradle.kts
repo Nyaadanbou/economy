@@ -2,20 +2,16 @@ import net.minecrell.pluginyml.bukkit.BukkitPluginDescription.PluginLoadOrder.ST
 
 plugins {
     id("cc.mewcraft.common")
-
-    val indraVersion = "3.0.1"
-    id("net.kyori.indra") version indraVersion
-    id("net.kyori.indra.git") version indraVersion
-
-    id("com.github.johnrengelman.shadow") version "7.1.2"
+    id("net.kyori.indra") version "3.0.1"
+    id("com.github.johnrengelman.shadow") version "8.1.1"
     id("net.minecrell.plugin-yml.bukkit") version "0.5.3"
 }
 
-version = "${project.version}".decorateVersion()
+version = "${project.version}"
 
 dependencies {
     // The server API
-    compileOnly("io.papermc.paper", "paper-api", "1.19.3-R0.1-SNAPSHOT")
+    compileOnly("io.papermc.paper", "paper-api", "1.19.4-R0.1-SNAPSHOT")
 
     // 3rd party plugins
     compileOnlyApi("me.lucko", "helper", "5.6.13")
@@ -89,6 +85,3 @@ indra {
 java {
     withSourcesJar()
 }
-
-fun lastCommitHash(): String = indraGit.commit()?.name?.substring(0, 7) ?: error("Could not determine commit hash")
-fun String.decorateVersion(): String = if (endsWith("-SNAPSHOT")) "$this+${lastCommitHash()}" else this
