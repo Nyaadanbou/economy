@@ -453,8 +453,9 @@ public final class MySQLStorage extends DataStorage {
 
         account.setCanReceiveCurrency(rs.getInt("payable") == 1);
 
-        String balanceDataRaw = rs.getString("balance_data");
-        String balanceAccRaw = rs.getString("balance_acc");
+        // These two columns may contain null values
+        String balanceDataRaw = Optional.ofNullable(rs.getString("balance_data")).orElse("{}");
+        String balanceAccRaw = Optional.ofNullable(rs.getString("balance_acc")).orElse("{}");
 
         JSONParser parser = new JSONParser();
         JSONObject balanceDataJson = (JSONObject) parser.parse(balanceDataRaw);
