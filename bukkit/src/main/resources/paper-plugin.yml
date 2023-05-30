@@ -5,7 +5,9 @@ main: me.xanium.gemseconomy.GemsEconomy
 api-version: 1.19
 authors: [ Nailm ]
 load-before: [ ]
-load-after: [ ]
+load-after:
+  - name: helper
+  - name: MewCore
 dependencies:
   - name: helper
     required: true
