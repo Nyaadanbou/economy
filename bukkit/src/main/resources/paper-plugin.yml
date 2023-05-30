@@ -2,9 +2,8 @@ name: GemsEconomy
 version: ${version}
 description: ${description}
 main: me.xanium.gemseconomy.GemsEconomy
-loader: me.xanium.gemseconomy.GemsEconomyLoader
 api-version: 1.19
-authors: [ Nailm, other contributors ]
+authors: [ Nailm ]
 load-before: [ ]
 load-after: [ ]
 dependencies:

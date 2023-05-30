@@ -1,35 +1,32 @@
-import net.minecrell.pluginyml.bukkit.BukkitPluginDescription.PluginLoadOrder.STARTUP
-
 plugins {
-    id("cc.mewcraft.common")
-    id("net.kyori.indra") version "3.0.1"
-    id("com.github.johnrengelman.shadow") version "8.1.1"
-    id("net.minecrell.plugin-yml.bukkit") version "0.5.3"
+    val mewcraftVersion = "1.0.0"
+    id("cc.mewcraft.java-conventions") version mewcraftVersion
+    id("cc.mewcraft.repository-conventions") version mewcraftVersion
+    id("cc.mewcraft.publishing-conventions") version mewcraftVersion
+    id("cc.mewcraft.project-conventions")
+    alias(libs.plugins.indra)
 }
 
-version = "${project.version}"
+// name, version and description inherited from "project-conventions"
 
 dependencies {
-    // The server API
-    compileOnly("io.papermc.paper", "paper-api", "1.19.4-R0.1-SNAPSHOT")
+    // the server api
+    compileOnly(libs.server.paper)
 
-    // 3rd party plugins
-    compileOnlyApi("me.lucko", "helper", "5.6.13")
-    compileOnly("de.themoep.connectorplugin", "core", "1.5-SNAPSHOT")
-    compileOnly("de.themoep.connectorplugin", "bukkit", "1.5-SNAPSHOT")
-    compileOnly("com.github.MilkBowl", "VaultAPI", "1.7") {
+    // my own libs
+    compileOnly(libs.mewcore)
+
+    // libs that present as other plugins
+    compileOnlyApi(libs.helper)
+    compileOnly(libs.connector.core)
+    compileOnly(libs.connector.bukkit)
+    compileOnly(libs.vault) {
         exclude("org.bukkit")
     }
-
-    // External libraries (will be downloaded upon server startup)
-    compileOnly("com.zaxxer", "HikariCP", "5.0.1")
-    compileOnly("de.themoep.utils", "lang-bukkit", "1.3-SNAPSHOT")
-    compileOnly("cloud.commandframework", "cloud-paper", "1.8.1")
-    compileOnly("cloud.commandframework", "cloud-minecraft-extras", "1.8.1")
 }
 
 // TODO remove/replace it with paper plugin specifications
-bukkit {
+/*bukkit {
     main = "me.xanium.gemseconomy.GemsEconomy"
     name = rootProject.name
     version = "${project.version}"
@@ -38,50 +35,42 @@ bukkit {
     depend = listOf("helper", "MewCore")
     softDepend = listOf("Vault", "ConnectorPlugin")
     load = STARTUP
-    loadBefore = listOf("ItemFrameShops")
-    libraries = listOf("com.zaxxer:HikariCP:5.0.1")
-}
+}*/
 
 tasks {
-    assemble {
-        dependsOn(shadowJar)
-    }
-    shadowJar {
-        archiveFileName.set("${rootProject.name}-${project.version}.jar")
-        archiveClassifier.set("shaded")
+    jar {
+        archiveBaseName.set(rootProject.name);
     }
     processResources {
         filesMatching("**/paper-plugin.yml") {
-            val map = mapOf(
-                "version" to "${project.version}",
-                "description" to project.description
+            expand(
+                mapOf(
+                    "version" to "${project.version}",
+                    "description" to project.description
+                )
             )
-            expand(map)
         }
     }
     task("deployToServer") {
         dependsOn(build)
         doLast {
             exec {
-                commandLine("rsync", "${shadowJar.get().archiveFile.get()}", "dev:data/dev/jar")
+                commandLine("rsync", "${jar.get().archiveFile.get()}", "dev:data/dev/jar")
             }
         }
     }
 }
 
-publishing {
+// commented - now managed by "cc.mewcraft.publishing-conventions"
+/*publishing {
     publications {
         create<MavenPublication>("maven") {
             artifactId = "GemsEconomy"
             from(components["java"])
         }
     }
-}
+}*/
 
 indra {
     javaVersions().target(17)
-}
-
-java {
-    withSourcesJar()
 }

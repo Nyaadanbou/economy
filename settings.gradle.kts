@@ -4,9 +4,5 @@ include(":velocity")
 include(":bukkit")
 include(":papi")
 
-pluginManagement {
-    repositories {
-        gradlePluginPortal()
-        maven("https://papermc.io/repo/repository/maven-public/")
-    }
-}
+// import common settings.gradle of Mewcraft projects
+apply(from = "${System.getenv("HOME")}/MewcraftGradle/mirrors.settings.gradle.kts")

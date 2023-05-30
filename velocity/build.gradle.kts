@@ -1,27 +1,26 @@
 plugins {
-    id("cc.mewcraft.common")
-
-    val indraVersion = "3.0.1"
-    id("net.kyori.indra") version indraVersion
-    id("net.kyori.indra.git") version indraVersion
+    val mewcraftVersion = "1.0.0"
+    id("cc.mewcraft.java-conventions") version mewcraftVersion
+    id("cc.mewcraft.repository-conventions") version mewcraftVersion
+    id("cc.mewcraft.project-conventions")
+    alias(libs.plugins.indra)
 }
 
-version = "${project.version}".decorateVersion()
+// name and description inherited from "project-conventions"
+version = "1.0.0"
 
 dependencies {
-    compileOnly("net.luckperms:api:5.4")
-    compileOnly("com.zaxxer", "HikariCP", "5.0.1")
-    compileOnly("com.velocitypowered", "velocity-api", "3.2.0-SNAPSHOT")
-    annotationProcessor("com.velocitypowered", "velocity-api", "3.2.0-SNAPSHOT")
+    // the proxy api
+    compileOnly(libs.proxy.velocity)
+    annotationProcessor(libs.proxy.velocity)
+
+    // libs to be shaded
+    compileOnly(libs.hikari)
+
+    // libs that present as other plugins
+    compileOnly(libs.luckperms)
 }
 
 indra {
     javaVersions().target(17)
 }
-
-java {
-    withSourcesJar()
-}
-
-fun lastCommitHash(): String = indraGit.commit()?.name?.substring(0, 7) ?: error("Could not determine commit hash")
-fun String.decorateVersion(): String = if (endsWith("-SNAPSHOT")) "$this+${lastCommitHash()}" else this
