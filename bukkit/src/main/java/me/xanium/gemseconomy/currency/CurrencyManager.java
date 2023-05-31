@@ -137,13 +137,13 @@ public class CurrencyManager {
     public void removeCurrency(Currency currency) {
         // Remove this currency from all accounts
         GemsEconomy.getInstance()
-            .getAccountManager()
-            .getOfflineAccounts()
-            .forEach(account -> {
-                account.getBalances().remove(currency);
-                this.plugin.getDataStore().saveAccount(account);
-                this.plugin.getMessenger().sendMessage(Action.UPDATE_ACCOUNT, account.getUuid());
-            });
+                .getAccountManager()
+                .getOfflineAccounts()
+                .forEach(account -> {
+                    account.getBalances().remove(currency);
+                    this.plugin.getDataStore().saveAccount(account);
+                    this.plugin.getMessenger().sendMessage(Action.UPDATE_ACCOUNT, account.getUuid());
+                });
 
         // Remove this currency from this manager
         this.currencies.remove(currency.getUuid());

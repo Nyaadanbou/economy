@@ -13,3 +13,10 @@ mysql:
   port: 3306
   username: minecraft
   password: ''
+cheque:
+  enabled: false
+  material: PAPER
+  name: '&a支票'
+  lore:
+    - '&7价值: {value}.'
+    - '&7发行人 {account}'

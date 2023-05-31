@@ -14,7 +14,7 @@ dependencies {
     compileOnly(libs.server.paper)
 
     // my own libs
-    compileOnly(libs.mewcore)
+//    compileOnly(libs.mewcore)
 
     // libs that present as other plugins
     compileOnlyApi(libs.helper)
@@ -23,6 +23,14 @@ dependencies {
     compileOnly(libs.vault) {
         exclude("org.bukkit")
     }
+    compileOnly(libs.hikari)
+
+    implementation("org.apache.commons:commons-lang3:3.12.0")
+    implementation("cloud.commandframework:cloud-paper:1.8.3")
+    implementation("cloud.commandframework:cloud-minecraft-extras:1.8.3")
+    implementation("de.themoep.utils", "lang-bukkit", "1.3-SNAPSHOT")
+
+
 }
 
 // TODO remove/replace it with paper plugin specifications

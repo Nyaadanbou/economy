@@ -29,11 +29,11 @@ public class GemsMessages {
     };
     public static final Function<Currency, Consumer<TextReplacementConfig.Builder>> CURRENCY_REPLACEMENT = currency -> config -> {
         config.matchLiteral("{currency}");
-        config.replacement(MiniMessage.miniMessage().deserialize(currency.getDisplayName()).color(currency.getColor()));
+        config.replacement((currency.getName()));
     };
     public static final BiFunction<Currency, Double, Consumer<TextReplacementConfig.Builder>> AMOUNT_REPLACEMENT = (currency, amount) -> config -> {
         config.matchLiteral("{amount}");
-        config.replacement(MiniMessage.miniMessage().deserialize(currency.fancyFormat(amount)).color(currency.getColor()));
+        config.replacement((currency.simpleFormat(amount)));
     };
 
     private final LanguageManager lang;

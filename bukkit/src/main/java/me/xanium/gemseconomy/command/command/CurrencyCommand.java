@@ -74,7 +74,7 @@ public class CurrencyCommand extends AbstractCommand {
                     .component(sender, "msg_currency_name")
                     .replaceText(config -> {
                         config.matchLiteral("{name}");
-                        config.replacement(Component.text(currency.getName(), currency.getColor()));
+                        config.replacement(currency.getDisplayName());
                     })
                 );
                 GemsEconomy.lang().sendComponent(sender, "msg_currency_default_balance", "default_balance", Double.toString(currency.getDefaultBalance()));

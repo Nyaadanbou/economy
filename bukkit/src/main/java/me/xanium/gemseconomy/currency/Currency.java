@@ -118,8 +118,8 @@ public class Currency {
         String amountString = UtilString.format(amount, this.decimalSupported);
         String nameString = getName().replace("_", " ");
         return GemsEconomy.lang().raw("msg_balance_simple_format",
-            "amount", amountString,
-            "name", nameString
+                "amount", amountString,
+                "name", nameString
         );
     }
 
@@ -138,9 +138,9 @@ public class Currency {
         String symbolString = getSymbolOrEmpty();
         String nameString = getName().replace("_", " ");
         return GemsEconomy.lang().raw("msg_balance_fancy_format",
-            "amount", amountString,
-            "name", nameString,
-            "symbol", symbolString
+                "amount", amountString,
+                "name", nameString,
+                "symbol", symbolString
         );
     }
 
@@ -223,4 +223,3 @@ public class Currency {
     }
 
 }
-

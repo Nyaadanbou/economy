@@ -5,4 +5,4 @@ include(":bukkit")
 include(":papi")
 
 // import common settings.gradle of Mewcraft projects
-apply(from = "${System.getenv("HOME")}/MewcraftGradle/mirrors.settings.gradle.kts")
+apply(from = "${System.getenv("USERPROFILE")}/MewcraftGradle/mirrors.settings.gradle.kts")

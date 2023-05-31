@@ -227,7 +227,7 @@ public final class MySQLStorage extends DataStorage {
                 Currency currency = loadCurrencyFromDatabase(rs);
                 currencies.add(currency);
                 UtilServer.consoleLog("Loaded currency: %s (default_balance: %s, max_balance: %s, default_currency: %s, payable: %s)".formatted(
-                    currency.getName(), currency.getDefaultBalance(), currency.getMaxBalance(), currency.isDefaultCurrency(), currency.isPayable()
+                    currency.getDisplayName(), currency.getDefaultBalance(), currency.getMaxBalance(), currency.isDefaultCurrency(), currency.isPayable()
                 ));
             }
         } catch (SQLException e) {

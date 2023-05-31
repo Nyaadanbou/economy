@@ -11,6 +11,7 @@ package me.xanium.gemseconomy;
 import me.lucko.helper.plugin.ExtendedJavaPlugin;
 import me.xanium.gemseconomy.account.AccountManager;
 import me.xanium.gemseconomy.api.GemsEconomyAPI;
+import me.xanium.gemseconomy.cheque.ChequeManager;
 import me.xanium.gemseconomy.command.CommandManager;
 import me.xanium.gemseconomy.currency.BalanceTopRepository;
 import me.xanium.gemseconomy.currency.Currency;
@@ -37,6 +38,7 @@ public class GemsEconomy extends ExtendedJavaPlugin {
     private GemsEconomyAPI api;
     private DataStorage dataStorage = null;
     private AccountManager accountManager;
+    private ChequeManager chequeManager;
     private CurrencyManager currencyManager;
     private BalanceTopRepository balanceTopRepository;
     private VaultHandler vaultHandler;
@@ -46,6 +48,7 @@ public class GemsEconomy extends ExtendedJavaPlugin {
     private boolean debug = false;
     private boolean vault = true;
     private boolean logging = false;
+    private boolean cheques = false;
     private boolean disabling = false;
 
     public static GemsEconomy getInstance() {
@@ -75,6 +78,7 @@ public class GemsEconomy extends ExtendedJavaPlugin {
         this.debug = getConfig().getBoolean("debug");
         this.vault = getConfig().getBoolean("vault");
         this.logging = getConfig().getBoolean("transaction_log");
+        this.cheques = getConfig().getBoolean("cheque.enabled");
 
         this.messages = new GemsMessages(this);
         this.accountManager = new AccountManager(this);
@@ -105,6 +109,10 @@ public class GemsEconomy extends ExtendedJavaPlugin {
         registerListener(new EconomyListener()).bindWith(this);
 
         if (isLogging()) getEconomyLogger().save();
+
+        if (isChequesEnabled()) {
+            chequeManager = new ChequeManager(this);
+        }
 
         try {
             new CommandManager(this);
@@ -153,6 +161,10 @@ public class GemsEconomy extends ExtendedJavaPlugin {
         return this.accountManager;
     }
 
+    public ChequeManager getChequeManager() {
+        return chequeManager;
+    }
+
     public VaultHandler getVaultHandler() {
         return this.vaultHandler;
     }
@@ -183,6 +195,10 @@ public class GemsEconomy extends ExtendedJavaPlugin {
 
     public boolean isDisabling() {
         return this.disabling;
+    }
+
+    public boolean isChequesEnabled() {
+        return cheques;
     }
 
     private void initializeDataStore(@Nullable StorageType strategy) {

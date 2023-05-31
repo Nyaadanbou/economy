@@ -61,7 +61,7 @@ public class Account {
             this.balances.put(currency, cappedAmount); // Update balance
             GemsEconomy.getInstance().getDataStore().saveAccount(this); // Save it to database
             GemsEconomy.getInstance().getMessenger().sendMessage(Action.UPDATE_ACCOUNT, getUuid()); // Sync between servers
-            GemsEconomy.getInstance().getEconomyLogger().log("[WITHDRAW] Account: " + getDisplayName() + " were withdrawn: " + currency.simpleFormat(amount) + " and now has " + currency.simpleFormat(cappedAmount));
+            GemsEconomy.getInstance().getEconomyLogger().log("[WITHDRAW] Account: " + getDisplayName() + " were withdrawn: " + currency.fancyFormat(amount) + " and now has " + currency.fancyFormat(amount));
         } finally {
             lock.writeLock().unlock();
         }
@@ -89,7 +89,7 @@ public class Account {
             this.cumulativeBalances.merge(currency, amount, Double::sum); // Accumulate deposited amount
             GemsEconomy.getInstance().getDataStore().saveAccount(this); // Save it to database
             GemsEconomy.getInstance().getMessenger().sendMessage(Action.UPDATE_ACCOUNT, getUuid()); // Sync between servers
-            GemsEconomy.getInstance().getEconomyLogger().log("[DEPOSIT] Account: " + getDisplayName() + " were deposited: " + currency.simpleFormat(amount) + " and now has " + currency.simpleFormat(cappedAmount));
+            GemsEconomy.getInstance().getEconomyLogger().log("[DEPOSIT] Account: " + getDisplayName() + " were deposited: " + currency.fancyFormat(amount) + " and now has " + currency.fancyFormat(cappedAmount));
         } finally {
             lock.writeLock().unlock();
         }
@@ -112,7 +112,7 @@ public class Account {
             this.balances.put(currency, cappedAmount); // Update balance
             GemsEconomy.getInstance().getDataStore().saveAccount(this); // Save it to database
             GemsEconomy.getInstance().getMessenger().sendMessage(Action.UPDATE_ACCOUNT, getUuid()); // Sync between servers
-            GemsEconomy.getInstance().getEconomyLogger().log("[BALANCE SET] Account: " + getDisplayName() + " were set to: " + currency.simpleFormat(cappedAmount));
+            GemsEconomy.getInstance().getEconomyLogger().log("[BALANCE SET] Account: " + getDisplayName() + " were set to: " + currency.fancyFormat(cappedAmount));
         } finally {
             lock.writeLock().unlock();
         }
