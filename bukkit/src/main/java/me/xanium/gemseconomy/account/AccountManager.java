@@ -36,6 +36,7 @@ public class AccountManager {
             .expireAfterAccess(10, TimeUnit.MINUTES)
             .build(CacheLoader.asyncReloading(new CacheLoader<>() {
                 @Override public @Nullable Account load(final @NonNull UUID key) {
+                    // TODO value cannot be null
                     return plugin.getDataStore().loadAccount(key); // This might return null;
                 }
             }, HelperExecutors.asyncHelper()));
