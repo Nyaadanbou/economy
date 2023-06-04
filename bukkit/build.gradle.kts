@@ -15,6 +15,8 @@ dependencies {
 
     // libs that present as other plugins
     compileOnlyApi(libs.helper)
+    compileOnly(libs.helper.sql)
+    compileOnly(libs.helper.redis)
     compileOnly(libs.connector.core)
     compileOnly(libs.connector.bukkit)
     compileOnly(libs.vault) {

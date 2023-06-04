@@ -21,7 +21,7 @@ public class CurrencyManager {
 
     public CurrencyManager(GemsEconomy plugin) {
         this.plugin = plugin;
-        this.currencies = new ConcurrentHashMap<>();
+        currencies = new ConcurrentHashMap<>();
     }
 
     /* ---------------- Getters ---------------- */
@@ -36,11 +36,11 @@ public class CurrencyManager {
     }
 
     public @Nullable Currency getCurrency(UUID uuid) {
-        return this.currencies.get(uuid);
+        return currencies.get(uuid);
     }
 
     public @Nullable Currency getCurrency(String name) {
-        for (Currency currency : this.currencies.values()) {
+        for (Currency currency : currencies.values()) {
             if (currency.getName().equalsIgnoreCase(name)) {
                 return currency;
             }
@@ -49,7 +49,7 @@ public class CurrencyManager {
     }
 
     public Currency getDefaultCurrency() {
-        for (Currency currency : this.currencies.values()) {
+        for (Currency currency : currencies.values()) {
             if (currency.isDefaultCurrency())
                 return currency;
         }
@@ -57,7 +57,7 @@ public class CurrencyManager {
     }
 
     public List<Currency> getCurrencies() {
-        return ImmutableList.copyOf(this.currencies.values());
+        return ImmutableList.copyOf(currencies.values());
     }
 
     /* ---------------- Setters ---------------- */
@@ -77,14 +77,14 @@ public class CurrencyManager {
         Currency currency = new Currency(UUID.randomUUID(), name);
         currency.setExchangeRate(1.0);
 
-        if (this.currencies.size() == 0) {
+        if (currencies.size() == 0) {
             currency.setDefaultCurrency(true);
         }
 
         addCurrency(currency);
 
-        this.plugin.getDataStore().saveCurrency(currency);
-        this.plugin.getMessenger().sendMessage(Action.CREATE_CURRENCY, currency.getUuid());
+        plugin.getDataStore().saveCurrency(currency);
+        plugin.getMessenger().sendMessage(Action.CREATE_CURRENCY, currency.getUuid());
 
         return currency;
     }
@@ -97,7 +97,7 @@ public class CurrencyManager {
      * @param currency a Currency object
      */
     public void addCurrency(Currency currency) {
-        this.currencies.putIfAbsent(currency.getUuid(), currency);
+        currencies.putIfAbsent(currency.getUuid(), currency);
     }
 
     /**
@@ -106,8 +106,8 @@ public class CurrencyManager {
      * @param currency a Currency
      */
     public void saveCurrency(Currency currency) {
-        this.plugin.getDataStore().saveCurrency(currency);
-        this.plugin.getMessenger().sendMessage(Action.UPDATE_CURRENCY, currency.getUuid());
+        plugin.getDataStore().saveCurrency(currency);
+        plugin.getMessenger().sendMessage(Action.UPDATE_CURRENCY, currency.getUuid());
     }
 
     /**
@@ -119,14 +119,15 @@ public class CurrencyManager {
      * @param create if true, it will create specific currency if not existing in this manager; otherwise false
      */
     public void updateCurrency(UUID uuid, boolean create) {
-        @Nullable Currency newCurrency = this.plugin.getDataStore().loadCurrency(uuid);
+        @Nullable Currency newCurrency = plugin.getDataStore().loadCurrency(uuid);
         @Nullable Currency oldCurrency = getCurrency(uuid);
-        if (newCurrency != null) // only do something if the new currency is actually loaded
-            if (oldCurrency != null) {
-                oldCurrency.update(newCurrency); // This manager has specific Currency, but not synced with database
-            } else if (create) {
-                addCurrency(newCurrency); // This manager doesn't have specific Currency - just create it
+        if (newCurrency != null) { // Only update it if the new currency is actually loaded
+            if (oldCurrency != null) { // This manager has specific Currency, but not synced with database
+                oldCurrency.update(newCurrency);
+            } else if (create) { // This manager doesn't have specific Currency - just create it
+                addCurrency(newCurrency);
             }
+        }
     }
 
     /**
@@ -141,19 +142,19 @@ public class CurrencyManager {
             .getOfflineAccounts()
             .forEach(account -> {
                 account.getBalances().remove(currency);
-                this.plugin.getDataStore().saveAccount(account);
-                this.plugin.getMessenger().sendMessage(Action.UPDATE_ACCOUNT, account.getUuid());
+                plugin.getDataStore().saveAccount(account);
+                plugin.getMessenger().sendMessage(Action.UPDATE_ACCOUNT, account.getUuid());
             });
 
         // Remove this currency from this manager
-        this.currencies.remove(currency.getUuid());
+        currencies.remove(currency.getUuid());
 
         // Remove this currency from data storage
-        this.plugin.getDataStore().deleteCurrency(currency);
-        this.plugin.getMessenger().sendMessage(Action.DELETE_CURRENCY, currency.getUuid());
+        plugin.getDataStore().deleteCurrency(currency);
+        plugin.getMessenger().sendMessage(Action.DELETE_CURRENCY, currency.getUuid());
 
         // Flush accounts in cache
-        this.plugin.getAccountManager().flushAccounts();
+        plugin.getAccountManager().flushAccounts();
     }
 
     /**
@@ -162,7 +163,7 @@ public class CurrencyManager {
      * If the UUID does not map to a Currency in this manager, this method will do nothing.
      */
     public void removeCurrency(UUID uuid) {
-        Currency currency = this.currencies.get(uuid);
+        Currency currency = currencies.get(uuid);
         if (currency != null)
             removeCurrency(currency);
     }
@@ -173,14 +174,14 @@ public class CurrencyManager {
      * @param currency the Currency to clear balance
      */
     public void clearBalance(Currency currency) {
-        this.plugin.getAccountManager().getOfflineAccounts().forEach(account -> {
+        plugin.getAccountManager().getOfflineAccounts().forEach(account -> {
             account.getBalances().compute(currency, (c, d) -> c.getDefaultBalance());
-            this.plugin.getDataStore().saveAccount(account);
-            this.plugin.getMessenger().sendMessage(Action.UPDATE_ACCOUNT, account.getUuid());
+            plugin.getDataStore().saveAccount(account);
+            plugin.getMessenger().sendMessage(Action.UPDATE_ACCOUNT, account.getUuid());
         });
 
         // Flush accounts in cache
-        this.plugin.getAccountManager().flushAccounts();
+        plugin.getAccountManager().flushAccounts();
     }
 
 }

@@ -13,7 +13,6 @@ import me.xanium.gemseconomy.utils.UtilString;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextColor;
-import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
@@ -25,7 +24,7 @@ import java.util.UUID;
 public class Currency {
 
     private final UUID uuid;
-    private @MonotonicNonNull String name;
+    private @Nullable String name;
     private @Nullable String symbol;
     private TextColor color = NamedTextColor.WHITE;
     private boolean decimalSupported = true;
@@ -67,11 +66,11 @@ public class Currency {
      * @deprecated use {@link #getName()} instead
      */
     @Deprecated
-    public String getSingular() {
+    public @Nullable String getSingular() {
         return getName();
     }
 
-    public String getName() {
+    public @Nullable String getName() {
         return this.name;
     }
 
@@ -144,7 +143,7 @@ public class Currency {
         );
     }
 
-    public String getDisplayName() {
+    public @Nullable String getDisplayName() {
         return this.name;
     }
 
@@ -211,7 +210,7 @@ public class Currency {
         this.exchangeRate = exchangeRate;
     }
 
-    @Override public boolean equals(@Nullable final Object o) {
+    @Override public boolean equals(final @Nullable Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         final Currency currency = (Currency) o;

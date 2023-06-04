@@ -98,20 +98,30 @@ public abstract class DataStorage {
     public abstract void deleteCurrency(final @NonNull Currency currency);
 
     /**
-     * Loads, and returns an Account with given name from database.
+     * Updates specific Account.
+     *
+     * @param account the Account to be updated
+     *
+     * @return the same Account reference with states being updated
+     */
+    @Contract("null -> null; !null -> !null")
+    public abstract @Nullable Account updateAccount(final @Nullable Account account);
+
+    /**
+     * Loads, and returns an Account with specific name from database.
      * <p>
-     * This method will return null if given name doesn't exist in database.
+     * This method will return null if specific name doesn't exist in database.
      *
      * @param name the Account name
      *
-     * @return an Account with given name
+     * @return an Account with specific name
      */
     public abstract @Nullable Account loadAccount(final @NonNull String name);
 
     /**
      * Loads an Account with the specific uuid from database, and returns it.
      * <p>
-     * This method will return null if given uuid doesn't exist in database.
+     * This method will return null if specific uuid doesn't exist in database.
      *
      * @param uuid the Account uuid
      *
@@ -128,9 +138,9 @@ public abstract class DataStorage {
     public abstract void saveAccount(final @NonNull Account account);
 
     /**
-     * Creates a new record of given Account in database.
+     * Creates a new record of specific Account in database.
      * <p>
-     * The given Account should be a freshly created instance.
+     * The specific Account should be a freshly created instance.
      *
      * @param account the new Account to save to database
      *
@@ -140,7 +150,7 @@ public abstract class DataStorage {
     public abstract void createAccount(final @NonNull Account account);
 
     /**
-     * Deletes given Account from database.
+     * Deletes specific Account from database.
      *
      * @param account the Account to delete from database
      */
@@ -148,16 +158,16 @@ public abstract class DataStorage {
     public abstract void deleteAccount(final @NonNull Account account);
 
     /**
-     * Deletes the Account with given uuid from database.
+     * Deletes the Account with specific uuid from database.
      *
-     * @param uuid the Account with given uuid to delete from database
+     * @param uuid the Account with specific uuid to delete from database
      */
     public abstract void deleteAccount(final @NonNull UUID uuid);
 
     /**
-     * Deletes the Account with given name from database.
+     * Deletes the Account with specific name from database.
      *
-     * @param name the Account with given name to delete from database
+     * @param name the Account with specific name to delete from database
      */
     public abstract void deleteAccount(final @NonNull String name);
 

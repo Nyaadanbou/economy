@@ -12,6 +12,12 @@ dependencies:
   - name: helper
     required: true
     bootstrap: false
+  - name: helper-sql
+    required: true
+    bootstrap: false
+  - name: helper-redis
+    required: true
+    bootstrap: false
   - name: MewCore
     required: true
     bootstrap: false

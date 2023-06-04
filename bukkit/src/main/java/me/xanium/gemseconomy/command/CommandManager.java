@@ -43,7 +43,7 @@ public class CommandManager extends PaperCommandManager<CommandSender> {
             plugin,
             AsynchronousCommandExecutionCoordinator.<CommandSender>builder()
                 .withAsynchronousParsing()
-                .withExecutor(HelperExecutors.asyncHelper()) // We use helper's executor
+                .withExecutor(HelperExecutors.asyncHelper()) // Reuse helper's executor
                 .build(),
             Function.identity(),
             Function.identity()
