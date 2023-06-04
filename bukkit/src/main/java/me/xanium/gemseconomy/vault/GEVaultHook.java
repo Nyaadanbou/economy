@@ -21,7 +21,6 @@ import java.util.List;
 
 import static java.util.Objects.requireNonNull;
 
-@SuppressWarnings({"deprecation", "RedundantSuppression"})
 public class GEVaultHook extends AbstractEconomy {
 
     @Override

@@ -41,27 +41,29 @@ public class RedisMessenger implements Messenger {
         });
         registerHandler(Action.UPDATE_ACCOUNT, (player, message) -> {
             UUID uuid = readUUID(message.getData());
-            this.plugin.getAccountManager().refreshAccount(uuid);
-            UtilServer.consoleLog("Received (source: %s) - Account updated: %s".formatted(message.getSendingServer(), uuid));
+            if (plugin.getAccountManager().cached(uuid)) {
+                plugin.getAccountManager().refreshAccount(uuid);
+                UtilServer.consoleLog("Received (source: %s) - Account updated: %s".formatted(message.getSendingServer(), uuid));
+            }
         });
         registerHandler(Action.DELETE_ACCOUNT, (player, message) -> {
             UUID uuid = readUUID(message.getData());
-            this.plugin.getAccountManager().flushAccount(uuid); // It's already deleted from database by sending server
+            plugin.getAccountManager().flushAccount(uuid); // It's already deleted from database by sending server
             UtilServer.consoleLog("Received (source: %s) - Account deleted: %s".formatted(message.getSendingServer(), uuid));
         });
         registerHandler(Action.CREATE_CURRENCY, (player, message) -> {
             UUID uuid = readUUID(message.getData());
-            this.plugin.getCurrencyManager().updateCurrency(uuid, true);
+            plugin.getCurrencyManager().updateCurrency(uuid, true);
             UtilServer.consoleLog("Received (source: %s) - Currency created: %s".formatted(message.getSendingServer(), uuid));
         });
         registerHandler(Action.UPDATE_CURRENCY, (player, message) -> {
             UUID uuid = readUUID(message.getData());
-            this.plugin.getCurrencyManager().updateCurrency(uuid, false);
+            plugin.getCurrencyManager().updateCurrency(uuid, false);
             UtilServer.consoleLog("Received (source: %s) - Currency updated: %s".formatted(message.getSendingServer(), uuid));
         });
         registerHandler(Action.DELETE_CURRENCY, (player, message) -> {
             UUID uuid = readUUID(message.getData());
-            this.plugin.getCurrencyManager().removeCurrency(uuid);
+            plugin.getCurrencyManager().removeCurrency(uuid);
             UtilServer.consoleLog("Received (source: %s) - Currency deleted: %s".formatted(message.getSendingServer(), uuid));
         });
     }
@@ -69,7 +71,7 @@ public class RedisMessenger implements Messenger {
     @Override
     public void sendMessage(final String action, final UUID uuid) {
         Schedulers.async().run(() -> {
-            sendData(action, MessageTarget.OTHERS_QUEUE, writeUUID(uuid));
+            sendData(action, writeUUID(uuid));
             switch (action) {
                 case Action.CREATE_ACCOUNT -> UtilServer.consoleLog("Sent - Account created: " + uuid);
                 case Action.UPDATE_ACCOUNT -> UtilServer.consoleLog("Sent - Account updated: " + uuid);
@@ -78,23 +80,15 @@ public class RedisMessenger implements Messenger {
                 case Action.UPDATE_CURRENCY -> UtilServer.consoleLog("Sent - Currency updated: " + uuid);
                 case Action.DELETE_CURRENCY -> UtilServer.consoleLog("Sent - Currency deleted: " + uuid);
             }
-        }); // Async
+        });
     }
 
-    private void sendData(String action, MessageTarget target, byte[] data) {
-        this.connectorPlugin.getConnector().sendData(this.connectingPlugin, action, target, data);
-    }
-
-    private void sendData(String action, MessageTarget target, Player player, byte[] data) {
-        this.connectorPlugin.getConnector().sendData(this.connectingPlugin, action, target, player, data);
-    }
-
-    private void sendData(String action, MessageTarget target, String server, byte[] data) {
-        this.connectorPlugin.getConnector().sendData(this.connectingPlugin, action, target, server, data);
+    private void sendData(String action, byte[] data) {
+        connectorPlugin.getConnector().sendData(connectingPlugin, action, MessageTarget.OTHERS_QUEUE, data);
     }
 
     private void registerHandler(String action, BiConsumer<Player, Message> handler) {
-        this.connectorPlugin.getConnector().registerMessageHandler(this.connectingPlugin, action, handler);
+        connectorPlugin.getConnector().registerMessageHandler(connectingPlugin, action, handler);
     }
 
     private UUID readUUID(byte[] data) {
@@ -104,13 +98,13 @@ public class RedisMessenger implements Messenger {
 
     private byte[] writeUUID(UUID uuid) {
         ByteArrayDataOutput out = ByteStreams.newDataOutput();
-        out.writeLong(uuid.getMostSignificantBits()); // Must first write most sig bits
-        out.writeLong(uuid.getLeastSignificantBits()); // Must second write least sig bits
+        out.writeLong(uuid.getMostSignificantBits());
+        out.writeLong(uuid.getLeastSignificantBits());
         return out.toByteArray();
     }
 
     @Override public void close() {
-        this.connectorPlugin.getConnector().unregisterMessageHandlers(this.connectingPlugin);
+        connectorPlugin.getConnector().unregisterMessageHandlers(this.connectingPlugin);
     }
 
 }

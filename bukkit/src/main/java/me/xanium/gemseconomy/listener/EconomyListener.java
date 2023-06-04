@@ -28,31 +28,31 @@ public class EconomyListener implements Listener, Terminable {
 
     @EventHandler(priority = EventPriority.LOWEST)
     public void onLogin(PlayerLoginEvent event) {
-        if (event.getResult() != PlayerLoginEvent.Result.ALLOWED)
+        if (event.getResult() != PlayerLoginEvent.Result.ALLOWED) {
             return;
-
-        Player player = event.getPlayer();
+        }
 
         Schedulers.async().run(() -> {
-            if (!this.plugin.getAccountManager().hasAccount(player))
-                this.plugin.getAccountManager().createAccount(player); // Create a new account if it did not exist
+            // If the player has never come to this server, we create one for him.
+            // If the player already has an account, we simply load it from database.
 
-            Account account = this.plugin.getAccountManager().fetchAccount(player); // Get and cache the account
+            Player player = event.getPlayer();
+            plugin.getAccountManager().createAccount(player); // It will create a new account if it does not exist
+            Account account = requireNonNull(plugin.getAccountManager().fetchAccount(player), "account");
 
-            requireNonNull(account, "account"); // Should never be null as we've already checked (and created if needed)
-
+            // Update nickname of the Account
             String playerName = player.getName();
-            if (!playerName.equals(account.getNickname())) { // Update nickname when the player changed their name
+            if (!playerName.equals(account.getNickname())) {
                 account.setNickname(playerName);
-                this.plugin.getLogger().info("Account name changes detected, updating: " + playerName);
-                this.plugin.getDataStore().saveAccount(account);
+                plugin.getDataStore().saveAccount(account);
+                plugin.getLogger().info("Account name changes detected, updating: " + playerName);
             }
         });
     }
 
-    // @EventHandler // don't flush account on quit to reduce database traffic
+    @EventHandler
     public void onQuit(PlayerQuitEvent event) {
-        this.plugin.getAccountManager().flushAccount(event.getPlayer().getUniqueId());
+        plugin.getAccountManager().flushAccount(event.getPlayer().getUniqueId());
     }
 
     @Override public void close() {

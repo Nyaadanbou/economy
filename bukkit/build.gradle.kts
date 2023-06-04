@@ -1,9 +1,6 @@
 plugins {
-    val mewcraftVersion = "1.0.0"
-    id("cc.mewcraft.java-conventions") version mewcraftVersion
-    id("cc.mewcraft.repository-conventions") version mewcraftVersion
-    id("cc.mewcraft.publishing-conventions") version mewcraftVersion
     id("cc.mewcraft.project-conventions")
+    id("cc.mewcraft.publishing-conventions")
     alias(libs.plugins.indra)
 }
 
@@ -18,6 +15,8 @@ dependencies {
 
     // libs that present as other plugins
     compileOnlyApi(libs.helper)
+    compileOnly(libs.helper.sql)
+    compileOnly(libs.helper.redis)
     compileOnly(libs.connector.core)
     compileOnly(libs.connector.bukkit)
     compileOnly(libs.vault) {
