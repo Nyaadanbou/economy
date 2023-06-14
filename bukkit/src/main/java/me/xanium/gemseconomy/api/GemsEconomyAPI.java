@@ -12,6 +12,7 @@ import me.xanium.gemseconomy.GemsEconomy;
 import me.xanium.gemseconomy.account.Account;
 import me.xanium.gemseconomy.currency.Currency;
 import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.util.UUID;
 
@@ -19,7 +20,6 @@ import static java.util.Objects.requireNonNull;
 
 @SuppressWarnings("unused")
 public class GemsEconomyAPI {
-
     public final GemsEconomy plugin = GemsEconomy.getInstance();
 
     public GemsEconomyAPI() {}
@@ -27,11 +27,15 @@ public class GemsEconomyAPI {
     public @NonNull Account pullAccount(@NonNull UUID uuid) {
         requireNonNull(uuid, "uuid");
 
-        if (plugin.getAccountManager().hasAccount(uuid)) {
-            return requireNonNull(plugin.getAccountManager().fetchAccount(uuid));
+        Account account;
+
+        account = plugin.getAccountManager().fetchAccount(uuid);
+        if (account == null) {
+            plugin.getAccountManager().createAccount(uuid);
+            account = plugin.getAccountManager().fetchAccount(uuid);
         }
-        plugin.getAccountManager().createAccount(uuid);
-        return requireNonNull(plugin.getAccountManager().fetchAccount(uuid));
+
+        return requireNonNull(account);
     }
 
     /**
@@ -41,8 +45,7 @@ public class GemsEconomyAPI {
     public void deposit(@NonNull UUID uuid, double amount) {
         requireNonNull(uuid, "uuid");
 
-        Account account = pullAccount(uuid);
-        account.deposit(plugin.getCurrencyManager().getDefaultCurrency(), amount);
+        pullAccount(uuid).deposit(plugin.getCurrencyManager().getDefaultCurrency(), amount);
     }
 
     /**
@@ -54,8 +57,7 @@ public class GemsEconomyAPI {
         requireNonNull(uuid, "uuid");
         requireNonNull(currency, "currency");
 
-        Account account = pullAccount(uuid);
-        account.deposit(currency, amount);
+        pullAccount(uuid).deposit(currency, amount);
     }
 
     /**
@@ -65,8 +67,7 @@ public class GemsEconomyAPI {
     public void withdraw(@NonNull UUID uuid, double amount) {
         requireNonNull(uuid, "uuid");
 
-        Account account = pullAccount(uuid);
-        account.withdraw(plugin.getCurrencyManager().getDefaultCurrency(), amount);
+        pullAccount(uuid).withdraw(plugin.getCurrencyManager().getDefaultCurrency(), amount);
     }
 
     /**
@@ -76,10 +77,9 @@ public class GemsEconomyAPI {
      */
     public void withdraw(@NonNull UUID uuid, double amount, @NonNull Currency currency) {
         requireNonNull(uuid, "uuid");
-        requireNonNull(uuid, "currency");
+        requireNonNull(currency, "currency");
 
-        Account account = pullAccount(uuid);
-        account.withdraw(currency, amount);
+        pullAccount(uuid).withdraw(currency, amount);
     }
 
     /**
@@ -90,8 +90,7 @@ public class GemsEconomyAPI {
     public double getBalance(@NonNull UUID uuid) {
         requireNonNull(uuid, "uuid");
 
-        Account account = pullAccount(uuid);
-        return account.getBalance(plugin.getCurrencyManager().getDefaultCurrency());
+        return pullAccount(uuid).getBalance(plugin.getCurrencyManager().getDefaultCurrency());
     }
 
     /**
@@ -102,10 +101,9 @@ public class GemsEconomyAPI {
      */
     public double getBalance(@NonNull UUID uuid, @NonNull Currency currency) {
         requireNonNull(uuid, "uuid");
-        requireNonNull(uuid, "currency");
+        requireNonNull(currency, "currency");
 
-        Account account = pullAccount(uuid);
-        return account.getBalance(currency);
+        return pullAccount(uuid).getBalance(currency);
     }
 
     /**
@@ -113,13 +111,9 @@ public class GemsEconomyAPI {
      *
      * @return - a Currency object
      */
-    public Currency getCurrency(@NonNull String name) {
+    public @Nullable Currency getCurrency(@NonNull String name) {
         requireNonNull(name, "name");
 
-        if (plugin.getCurrencyManager().getCurrency(name) != null) {
-            return plugin.getCurrencyManager().getCurrency(name);
-        }
-        return null;
+        return plugin.getCurrencyManager().getCurrency(name);
     }
-
 }
