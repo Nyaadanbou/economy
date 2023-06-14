@@ -10,7 +10,7 @@ import org.bukkit.plugin.Plugin;
 
 import java.util.UUID;
 
-public interface Messenger extends Terminable {
+public  interface Messenger extends Terminable {
 
     static Messenger get() {
         Plugin connector = Bukkit.getServer().getPluginManager().getPlugin("ConnectorPlugin");

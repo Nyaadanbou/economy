@@ -5,7 +5,7 @@ plugins {
 repositories {
     mavenCentral()
     gradlePluginPortal()
-    maven(uri("${System.getenv("HOME")}/MewcraftRepository"))
+    maven(uri("${System.getenv("USERPROFILE")}/MewcraftRepository"))
 }
 
 dependencies {

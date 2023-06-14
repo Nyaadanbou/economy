@@ -128,6 +128,7 @@ public class CommandManager extends PaperCommandManager<CommandSender> {
             new BalanceCommand(plugin, this),
             new BalanceAccCommand(plugin, this),
             new BalanceTopCommand(plugin, this),
+            new ChequeCommand(plugin, this),
             new CurrencyCommand(plugin, this),
             new EconomyCommand(plugin, this),
             new PayCommand(plugin, this)
