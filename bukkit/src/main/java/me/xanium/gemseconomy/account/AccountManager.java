@@ -37,7 +37,7 @@ public class AccountManager {
     public AccountManager(@NonNull GemsEconomy plugin) {
         this.plugin = plugin;
         this.caches = CacheBuilder.newBuilder()
-            .expireAfterAccess(Duration.of(60, ChronoUnit.MINUTES))
+            .expireAfterAccess(Duration.of(10, ChronoUnit.MINUTES))
             .build(CacheLoader.asyncReloading(new CacheLoader<>() {
                 @Override public @NonNull Optional<Account> load(final @NonNull UUID key) {
                     return Optional.ofNullable(plugin.getDataStore().loadAccount(key));

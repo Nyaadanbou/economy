@@ -10,6 +10,7 @@ package me.xanium.gemseconomy.listener;
 
 import me.lucko.helper.Schedulers;
 import me.lucko.helper.terminable.Terminable;
+import me.lucko.helper.utils.Players;
 import me.xanium.gemseconomy.GemsEconomy;
 import me.xanium.gemseconomy.account.Account;
 import org.bukkit.entity.Player;
@@ -17,8 +18,10 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
-import org.bukkit.event.player.PlayerLoginEvent;
+import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
+
+import java.util.UUID;
 
 import static java.util.Objects.requireNonNull;
 
@@ -27,32 +30,33 @@ public class EconomyListener implements Listener, Terminable {
     private final GemsEconomy plugin = GemsEconomy.getInstance();
 
     @EventHandler(priority = EventPriority.LOWEST)
-    public void onLogin(PlayerLoginEvent event) {
-        if (event.getResult() != PlayerLoginEvent.Result.ALLOWED) {
+    public void onLogin(AsyncPlayerPreLoginEvent event) {
+        if (event.getLoginResult() != AsyncPlayerPreLoginEvent.Result.ALLOWED) {
             return;
         }
 
-        Schedulers.async().run(() -> {
-            // If the player has never come to this server, we create one for him.
-            // If the player already has an account, we simply load it from database.
+        // If the player has never come to this server, we create one for him.
+        // If the player already has an account, we simply load it from database.
 
-            Player player = event.getPlayer();
-            plugin.getAccountManager().createAccount(player); // It will create a new account if it does not exist
-            Account account = requireNonNull(plugin.getAccountManager().fetchAccount(player), "account");
+        final UUID uuid = event.getUniqueId();
+        plugin.getAccountManager().createAccount(uuid); // It will create a new account if it does not exist
 
-            // Update nickname of the Account
-            String playerName = player.getName();
-            if (!playerName.equals(account.getNickname())) {
-                account.setNickname(playerName);
-                plugin.getDataStore().saveAccount(account);
-                plugin.getLogger().info("Account name changes detected, updating: " + playerName);
-            }
-        });
+        // Update nickname of the Account
+        Schedulers.async().runLater(() -> {
+            final Account account = requireNonNull(plugin.getAccountManager().fetchAccount(uuid));
+            Players.get(uuid).map(Player::getName).ifPresent(playerName -> {
+                if (!playerName.equals(account.getNickname())) {
+                    account.setNickname(playerName);
+                    plugin.getDataStore().saveAccount(account);
+                    plugin.getLogger().info("Account name changes detected, updating: " + playerName);
+                }
+            });
+        }, 20);
     }
 
     @EventHandler
     public void onQuit(PlayerQuitEvent event) {
-        plugin.getAccountManager().flushAccount(event.getPlayer().getUniqueId());
+        //plugin.getAccountManager().flushAccount(event.getPlayer().getUniqueId()); // LoadingCache will remove it automatically
     }
 
     @Override public void close() {
