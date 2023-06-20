@@ -1,6 +1,5 @@
 package me.xanium.gemseconomy.vault;
 
-import com.google.common.base.Preconditions;
 import me.xanium.gemseconomy.GemsEconomy;
 import me.xanium.gemseconomy.account.Account;
 import me.xanium.gemseconomy.currency.Currency;
@@ -12,8 +11,7 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import static java.util.Objects.requireNonNull;
+import java.util.Objects;
 
 public class GEVaultHook extends AbstractEconomy {
 
@@ -65,26 +63,14 @@ public class GEVaultHook extends AbstractEconomy {
 
     @SuppressWarnings("DuplicatedCode")
     private @NonNull Account getAccountOrCreate(@NonNull OfflinePlayer offlinePlayer) {
-        Preconditions.checkNotNull(offlinePlayer, "player");
-        Account account;
-        account = GemsEconomy.getInstance().getAccountManager().fetchAccount(offlinePlayer);
-        if (account == null) {
-            GemsEconomy.getInstance().getAccountManager().createAccount(offlinePlayer);
-            account = GemsEconomy.getInstance().getAccountManager().fetchAccount(offlinePlayer);
-        }
-        return requireNonNull(account);
+        Objects.requireNonNull(offlinePlayer, "player");
+        return Objects.requireNonNull(GemsEconomy.getInstance().getAccountManager().createAccount(offlinePlayer));
     }
 
     @SuppressWarnings("DuplicatedCode")
     private @NonNull Account getAccountOrCreate(@NonNull String playerName) {
-        Preconditions.checkNotNull(playerName, "playerName");
-        Account account;
-        account = GemsEconomy.getInstance().getAccountManager().fetchAccount(playerName);
-        if (account == null) {
-            GemsEconomy.getInstance().getAccountManager().createAccount(playerName);
-            account = GemsEconomy.getInstance().getAccountManager().fetchAccount(playerName);
-        }
-        return requireNonNull(account);
+        Objects.requireNonNull(playerName, "playerName");
+        return Objects.requireNonNull(GemsEconomy.getInstance().getAccountManager().createAccount(playerName));
     }
 
     @Override

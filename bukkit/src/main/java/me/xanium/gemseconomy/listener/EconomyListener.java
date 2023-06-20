@@ -23,8 +23,6 @@ import org.bukkit.event.player.PlayerQuitEvent;
 
 import java.util.UUID;
 
-import static java.util.Objects.requireNonNull;
-
 public class EconomyListener implements Listener, Terminable {
 
     private final GemsEconomy plugin = GemsEconomy.getInstance();
@@ -39,19 +37,16 @@ public class EconomyListener implements Listener, Terminable {
         // If the player already has an account, we simply load it from database.
 
         final UUID uuid = event.getUniqueId();
-        plugin.getAccountManager().createAccount(uuid); // It will create a new account if it does not exist
+        final Account account = plugin.getAccountManager().createAccount(uuid);
 
         // Update nickname of the Account
-        Schedulers.async().runLater(() -> {
-            final Account account = requireNonNull(plugin.getAccountManager().fetchAccount(uuid));
-            Players.get(uuid).map(Player::getName).ifPresent(playerName -> {
-                if (!playerName.equals(account.getNickname())) {
-                    account.setNickname(playerName);
-                    plugin.getDataStore().saveAccount(account);
-                    plugin.getLogger().info("Account name changes detected, updating: " + playerName);
-                }
-            });
-        }, 20);
+        Schedulers.async().runLater(() -> Players.get(uuid).map(Player::getName).ifPresent(playerName -> {
+            if (!playerName.equals(account.getNickname())) {
+                account.setNickname(playerName);
+                plugin.getDataStore().saveAccount(account);
+                plugin.getLogger().info("Account name changes detected, updating: " + playerName);
+            }
+        }), 20);
     }
 
     @EventHandler

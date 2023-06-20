@@ -26,16 +26,7 @@ public class GemsEconomyAPI {
 
     public @NonNull Account pullAccount(@NonNull UUID uuid) {
         requireNonNull(uuid, "uuid");
-
-        Account account;
-
-        account = plugin.getAccountManager().fetchAccount(uuid);
-        if (account == null) {
-            plugin.getAccountManager().createAccount(uuid);
-            account = plugin.getAccountManager().fetchAccount(uuid);
-        }
-
-        return requireNonNull(account);
+        return requireNonNull(plugin.getAccountManager().createAccount(uuid));
     }
 
     /**
@@ -44,7 +35,6 @@ public class GemsEconomyAPI {
      */
     public void deposit(@NonNull UUID uuid, double amount) {
         requireNonNull(uuid, "uuid");
-
         pullAccount(uuid).deposit(plugin.getCurrencyManager().getDefaultCurrency(), amount);
     }
 
@@ -56,7 +46,6 @@ public class GemsEconomyAPI {
     public void deposit(@NonNull UUID uuid, double amount, @NonNull Currency currency) {
         requireNonNull(uuid, "uuid");
         requireNonNull(currency, "currency");
-
         pullAccount(uuid).deposit(currency, amount);
     }
 
@@ -66,7 +55,6 @@ public class GemsEconomyAPI {
      */
     public void withdraw(@NonNull UUID uuid, double amount) {
         requireNonNull(uuid, "uuid");
-
         pullAccount(uuid).withdraw(plugin.getCurrencyManager().getDefaultCurrency(), amount);
     }
 
@@ -78,42 +66,35 @@ public class GemsEconomyAPI {
     public void withdraw(@NonNull UUID uuid, double amount, @NonNull Currency currency) {
         requireNonNull(uuid, "uuid");
         requireNonNull(currency, "currency");
-
         pullAccount(uuid).withdraw(currency, amount);
     }
 
     /**
      * @param uuid - the user's unique ID
-     *
      * @return - the default Currency balance of the user
      */
     public double getBalance(@NonNull UUID uuid) {
         requireNonNull(uuid, "uuid");
-
         return pullAccount(uuid).getBalance(plugin.getCurrencyManager().getDefaultCurrency());
     }
 
     /**
      * @param uuid     - the user's unique ID
      * @param currency - the amount of the default Currency
-     *
      * @return - the balance of the specified Currency
      */
     public double getBalance(@NonNull UUID uuid, @NonNull Currency currency) {
         requireNonNull(uuid, "uuid");
         requireNonNull(currency, "currency");
-
         return pullAccount(uuid).getBalance(currency);
     }
 
     /**
      * @param name - the Currency name
-     *
      * @return - a Currency object
      */
     public @Nullable Currency getCurrency(@NonNull String name) {
         requireNonNull(name, "name");
-
         return plugin.getCurrencyManager().getCurrency(name);
     }
 }
