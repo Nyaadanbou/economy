@@ -13,6 +13,7 @@ import me.xanium.gemseconomy.account.Account;
 import me.xanium.gemseconomy.currency.Currency;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
+import org.jetbrains.annotations.ApiStatus;
 
 import java.util.UUID;
 
@@ -24,14 +25,14 @@ public class GemsEconomyAPI {
 
     public GemsEconomyAPI() {}
 
-    public @NonNull Account pullAccount(@NonNull UUID uuid) {
-        requireNonNull(uuid, "uuid");
-        return requireNonNull(plugin.getAccountManager().createAccount(uuid));
+    @ApiStatus.Internal
+    private @NonNull Account pullAccount(@NonNull UUID uuid) {
+        return plugin.getAccountManager().createAccount(uuid);
     }
 
     /**
-     * @param uuid   - the user's unique ID
-     * @param amount - the amount of the default Currency
+     * @param uuid   the user's unique ID
+     * @param amount the amount of the default Currency
      */
     public void deposit(@NonNull UUID uuid, double amount) {
         requireNonNull(uuid, "uuid");
@@ -39,9 +40,9 @@ public class GemsEconomyAPI {
     }
 
     /**
-     * @param uuid     - the user's unique ID
-     * @param amount   - the amount of a Currency, if the Currency is null, the default will be used
-     * @param currency - the specified Currency
+     * @param uuid     the user's unique ID
+     * @param amount   the amount of a Currency, if the Currency is null, the default will be used
+     * @param currency the specified Currency
      */
     public void deposit(@NonNull UUID uuid, double amount, @NonNull Currency currency) {
         requireNonNull(uuid, "uuid");
@@ -50,8 +51,8 @@ public class GemsEconomyAPI {
     }
 
     /**
-     * @param uuid   - the user's unique ID
-     * @param amount - the amount of the default Currency
+     * @param uuid   the user's unique ID
+     * @param amount the amount of the default Currency
      */
     public void withdraw(@NonNull UUID uuid, double amount) {
         requireNonNull(uuid, "uuid");
@@ -59,9 +60,9 @@ public class GemsEconomyAPI {
     }
 
     /**
-     * @param uuid     - the user's unique ID
-     * @param amount   - the amount of the currency
-     * @param currency - the Currency you withdraw from
+     * @param uuid     the user's unique ID
+     * @param amount   the amount of the currency
+     * @param currency the Currency you withdraw from
      */
     public void withdraw(@NonNull UUID uuid, double amount, @NonNull Currency currency) {
         requireNonNull(uuid, "uuid");
@@ -70,8 +71,8 @@ public class GemsEconomyAPI {
     }
 
     /**
-     * @param uuid - the user's unique ID
-     * @return - the default Currency balance of the user
+     * @param uuid the user's unique ID
+     * @return the default Currency balance of the user
      */
     public double getBalance(@NonNull UUID uuid) {
         requireNonNull(uuid, "uuid");
@@ -79,9 +80,9 @@ public class GemsEconomyAPI {
     }
 
     /**
-     * @param uuid     - the user's unique ID
-     * @param currency - the amount of the default Currency
-     * @return - the balance of the specified Currency
+     * @param uuid     the user's unique ID
+     * @param currency the amount of the default Currency
+     * @return the balance of the specified Currency
      */
     public double getBalance(@NonNull UUID uuid, @NonNull Currency currency) {
         requireNonNull(uuid, "uuid");
@@ -90,8 +91,8 @@ public class GemsEconomyAPI {
     }
 
     /**
-     * @param name - the Currency name
-     * @return - a Currency object
+     * @param name the Currency name
+     * @return a Currency object
      */
     public @Nullable Currency getCurrency(@NonNull String name) {
         requireNonNull(name, "name");
