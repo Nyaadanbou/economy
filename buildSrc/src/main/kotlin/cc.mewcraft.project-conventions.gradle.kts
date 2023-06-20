@@ -4,5 +4,5 @@ plugins {
 }
 
 group = "me.xanium.gemseconomy"
-version = "1.3.10"
+version = "1.3.11"
 description = "A modern multi-currency economy plugin"
