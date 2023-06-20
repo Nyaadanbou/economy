@@ -32,11 +32,11 @@ import java.util.UUID;
 public class AccountManager {
 
     private final @NonNull GemsEconomy plugin;
-    private final @NonNull LoadingCache<UUID, Optional<Account>> caches; // accounts loaded in memory
+    private final @NonNull LoadingCache<UUID, Optional<Account>> cache; // accounts loaded in memory
 
     public AccountManager(@NonNull GemsEconomy plugin) {
         this.plugin = plugin;
-        this.caches = CacheBuilder.newBuilder()
+        this.cache = CacheBuilder.newBuilder()
             .expireAfterAccess(Duration.of(10, ChronoUnit.MINUTES))
             .build(CacheLoader.asyncReloading(new CacheLoader<>() {
                 @Override public @NonNull Optional<Account> load(final @NonNull UUID key) {
@@ -142,7 +142,7 @@ public class AccountManager {
      * @param uuid the uuid of specific Account
      */
     public void deleteAccount(@NonNull UUID uuid) {
-        caches.invalidate(uuid); // Delete from memory
+        cache.invalidate(uuid); // Delete from memory
         plugin.getDataStore().deleteAccount(uuid); // Delete from database
     }
 
@@ -200,25 +200,25 @@ public class AccountManager {
     /**
      * Fetch an Account with specific uuid.
      * <p>
-     * This will first get the Account from caches, followed by database. If neither is found, it will return null.
+     * This will first get the Account from cache, followed by database. If neither is found, it will return null.
      *
      * @param uuid the uuid of the Account to fetch for
      * @return an Account with given uuid
      */
     public @Nullable Account fetchAccount(@NonNull UUID uuid) {
-        return caches.getUnchecked(uuid).orElse(null);
+        return cache.getUnchecked(uuid).orElse(null);
     }
 
     /**
      * Fetch an Account with specific name.
      * <p>
-     * This will first get the Account from caches, followed by database. If neither is found, it will return null.
+     * This will first get the Account from cache, followed by database. If neither is found, it will return null.
      *
      * @param name the name of the Account to fetch for
      * @return an Account with given name
      */
     public @Nullable Account fetchAccount(@NonNull String name) {
-        for (final Optional<Account> account : caches.asMap().values()) {
+        for (final Optional<Account> account : cache.asMap().values()) {
             if (account.isPresent() && name.equalsIgnoreCase(account.get().getNickname())) {
                 return account.get();
             }
@@ -233,7 +233,7 @@ public class AccountManager {
     }
 
     /**
-     * Caches an Account.
+     * cache an Account.
      * <p>
      * If the Account is already cached (regardless whether it's empty optional or not), this method will override the
      * original object.
@@ -241,7 +241,7 @@ public class AccountManager {
      * @param account the Account to be loaded into memory
      */
     public void cacheAccount(@NonNull Account account) {
-        caches.put(account.getUuid(), Optional.of(account));
+        cache.put(account.getUuid(), Optional.of(account));
     }
 
     /**
@@ -252,7 +252,7 @@ public class AccountManager {
      */
     @SuppressWarnings("OptionalAssignedToNull")
     public boolean cached(@NonNull UUID uuid) {
-        return caches.getIfPresent(uuid) != null;
+        return cache.getIfPresent(uuid) != null;
     }
 
     /**
@@ -264,8 +264,8 @@ public class AccountManager {
         // TODO According to javadoc,
         //  if the Account is being read by another thread this method will basically do nothing.
         //  This would be an issue because the Account may not sync with the database.
-        //  Link: https://github.com/google/guava/wiki/CachesExplained
-        caches.refresh(uuid);
+        //  Link: https://github.com/google/guava/wiki/cacheExplained
+        cache.refresh(uuid);
     }
 
     /**
@@ -274,14 +274,14 @@ public class AccountManager {
      * @param uuid the uuid of the Account
      */
     public void flushAccount(@NonNull UUID uuid) {
-        caches.invalidate(uuid);
+        cache.invalidate(uuid);
     }
 
     /**
      * Discards all Account objects from memory.
      */
     public void flushAccounts() {
-        caches.invalidateAll();
+        cache.invalidateAll();
     }
 
     /**
@@ -290,7 +290,7 @@ public class AccountManager {
      * @return a view of all the Accounts loaded in memory
      */
     public @NonNull Collection<Account> getCachedAccounts() {
-        return caches.asMap().values().stream().filter(Optional::isPresent).map(Optional::get).toList();
+        return cache.asMap().values().stream().filter(Optional::isPresent).map(Optional::get).toList();
     }
 
     /**
