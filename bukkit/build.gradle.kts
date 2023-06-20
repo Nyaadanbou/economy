@@ -1,7 +1,6 @@
 plugins {
     id("cc.mewcraft.project-conventions")
     id("cc.mewcraft.publishing-conventions")
-    alias(libs.plugins.indra)
 }
 
 // name, version and description inherited from "project-conventions"
@@ -69,7 +68,3 @@ tasks {
         }
     }
 }*/
-
-indra {
-    javaVersions().target(17)
-}

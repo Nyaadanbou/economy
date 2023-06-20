@@ -1,6 +1,5 @@
 plugins {
     id("cc.mewcraft.project-conventions")
-    alias(libs.plugins.indra)
 }
 
 // name and description inherited from "project-conventions"
@@ -16,8 +15,4 @@ dependencies {
 
     // libs that present as other plugins
     compileOnly(libs.luckperms)
-}
-
-indra {
-    javaVersions().target(17)
 }
