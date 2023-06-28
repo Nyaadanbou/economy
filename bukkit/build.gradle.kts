@@ -8,7 +8,7 @@ project.ext.set("name", "GemsEconomy")
 // name, version and description inherited from "project-conventions"
 
 dependencies {
-    compileOnly(project(":economy:api"))
+    implementation(project(":economy:api"))
     implementation(project(":economy:papi"))
     implementation(project(":economy:mini"))
 
