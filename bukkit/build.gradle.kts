@@ -15,10 +15,10 @@ dependencies {
     compileOnly(libs.server.paper)
 
     // my own libs
-    compileOnly(libs.mewcore)
+    compileOnly(project(":mewcore"))
 
     // libs that present as other plugins
-    compileOnlyApi(libs.helper)
+    compileOnly(libs.helper)
     compileOnly(libs.helper.sql)
     compileOnly(libs.helper.redis)
     compileOnly(libs.connector.core)
