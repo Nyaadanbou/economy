@@ -471,7 +471,7 @@ public final class MySQLStorage extends DataStorage {
         JSONObject balanceDataJson = (JSONObject) parser.parse(balanceDataRaw);
         JSONObject balanceAccJson = (JSONObject) parser.parse(balanceAccRaw);
 
-        for (Currency currency : plugin.getCurrencyManager().getCurrencies()) {
+        for (Currency currency : plugin.getCurrencyManager().getLoadedCurrencies()) {
             // Read balance data
             Number balance = (Number) balanceDataJson.get(currency.getUuid().toString());
             if (balance != null) {

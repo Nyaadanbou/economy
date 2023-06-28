@@ -71,7 +71,7 @@ public class AccountManager {
         Account account = new PlayerAccount(uuid);
 
         // Set default balances
-        plugin.getCurrencyManager().getCurrencies().forEach(currency ->
+        plugin.getCurrencyManager().getLoadedCurrencies().forEach(currency ->
             account.setBalance(currency, currency.getDefaultBalance())
         );
 
@@ -126,7 +126,7 @@ public class AccountManager {
         );
 
         // Set default balances
-        plugin.getCurrencyManager().getCurrencies().forEach(currency ->
+        plugin.getCurrencyManager().getLoadedCurrencies().forEach(currency ->
             account.setBalance(currency, currency.getDefaultBalance())
         );
 

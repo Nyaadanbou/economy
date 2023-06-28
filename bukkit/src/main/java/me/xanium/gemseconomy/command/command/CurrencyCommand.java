@@ -54,8 +54,8 @@ public class CurrencyCommand extends AbstractCommand {
             .literal("list")
             .handler(context -> {
                 CommandSender sender = context.getSender();
-                GemsEconomyPlugin.lang().sendComponent(sender, "msg_currency_list_header", "size", Integer.toString(GemsEconomyPlugin.getInstance().getCurrencyManager().getCurrencies().size()));
-                for (Currency currency : GemsEconomyPlugin.getInstance().getCurrencyManager().getCurrencies()) {
+                GemsEconomyPlugin.lang().sendComponent(sender, "msg_currency_list_header", "size", Integer.toString(GemsEconomyPlugin.getInstance().getCurrencyManager().getLoadedCurrencies().size()));
+                for (Currency currency : GemsEconomyPlugin.getInstance().getCurrencyManager().getLoadedCurrencies()) {
                     GemsEconomyPlugin.lang().sendComponent(sender, GemsEconomyPlugin.lang()
                         .component(sender, "msg_currency_list_entry")
                         .replaceText(CURRENCY_REPLACEMENT.apply(currency))

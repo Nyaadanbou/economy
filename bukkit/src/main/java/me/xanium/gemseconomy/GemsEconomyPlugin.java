@@ -81,7 +81,7 @@ public class GemsEconomyPlugin extends ExtendedJavaPlugin {
         initializeDataStore(StorageType.valueOf(requireNonNull(getConfig().getString("storage")).toUpperCase()));
 
         // Check if default currency is set
-        if (currencyManager.getCurrencies().stream().noneMatch(Currency::isDefaultCurrency)) {
+        if (currencyManager.getLoadedCurrencies().stream().noneMatch(Currency::isDefaultCurrency)) {
             getLogger().severe("No default currency is provided");
             getServer().getPluginManager().disablePlugin(this);
             return;
@@ -229,7 +229,7 @@ public class GemsEconomyPlugin extends ExtendedJavaPlugin {
 
             UtilServer.consoleLog("Loading currencies from database...");
             getDataStore().loadCurrencies().forEach(currency -> getCurrencyManager().addCurrency(currency));
-            UtilServer.consoleLog("Loaded " + getCurrencyManager().getCurrencies().size() + " currencies!");
+            UtilServer.consoleLog("Loaded " + getCurrencyManager().getLoadedCurrencies().size() + " currencies!");
         } catch (Throwable e) {
             e.printStackTrace();
             UtilServer.consoleLog("§cCannot load initial data from data storage.");

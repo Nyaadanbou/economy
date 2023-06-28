@@ -27,10 +27,6 @@ public class CurrencyManager {
 
     /* ---------------- Getters ---------------- */
 
-    @Deprecated
-    public boolean currencyExist(String name) {
-        return getCurrency(name) != null;
-    }
 
     public boolean hasCurrency(String name) {
         return getCurrency(name) != null;
@@ -57,7 +53,7 @@ public class CurrencyManager {
         throw new IllegalStateException("No default currency is provided");
     }
 
-    public List<Currency> getCurrencies() {
+    public List<Currency> getLoadedCurrencies() {
         return ImmutableList.copyOf(currencies.values());
     }
 

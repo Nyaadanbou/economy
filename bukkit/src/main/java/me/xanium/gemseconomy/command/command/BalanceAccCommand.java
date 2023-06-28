@@ -64,7 +64,7 @@ public class BalanceAccCommand extends AbstractCommand {
     }
 
     private void sendBalance(CommandSender sender, Account account) {
-        int currencies = GemsEconomyPlugin.getInstance().getCurrencyManager().getCurrencies().size();
+        int currencies = GemsEconomyPlugin.getInstance().getCurrencyManager().getLoadedCurrencies().size();
         if (currencies == 0) {
             GemsEconomyPlugin.lang().sendComponent(sender, "err_no_default_currency");
         } else if (currencies == 1) {

@@ -13,6 +13,7 @@ import me.xanium.gemseconomy.GemsEconomyPlugin;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
+import java.util.List;
 import java.util.UUID;
 
 @SuppressWarnings("unused")
@@ -75,5 +76,9 @@ public class GemsEconomyImpl implements GemsEconomy {
 
     @Override public @NonNull Currency getDefaultCurrency() {
         return plugin.getCurrencyManager().getDefaultCurrency();
+    }
+
+    @Override public @NonNull List<Currency> getLoadedCurrencies() {
+        return plugin.getCurrencyManager().getLoadedCurrencies();
     }
 }
