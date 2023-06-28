@@ -4,12 +4,12 @@ import cloud.commandframework.Command;
 import cloud.commandframework.arguments.standard.DoubleArgument;
 import cloud.commandframework.arguments.standard.StringArgument;
 import me.xanium.gemseconomy.GemsEconomyPlugin;
+import me.xanium.gemseconomy.api.Currency;
 import me.xanium.gemseconomy.command.AbstractCommand;
 import me.xanium.gemseconomy.command.CommandManager;
 import me.xanium.gemseconomy.command.argument.AmountArgument;
 import me.xanium.gemseconomy.command.argument.CurrencyArgument;
 import me.xanium.gemseconomy.command.argument.TextColorArgument;
-import me.xanium.gemseconomy.currency.Currency;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextColor;
 import org.bukkit.command.CommandSender;
@@ -82,7 +82,7 @@ public class CurrencyCommand extends AbstractCommand {
                     .component(sender, "msg_currency_decimal_support")
                     .replaceText(STATUS_REPLACEMENT.apply(currency.isDecimalSupported()))
                 );
-                GemsEconomyPlugin.lang().sendComponent(sender, "msg_currency_maximum_balance", "maximum_balance", Double.toString(currency.getMaxBalance()));
+                GemsEconomyPlugin.lang().sendComponent(sender, "msg_currency_maximum_balance", "maximum_balance", Double.toString(currency.getMaximumBalance()));
                 GemsEconomyPlugin.lang().sendComponent(sender, GemsEconomyPlugin.lang()
                     .component(sender, "msg_currency_default")
                     .replaceText(STATUS_REPLACEMENT.apply(currency.isDefaultCurrency()))
@@ -138,7 +138,7 @@ public class CurrencyCommand extends AbstractCommand {
                     .replaceText(CURRENCY_REPLACEMENT.apply(currency))
                     .replaceText(config -> {
                         config.matchLiteral("{maximum_balance}");
-                        config.replacement(Component.text(currency.getMaxBalance()));
+                        config.replacement(Component.text(currency.getMaximumBalance()));
                     })
                 );
             })

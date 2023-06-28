@@ -4,11 +4,11 @@ import cloud.commandframework.Command;
 import cloud.commandframework.arguments.standard.IntegerArgument;
 import me.lucko.helper.promise.Promise;
 import me.xanium.gemseconomy.GemsEconomyPlugin;
+import me.xanium.gemseconomy.api.Currency;
 import me.xanium.gemseconomy.command.AbstractCommand;
 import me.xanium.gemseconomy.command.CommandManager;
 import me.xanium.gemseconomy.command.argument.CurrencyArgument;
 import me.xanium.gemseconomy.currency.BalanceTop;
-import me.xanium.gemseconomy.currency.Currency;
 import me.xanium.gemseconomy.data.TransientBalance;
 import org.bukkit.command.CommandSender;
 

@@ -13,28 +13,23 @@ import me.xanium.gemseconomy.utils.UtilServer;
 import net.milkbowl.vault.economy.Economy;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.ServicePriority;
-import org.bukkit.plugin.ServicesManager;
 
 public class VaultHandler {
-
-    private GEVaultHook economy = null;
     private final GemsEconomyPlugin plugin;
+    private VaultHook economy;
 
-    public VaultHandler(GemsEconomyPlugin plugin){
+    public VaultHandler(GemsEconomyPlugin plugin) {
         this.plugin = plugin;
     }
 
     public void hook() {
         try {
-            if (this.economy == null) {
-                this.economy = new GEVaultHook();
+            if (economy == null) {
+                economy = new VaultHook();
             }
 
             plugin.getCurrencyManager().getDefaultCurrency();
-
-            ServicesManager sm = Bukkit.getServicesManager();
-            sm.register(Economy.class, this.economy, plugin, ServicePriority.Highest);
-
+            Bukkit.getServicesManager().register(Economy.class, economy, plugin, ServicePriority.Highest);
             UtilServer.consoleLog("Vault link enabled.");
         } catch (Exception e) {
             e.printStackTrace();
@@ -42,11 +37,9 @@ public class VaultHandler {
     }
 
     public void unhook() {
-        ServicesManager sm = Bukkit.getServicesManager();
-        if(this.economy != null){
-            sm.unregister(Economy.class, this.economy);
-            this.economy = null;
+        if (economy != null) {
+            Bukkit.getServicesManager().unregister(Economy.class, economy);
+            economy = null;
         }
     }
-
 }

@@ -1,8 +1,9 @@
 package me.xanium.gemseconomy.vault;
 
+import com.google.common.base.Preconditions;
 import me.xanium.gemseconomy.GemsEconomyPlugin;
-import me.xanium.gemseconomy.account.Account;
-import me.xanium.gemseconomy.currency.Currency;
+import me.xanium.gemseconomy.api.Account;
+import me.xanium.gemseconomy.api.Currency;
 import me.xanium.gemseconomy.utils.UtilServer;
 import net.milkbowl.vault.economy.AbstractEconomy;
 import net.milkbowl.vault.economy.EconomyResponse;
@@ -11,9 +12,8 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
-public class GEVaultHook extends AbstractEconomy {
+public class VaultHook extends AbstractEconomy {
 
     @Override
     public boolean isEnabled() {
@@ -63,14 +63,14 @@ public class GEVaultHook extends AbstractEconomy {
 
     @SuppressWarnings("DuplicatedCode")
     private @NonNull Account getAccountOrCreate(@NonNull OfflinePlayer offlinePlayer) {
-        Objects.requireNonNull(offlinePlayer, "player");
-        return Objects.requireNonNull(GemsEconomyPlugin.getInstance().getAccountManager().createAccount(offlinePlayer));
+        Preconditions.checkNotNull(offlinePlayer, "player");
+        return GemsEconomyPlugin.getInstance().getAccountManager().createAccount(offlinePlayer);
     }
 
     @SuppressWarnings("DuplicatedCode")
     private @NonNull Account getAccountOrCreate(@NonNull String playerName) {
-        Objects.requireNonNull(playerName, "playerName");
-        return Objects.requireNonNull(GemsEconomyPlugin.getInstance().getAccountManager().createAccount(playerName));
+        Preconditions.checkNotNull(playerName, "playerName");
+        return GemsEconomyPlugin.getInstance().getAccountManager().createAccount(playerName);
     }
 
     @Override

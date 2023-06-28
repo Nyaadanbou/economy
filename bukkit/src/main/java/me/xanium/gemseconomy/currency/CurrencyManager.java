@@ -2,6 +2,7 @@ package me.xanium.gemseconomy.currency;
 
 import com.google.common.collect.ImmutableList;
 import me.xanium.gemseconomy.GemsEconomyPlugin;
+import me.xanium.gemseconomy.api.Currency;
 import me.xanium.gemseconomy.message.Action;
 import me.xanium.gemseconomy.message.Messenger;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -66,7 +67,6 @@ public class CurrencyManager {
      * Creates a new Currency and saves it to database.
      *
      * @param name the name of the new Currency
-     *
      * @return the new Currency, or <code>null</code> if already existed
      */
     public @Nullable Currency createCurrency(String name) {
@@ -74,8 +74,8 @@ public class CurrencyManager {
             return null;
         }
 
-        Currency currency = new Currency(UUID.randomUUID(), name);
-        currency.setExchangeRate(1.0);
+        Currency currency = new ServerCurrency(UUID.randomUUID(), name);
+        currency.setExchangeRate(1D);
 
         if (currencies.size() == 0) {
             currency.setDefaultCurrency(true);

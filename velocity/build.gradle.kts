@@ -1,7 +1,3 @@
-plugins {
-    id("cc.mewcraft.project-conventions")
-}
-
 // name and description inherited from "project-conventions"
 version = "1.0.0"
 

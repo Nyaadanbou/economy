@@ -2,13 +2,13 @@ package me.xanium.gemseconomy.command.command;
 
 import cloud.commandframework.Command;
 import me.xanium.gemseconomy.GemsEconomyPlugin;
-import me.xanium.gemseconomy.account.Account;
+import me.xanium.gemseconomy.api.Account;
+import me.xanium.gemseconomy.api.Currency;
 import me.xanium.gemseconomy.command.AbstractCommand;
 import me.xanium.gemseconomy.command.CommandManager;
 import me.xanium.gemseconomy.command.argument.AccountArgument;
 import me.xanium.gemseconomy.command.argument.AmountArgument;
 import me.xanium.gemseconomy.command.argument.CurrencyArgument;
-import me.xanium.gemseconomy.currency.Currency;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;

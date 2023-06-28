@@ -5,6 +5,7 @@ import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 import me.lucko.helper.promise.Promise;
 import me.xanium.gemseconomy.GemsEconomyPlugin;
+import me.xanium.gemseconomy.api.Currency;
 import me.xanium.gemseconomy.data.TransientBalance;
 
 import java.time.Duration;
@@ -39,7 +40,6 @@ public class BalanceTopRepository {
      * Gets a balance top list for specific currency.
      *
      * @param currency the currency from which the balance top list is fetched
-     *
      * @return a promise which contains the results
      */
     public Promise<BalanceTop> computeByCurrency(Currency currency) {

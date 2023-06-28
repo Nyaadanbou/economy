@@ -1,8 +1,8 @@
 package me.xanium.gemseconomy;
 
 import de.themoep.utils.lang.bukkit.LanguageManager;
-import me.xanium.gemseconomy.account.Account;
-import me.xanium.gemseconomy.currency.Currency;
+import me.xanium.gemseconomy.api.Account;
+import me.xanium.gemseconomy.api.Currency;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextReplacementConfig;
 import net.kyori.adventure.text.minimessage.MiniMessage;

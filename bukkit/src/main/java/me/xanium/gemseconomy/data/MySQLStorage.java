@@ -12,9 +12,10 @@ import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import me.lucko.helper.promise.Promise;
 import me.xanium.gemseconomy.GemsEconomyPlugin;
-import me.xanium.gemseconomy.account.Account;
 import me.xanium.gemseconomy.account.PlayerAccount;
-import me.xanium.gemseconomy.currency.Currency;
+import me.xanium.gemseconomy.api.Account;
+import me.xanium.gemseconomy.api.Currency;
+import me.xanium.gemseconomy.currency.ServerCurrency;
 import me.xanium.gemseconomy.utils.UtilServer;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextColor;
@@ -24,13 +25,21 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
-import java.sql.*;
-import java.util.*;
+import java.sql.Connection;
+import java.sql.DatabaseMetaData;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.UUID;
 
 import static java.util.Objects.requireNonNull;
 
 public final class MySQLStorage extends DataStorage {
-
     // --- Table Names ---
     private final String currencyTable = getTablePrefix() + "_currencies";
     private final String accountsTable = getTablePrefix() + "_accounts";
@@ -230,7 +239,7 @@ public final class MySQLStorage extends DataStorage {
                 Currency currency = loadCurrencyFromDatabase(rs);
                 currencies.add(currency);
                 UtilServer.consoleLog("Loaded currency: %s (default_balance: %s, max_balance: %s, default_currency: %s, payable: %s)".formatted(
-                    currency.getName(), currency.getDefaultBalance(), currency.getMaxBalance(), currency.isDefaultCurrency(), currency.isPayable()
+                    currency.getName(), currency.getDefaultBalance(), currency.getMaximumBalance(), currency.isDefaultCurrency(), currency.isPayable()
                 ));
             }
         } catch (SQLException e) {
@@ -266,7 +275,7 @@ public final class MySQLStorage extends DataStorage {
             stmt.setString(1, currency.getUuid().toString());
             stmt.setString(2, currency.getName());
             stmt.setDouble(3, currency.getDefaultBalance());
-            stmt.setDouble(4, currency.getMaxBalance());
+            stmt.setDouble(4, currency.getMaximumBalance());
             stmt.setString(5, currency.getSymbolNullable());
             stmt.setInt(6, currency.isDecimalSupported() ? 1 : 0);
             stmt.setInt(7, currency.isDefaultCurrency() ? 1 : 0);
@@ -523,8 +532,7 @@ public final class MySQLStorage extends DataStorage {
         TextColor color = Optional.ofNullable(rs.getString("color")).map(TextColor::fromHexString).orElse(NamedTextColor.WHITE);
         double exchangeRate = rs.getDouble("exchange_rate");
 
-        Currency currency = new Currency(uuid);
-        currency.setName(name);
+        Currency currency = new ServerCurrency(uuid, name);
         currency.setDefaultBalance(defaultBalance);
         currency.setMaximumBalance(maximumBalance);
         currency.setSymbol(symbol);
@@ -536,5 +544,4 @@ public final class MySQLStorage extends DataStorage {
 
         return currency;
     }
-
 }

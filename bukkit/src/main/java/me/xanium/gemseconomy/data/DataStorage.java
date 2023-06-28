@@ -10,8 +10,8 @@ package me.xanium.gemseconomy.data;
 
 import me.lucko.helper.promise.Promise;
 import me.xanium.gemseconomy.GemsEconomyPlugin;
-import me.xanium.gemseconomy.account.Account;
-import me.xanium.gemseconomy.currency.Currency;
+import me.xanium.gemseconomy.api.Account;
+import me.xanium.gemseconomy.api.Currency;
 import me.xanium.gemseconomy.listener.EconomyListener;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
@@ -38,7 +38,6 @@ public abstract class DataStorage {
      * Gets an instance of given storage method.
      *
      * @param method a method
-     *
      * @return an instance of given storage method
      */
     public static @Nullable DataStorage getMethod(final @NonNull StorageType method) {
@@ -101,7 +100,6 @@ public abstract class DataStorage {
      * Updates specific Account.
      *
      * @param account the Account to be updated
-     *
      * @return the same Account reference with states being updated
      */
     @Contract("null -> null; !null -> !null")
@@ -113,7 +111,6 @@ public abstract class DataStorage {
      * This method will return null if specific name doesn't exist in database.
      *
      * @param name the Account name
-     *
      * @return an Account with specific name
      */
     public abstract @Nullable Account loadAccount(final @NonNull String name);
@@ -124,7 +121,6 @@ public abstract class DataStorage {
      * This method will return null if specific uuid doesn't exist in database.
      *
      * @param uuid the Account uuid
-     *
      * @return an Account with the specific uuid
      */
     public abstract @Nullable Account loadAccount(final @NonNull UUID uuid);
@@ -143,7 +139,6 @@ public abstract class DataStorage {
      * The specific Account should be a freshly created instance.
      *
      * @param account the new Account to save to database
-     *
      * @see EconomyListener
      */
     @Contract(pure = true)
@@ -184,7 +179,6 @@ public abstract class DataStorage {
      * The implementation should not store any data in memory for long time.
      *
      * @param currency the currency which the balances are fetched from
-     *
      * @return a promise
      */
     @Contract(pure = true)

@@ -12,7 +12,7 @@ import me.lucko.helper.Schedulers;
 import me.lucko.helper.terminable.Terminable;
 import me.lucko.helper.utils.Players;
 import me.xanium.gemseconomy.GemsEconomyPlugin;
-import me.xanium.gemseconomy.account.Account;
+import me.xanium.gemseconomy.api.Account;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;

@@ -1,9 +1,10 @@
 package me.xanium.gemseconomy.papi;
 
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
-import me.xanium.gemseconomy.GemsEconomyPlugin;
-import me.xanium.gemseconomy.account.Account;
-import me.xanium.gemseconomy.currency.Currency;
+import me.xanium.gemseconomy.api.Account;
+import me.xanium.gemseconomy.api.Currency;
+import me.xanium.gemseconomy.api.GemsEconomy;
+import me.xanium.gemseconomy.api.GemsEconomyProvider;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -11,7 +12,7 @@ import org.checkerframework.checker.nullness.qual.Nullable;
 
 public class GemsEconomyExpansion extends PlaceholderExpansion {
 
-    private GemsEconomyPlugin economy;
+    private GemsEconomy economy;
 
     @Override
     public boolean register() {
@@ -19,11 +20,7 @@ public class GemsEconomyExpansion extends PlaceholderExpansion {
             return false;
         }
 
-        this.economy = (GemsEconomyPlugin) Bukkit.getPluginManager().getPlugin(getRequiredPlugin());
-
-        if (this.economy == null) {
-            return false;
-        }
+        economy = GemsEconomyProvider.get();
 
         return super.register();
     }
@@ -59,12 +56,12 @@ public class GemsEconomyExpansion extends PlaceholderExpansion {
             return "";
         }
 
-        params = params.toLowerCase();
-        Currency defaultCurrency = this.economy.getCurrencyManager().getDefaultCurrency();
-        Account account = this.economy.getAccountManager().fetchAccount(player.getUniqueId());
-
-        if (account == null)
+        if (!economy.hasAccount(player.getUniqueId()))
             return "";
+
+        params = params.toLowerCase();
+        Currency defaultCurrency = economy.getDefaultCurrency();
+        Account account = economy.pullAccount(player.getUniqueId());
 
         if (params.startsWith("cum.balance.formatted.fancy")) { // length of "cum.balance.formatted.fancy": 27
             return parseFancyFormattedCum(defaultCurrency, account, params.substring(27));
@@ -89,7 +86,7 @@ public class GemsEconomyExpansion extends PlaceholderExpansion {
 
         if (input.startsWith(":")) {
             String currencyName = input.substring(1);
-            Currency currency = this.economy.getCurrencyManager().getCurrency(currencyName);
+            Currency currency = economy.getCurrency(currencyName);
             return currency != null ? String.valueOf(acc.getBalance(currency)) : "";
         } else {
             return String.valueOf(acc.getBalance(def));
@@ -102,7 +99,7 @@ public class GemsEconomyExpansion extends PlaceholderExpansion {
 
         if (input.startsWith(":")) {
             String currencyName = input.substring(1);
-            Currency currency = this.economy.getCurrencyManager().getCurrency(currencyName);
+            Currency currency = economy.getCurrency(currencyName);
             return currency != null ? currency.simpleFormat(acc.getBalance(currency)) : "";
         } else {
             return def.simpleFormat(acc.getBalance(def));
@@ -115,7 +112,7 @@ public class GemsEconomyExpansion extends PlaceholderExpansion {
 
         if (input.startsWith(":")) {
             String currencyName = input.substring(1);
-            Currency currency = this.economy.getCurrencyManager().getCurrency(currencyName);
+            Currency currency = economy.getCurrency(currencyName);
             return currency != null ? currency.fancyFormat(acc.getBalance(currency)) : "";
         } else {
             return def.fancyFormat(acc.getBalance(def));
@@ -128,7 +125,7 @@ public class GemsEconomyExpansion extends PlaceholderExpansion {
 
         if (input.startsWith(":")) {
             String currencyName = input.substring(1);
-            Currency currency = this.economy.getCurrencyManager().getCurrency(currencyName);
+            Currency currency = economy.getCurrency(currencyName);
             return currency != null ? String.valueOf(acc.getCumulativeBalance(currency)) : "";
         } else {
             return String.valueOf(acc.getCumulativeBalance(def));
@@ -141,7 +138,7 @@ public class GemsEconomyExpansion extends PlaceholderExpansion {
 
         if (input.startsWith(":")) {
             String currencyName = input.substring(1);
-            Currency currency = this.economy.getCurrencyManager().getCurrency(currencyName);
+            Currency currency = economy.getCurrency(currencyName);
             return currency != null ? currency.simpleFormat(acc.getCumulativeBalance(currency)) : "";
         } else {
             return def.simpleFormat(acc.getCumulativeBalance(def));
@@ -154,7 +151,7 @@ public class GemsEconomyExpansion extends PlaceholderExpansion {
 
         if (input.startsWith(":")) {
             String currencyName = input.substring(1);
-            Currency currency = this.economy.getCurrencyManager().getCurrency(currencyName);
+            Currency currency = economy.getCurrency(currencyName);
             return currency != null ? currency.fancyFormat(acc.getCumulativeBalance(currency)) : "";
         } else {
             return def.fancyFormat(acc.getCumulativeBalance(def));

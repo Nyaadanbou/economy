@@ -9,6 +9,8 @@ project.ext.set("name", "GemsEconomy")
 // name, version and description inherited from "project-conventions"
 
 dependencies {
+    compileOnly(project(":economy:api"))
+
     // the server api
     compileOnly(libs.server.paper)
 

@@ -9,7 +9,7 @@ import java.util.Comparator;
 import java.util.List;
 
 /**
- * Represents a sorted list of balances associated with a {@link Currency}.
+ * Represents a sorted list of balances associated with a {@link me.xanium.gemseconomy.api.Currency}.
  */
 public class BalanceTop {
 
@@ -36,7 +36,6 @@ public class BalanceTop {
      * Gets the entries at specific page.
      *
      * @param page page index starting from 0
-     *
      * @return the entries at specific page index
      */
     public List<TransientBalance> getResultsAt(int page) {

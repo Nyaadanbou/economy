@@ -1,6 +1,5 @@
-package me.xanium.gemseconomy.account;
+package me.xanium.gemseconomy.api;
 
-import me.xanium.gemseconomy.currency.Currency;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.jetbrains.annotations.ApiStatus;
@@ -9,6 +8,11 @@ import java.util.Map;
 import java.util.UUID;
 
 public interface Account {
+    @NonNull UUID getUuid();
+
+    @NonNull String getDisplayName();
+
+    @NonNull String getNickname();
 
     boolean withdraw(@NonNull Currency currency, double amount);
 
@@ -30,12 +34,6 @@ public interface Account {
     @ApiStatus.Internal
     @NonNull Map<Currency, Double> getCumulativeBalances();
 
-    @NonNull String getDisplayName();
-
-    @Nullable String getNickname();
-
-    @NonNull UUID getUuid();
-
     @ApiStatus.Internal
     boolean testOverflow(@NonNull Currency currency, double amount);
 
@@ -54,5 +52,4 @@ public interface Account {
     /*@Override boolean equals(Object o);
 
     @Override int hashCode();*/
-
 }

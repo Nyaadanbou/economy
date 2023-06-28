@@ -16,6 +16,7 @@ import com.google.common.util.concurrent.ListenableFuture;
 import me.lucko.helper.profiles.OfflineModeProfiles;
 import me.lucko.helper.scheduler.HelperExecutors;
 import me.xanium.gemseconomy.GemsEconomyPlugin;
+import me.xanium.gemseconomy.api.Account;
 import me.xanium.gemseconomy.data.DataStorage;
 import me.xanium.gemseconomy.message.Action;
 import org.bukkit.OfflinePlayer;
@@ -67,7 +68,7 @@ public class AccountManager {
             return test;
         }
 
-        Account account = new PlayerAccount(uuid, null);
+        Account account = new PlayerAccount(uuid);
 
         // Set default balances
         plugin.getCurrencyManager().getCurrencies().forEach(currency ->

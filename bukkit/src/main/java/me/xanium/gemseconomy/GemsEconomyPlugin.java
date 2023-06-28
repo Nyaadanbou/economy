@@ -10,10 +10,12 @@ package me.xanium.gemseconomy;
 
 import me.lucko.helper.plugin.ExtendedJavaPlugin;
 import me.xanium.gemseconomy.account.AccountManager;
-import me.xanium.gemseconomy.api.GemsEconomyAPI;
+import me.xanium.gemseconomy.api.Currency;
+import me.xanium.gemseconomy.api.GemsEconomy;
+import me.xanium.gemseconomy.api.GemsEconomyImpl;
+import me.xanium.gemseconomy.api.GemsEconomyProvider;
 import me.xanium.gemseconomy.command.CommandManager;
 import me.xanium.gemseconomy.currency.BalanceTopRepository;
-import me.xanium.gemseconomy.currency.Currency;
 import me.xanium.gemseconomy.currency.CurrencyManager;
 import me.xanium.gemseconomy.data.DataStorage;
 import me.xanium.gemseconomy.data.MySQLStorage;
@@ -23,6 +25,7 @@ import me.xanium.gemseconomy.logging.EconomyLogger;
 import me.xanium.gemseconomy.message.Messenger;
 import me.xanium.gemseconomy.utils.UtilServer;
 import me.xanium.gemseconomy.vault.VaultHandler;
+import org.bukkit.plugin.ServicePriority;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.util.logging.Level;
@@ -34,8 +37,7 @@ public class GemsEconomyPlugin extends ExtendedJavaPlugin {
     private static GemsEconomyPlugin INSTANCE;
 
     private GemsMessages messages;
-    private GemsEconomyAPI api;
-    private DataStorage dataStorage = null;
+    private DataStorage dataStorage;
     private AccountManager accountManager;
     private CurrencyManager currencyManager;
     private BalanceTopRepository balanceTopRepository;
@@ -52,14 +54,6 @@ public class GemsEconomyPlugin extends ExtendedJavaPlugin {
         return INSTANCE;
     }
 
-    @SuppressWarnings("unused")
-    public static GemsEconomyAPI getAPI() {
-        if (INSTANCE.api == null) {
-            INSTANCE.api = new GemsEconomyAPI();
-        }
-        return INSTANCE.api;
-    }
-
     public static GemsMessages lang() {
         return INSTANCE.messages;
     }
@@ -68,31 +62,35 @@ public class GemsEconomyPlugin extends ExtendedJavaPlugin {
     public void load() {
         INSTANCE = this;
 
-        getConfig().options().copyDefaults(true);
         saveDefaultConfig();
         reloadConfig();
 
-        this.debug = getConfig().getBoolean("debug");
-        this.vault = getConfig().getBoolean("vault");
-        this.logging = getConfig().getBoolean("transaction_log");
+        debug = getConfig().getBoolean("debug");
+        vault = getConfig().getBoolean("vault");
+        logging = getConfig().getBoolean("transaction_log");
 
-        this.messages = new GemsMessages(this);
-        this.accountManager = new AccountManager(this);
-        this.currencyManager = new CurrencyManager(this);
-        this.economyLogger = new EconomyLogger(this);
-        this.balanceTopRepository = new BalanceTopRepository(this);
+        messages = new GemsMessages(this);
+        accountManager = new AccountManager(this);
+        currencyManager = new CurrencyManager(this);
+        economyLogger = new EconomyLogger(this);
+        balanceTopRepository = new BalanceTopRepository(this);
 
         initializeDataStore(StorageType.valueOf(requireNonNull(getConfig().getString("storage")).toUpperCase()));
 
-        if (this.currencyManager.getCurrencies().stream().noneMatch(Currency::isDefaultCurrency)) {
-            this.getLogger().severe("No default currency is provided");
+        if (currencyManager.getCurrencies().stream().noneMatch(Currency::isDefaultCurrency)) {
+            getLogger().severe("No default currency is provided");
             getServer().getPluginManager().disablePlugin(this);
             return;
         }
 
+        // Provides API instances with the providers
+        GemsEconomyImpl instance = new GemsEconomyImpl(this);
+        getServer().getServicesManager().register(GemsEconomy.class, instance, this, ServicePriority.Normal);
+        GemsEconomyProvider.register(instance);
+
         if (isVault()) {
-            this.vaultHandler = new VaultHandler(this);
-            this.vaultHandler.hook();
+            vaultHandler = new VaultHandler(this);
+            vaultHandler.hook();
         } else {
             UtilServer.consoleLog("Vault link is disabled.");
         }
@@ -117,6 +115,9 @@ public class GemsEconomyPlugin extends ExtendedJavaPlugin {
     @Override
     public void disable() {
         this.disabling = true;
+
+        GemsEconomyProvider.unregister();
+        getServer().getServicesManager().unregisterAll(this);
 
         if (isVault())
             getVaultHandler().unhook();

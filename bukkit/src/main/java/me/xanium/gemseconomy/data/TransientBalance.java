@@ -10,7 +10,6 @@ import me.xanium.gemseconomy.currency.BalanceTopRepository;
  *
  * @param name   account name
  * @param amount balance amount
- *
  * @see BalanceTop
  * @see BalanceTopRepository
  */

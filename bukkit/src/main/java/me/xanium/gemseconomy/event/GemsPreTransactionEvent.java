@@ -1,7 +1,7 @@
 package me.xanium.gemseconomy.event;
 
-import me.xanium.gemseconomy.account.Account;
-import me.xanium.gemseconomy.currency.Currency;
+import me.xanium.gemseconomy.api.Account;
+import me.xanium.gemseconomy.api.Currency;
 import me.xanium.gemseconomy.utils.TransactionType;
 import org.bukkit.Bukkit;
 import org.bukkit.event.Cancellable;
