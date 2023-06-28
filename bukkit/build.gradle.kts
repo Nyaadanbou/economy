@@ -10,6 +10,8 @@ project.ext.set("name", "GemsEconomy")
 
 dependencies {
     compileOnly(project(":economy:api"))
+    implementation(project(":economy:papi"))
+    implementation(project(":economy:mini"))
 
     // the server api
     compileOnly(libs.server.paper)

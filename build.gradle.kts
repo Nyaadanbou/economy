@@ -3,6 +3,6 @@ subprojects {
     apply(plugin = "cc.mewcraft.repository-conventions")
 
     group = "me.xanium.gemseconomy"
-    version = "2.0.0"
+    version = "2.0.1"
     description = "A modern multi-currency economy plugin"
 }

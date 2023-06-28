@@ -12,15 +12,15 @@ public interface Currency {
 
     @NonNull String getName();
 
+    void setName(@NonNull String name);
+
     /**
      * @deprecated in favor of {@link #getName()}
      */
     @Deprecated
-    default @Nullable String getSingular() {
+    default @NonNull String getSingular() {
         return getName();
     }
-
-    void setName(@NonNull String name);
 
     double getDefaultBalance();
 
@@ -51,8 +51,8 @@ public interface Currency {
     /**
      * Gets a MiniMessage string describing the balance amount.
      * <p>
-     * Since this is a MiniMessage string, it is meant to be used for display that support {@link Component}. The caller
-     * of this method should deserialize the MiniMessage string on their own.
+     * Since this is a MiniMessage string, it is meant to be used for display that support {@link Component}.
+     * The caller of this method should deserialize the MiniMessage string on their own.
      *
      * @param amount the balance amount
      * @return a MiniMessage string describing the balance amount

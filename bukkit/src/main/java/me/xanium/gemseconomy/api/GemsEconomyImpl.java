@@ -27,6 +27,10 @@ public class GemsEconomyImpl implements GemsEconomy {
         return plugin.getAccountManager().createAccount(uuid);
     }
 
+    @Override public @Nullable Account getAccount(@NonNull UUID uuid) {
+        return plugin.getAccountManager().fetchAccount(uuid);
+    }
+
     @Override public boolean hasAccount(@NonNull UUID uuid) {
         return plugin.getAccountManager().hasAccount(uuid);
     }

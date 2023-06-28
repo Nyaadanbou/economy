@@ -69,7 +69,7 @@ public class BalanceAccCommand extends AbstractCommand {
             GemsEconomyPlugin.lang().sendComponent(sender, "err_no_default_currency");
         } else if (currencies == 1) {
             Currency currency = GemsEconomyPlugin.getInstance().getCurrencyManager().getDefaultCurrency();
-            double balance = account.getCumulativeBalance(currency);
+            double balance = account.getHeapBalance(currency);
             GemsEconomyPlugin.lang().sendComponent(sender, GemsEconomyPlugin.lang()
                 .component(sender, "msg_balance_acc_current")
                 .replaceText(ACCOUNT_REPLACEMENT.apply(account))
@@ -77,9 +77,9 @@ public class BalanceAccCommand extends AbstractCommand {
             );
         } else {
             GemsEconomyPlugin.lang().sendComponent(sender, "msg_balance_acc_multiple", "account", account.getNickname());
-            account.getCumulativeBalances().forEach((currency, acc) -> {
+            account.getHeapBalances().forEach((currency, acc) -> {
                 if (sender.hasPermission("gemseconomy.currency.balanceacc." + currency.getName())) {
-                    double balance = account.getCumulativeBalance(currency);
+                    double balance = account.getHeapBalance(currency);
                     GemsEconomyPlugin.lang().sendComponent(sender, GemsEconomyPlugin.lang()
                         .component(sender, "msg_balance_list")
                         .replaceText(AMOUNT_REPLACEMENT.apply(currency, balance))

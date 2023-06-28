@@ -20,6 +20,8 @@ import me.xanium.gemseconomy.currency.CurrencyManager;
 import me.xanium.gemseconomy.data.DataStorage;
 import me.xanium.gemseconomy.data.MySQLStorage;
 import me.xanium.gemseconomy.data.StorageType;
+import me.xanium.gemseconomy.hook.MiniPlaceholderExpansion;
+import me.xanium.gemseconomy.hook.PAPIPlaceholderExpansion;
 import me.xanium.gemseconomy.listener.EconomyListener;
 import me.xanium.gemseconomy.logging.EconomyLogger;
 import me.xanium.gemseconomy.message.Messenger;
@@ -27,8 +29,6 @@ import me.xanium.gemseconomy.utils.UtilServer;
 import me.xanium.gemseconomy.vault.VaultHandler;
 import org.bukkit.plugin.ServicePriority;
 import org.checkerframework.checker.nullness.qual.Nullable;
-
-import java.util.logging.Level;
 
 import static java.util.Objects.requireNonNull;
 
@@ -62,6 +62,7 @@ public class GemsEconomyPlugin extends ExtendedJavaPlugin {
     public void load() {
         INSTANCE = this;
 
+        // Save default config (if there is none) and load it
         saveDefaultConfig();
         reloadConfig();
 
@@ -69,25 +70,29 @@ public class GemsEconomyPlugin extends ExtendedJavaPlugin {
         vault = getConfig().getBoolean("vault");
         logging = getConfig().getBoolean("transaction_log");
 
+        // Initialize managers
         messages = new GemsMessages(this);
         accountManager = new AccountManager(this);
         currencyManager = new CurrencyManager(this);
-        economyLogger = new EconomyLogger(this);
         balanceTopRepository = new BalanceTopRepository(this);
+        economyLogger = new EconomyLogger(this);
 
+        // Initialize data source
         initializeDataStore(StorageType.valueOf(requireNonNull(getConfig().getString("storage")).toUpperCase()));
 
+        // Check if default currency is set
         if (currencyManager.getCurrencies().stream().noneMatch(Currency::isDefaultCurrency)) {
             getLogger().severe("No default currency is provided");
             getServer().getPluginManager().disablePlugin(this);
             return;
         }
 
-        // Provides API instances with the providers
+        // Initialize API instances
         GemsEconomyImpl instance = new GemsEconomyImpl(this);
         getServer().getServicesManager().register(GemsEconomy.class, instance, this, ServicePriority.Normal);
         GemsEconomyProvider.register(instance);
 
+        // Register Vault hook
         if (isVault()) {
             vaultHandler = new VaultHandler(this);
             vaultHandler.hook();
@@ -98,36 +103,50 @@ public class GemsEconomyPlugin extends ExtendedJavaPlugin {
 
     @Override
     public void enable() {
-        this.messenger = bind(Messenger.get());
+        // Initialize messenger
+        messenger = bind(Messenger.get());
 
-        registerListener(new EconomyListener()).bindWith(this);
+        // Register listeners
+        bind(registerListener(new EconomyListener()));
 
-        if (isLogging()) getEconomyLogger().save();
+        // Register placeholder expansions
+        if (isPluginPresent("PlaceholderAPI"))
+            bind(new PAPIPlaceholderExpansion()).register();
+        if (isPluginPresent("MiniPlaceholders"))
+            bind(new MiniPlaceholderExpansion()).register();
 
+        // Initialize logger
+        if (isLogging())
+            getEconomyLogger().save();
+
+        // Initialize commands
         try {
             new CommandManager(this);
         } catch (Exception e) {
-            getLogger().log(Level.SEVERE, "Failed to initialize commands", e);
+            getSLF4JLogger().error("Failed to initialize commands", e);
             getServer().getPluginManager().disablePlugin(this);
         }
     }
 
     @Override
     public void disable() {
-        this.disabling = true;
+        disabling = true;
 
+        // Unregister API instances
         GemsEconomyProvider.unregister();
         getServer().getServicesManager().unregisterAll(this);
 
+        // Unregister Vault hook
         if (isVault())
             getVaultHandler().unhook();
 
+        // Close data source
         if (getDataStore() != null)
             getDataStore().close();
     }
 
     public void reloadLanguages() {
-        this.messages = new GemsMessages(this);
+        messages = new GemsMessages(this);
     }
 
     public void reloadConfiguration() {
@@ -139,35 +158,35 @@ public class GemsEconomyPlugin extends ExtendedJavaPlugin {
     }
 
     public DataStorage getDataStore() {
-        return this.dataStorage;
+        return dataStorage;
     }
 
     public BalanceTopRepository getBalanceTopRepository() {
-        return this.balanceTopRepository;
+        return balanceTopRepository;
     }
 
     public CurrencyManager getCurrencyManager() {
-        return this.currencyManager;
+        return currencyManager;
     }
 
     public AccountManager getAccountManager() {
-        return this.accountManager;
+        return accountManager;
     }
 
     public VaultHandler getVaultHandler() {
-        return this.vaultHandler;
+        return vaultHandler;
     }
 
     public EconomyLogger getEconomyLogger() {
-        return this.economyLogger;
+        return economyLogger;
     }
 
     public Messenger getMessenger() {
-        return this.messenger;
+        return messenger;
     }
 
     public boolean isDebug() {
-        return this.debug;
+        return debug;
     }
 
     public void setDebug(boolean debug) {
@@ -175,15 +194,15 @@ public class GemsEconomyPlugin extends ExtendedJavaPlugin {
     }
 
     public boolean isVault() {
-        return this.vault;
+        return vault;
     }
 
     public boolean isLogging() {
-        return this.logging;
+        return logging;
     }
 
     public boolean isDisabling() {
-        return this.disabling;
+        return disabling;
     }
 
     private void initializeDataStore(@Nullable StorageType strategy) {
@@ -196,7 +215,7 @@ public class GemsEconomyPlugin extends ExtendedJavaPlugin {
         ));
 
         if (strategy != null) {
-            this.dataStorage = DataStorage.getMethod(strategy);
+            dataStorage = DataStorage.getMethod(strategy);
         } else {
             UtilServer.consoleLog("§cNo valid storage method provided.");
             UtilServer.consoleLog("§cCheck your files, then try again.");
@@ -212,9 +231,9 @@ public class GemsEconomyPlugin extends ExtendedJavaPlugin {
             getDataStore().loadCurrencies().forEach(currency -> getCurrencyManager().addCurrency(currency));
             UtilServer.consoleLog("Loaded " + getCurrencyManager().getCurrencies().size() + " currencies!");
         } catch (Throwable e) {
+            e.printStackTrace();
             UtilServer.consoleLog("§cCannot load initial data from data storage.");
             UtilServer.consoleLog("§cCheck your files, then try again.");
-            e.printStackTrace();
             getServer().getPluginManager().disablePlugin(this);
         }
     }

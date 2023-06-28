@@ -27,24 +27,21 @@ public interface Account {
     @ApiStatus.Internal
     @NonNull Map<Currency, Double> getBalances();
 
-    double getCumulativeBalance(@NonNull Currency currency);
+    double getHeapBalance(@NonNull Currency currency);
 
-    double getCumulativeBalance(@NonNull String identifier);
-
-    @ApiStatus.Internal
-    @NonNull Map<Currency, Double> getCumulativeBalances();
+    double getHeapBalance(@NonNull String identifier);
 
     @ApiStatus.Internal
+    @NonNull Map<Currency, Double> getHeapBalances();
+
     boolean testOverflow(@NonNull Currency currency, double amount);
 
     boolean hasEnough(double amount);
 
     boolean hasEnough(@NonNull Currency currency, double amount);
 
-    @ApiStatus.Internal
     boolean canReceiveCurrency();
 
-    @ApiStatus.Internal
     void setCanReceiveCurrency(boolean canReceiveCurrency);
 
     void setNickname(@Nullable String nickname);

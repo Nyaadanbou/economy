@@ -29,7 +29,8 @@ public class InternalCommand extends AbstractCommand {
                 GemsEconomyPlugin.getInstance().reloadLanguages();
                 GemsEconomyPlugin.lang().sendComponent(sender, "msg_reloaded_lang",
                     "plugin", GemsEconomyPlugin.getInstance().getDescription().getName(),
-                    "version", GemsEconomyPlugin.getInstance().getDescription().getVersion());
+                    "version", GemsEconomyPlugin.getInstance().getDescription().getVersion()
+                );
             })
             .build();
 

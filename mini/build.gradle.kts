@@ -9,5 +9,5 @@ dependencies {
 
     // libs that present as other plugins
     compileOnly(libs.helper)
-    compileOnly(libs.papi)
+    compileOnly(libs.minipapi)
 }

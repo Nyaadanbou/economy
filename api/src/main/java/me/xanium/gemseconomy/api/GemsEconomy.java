@@ -8,13 +8,22 @@ import java.util.UUID;
 
 public interface GemsEconomy {
     /**
-     * Get an account, or create it if not existing.
+     * Get an account, or create one if not existing.
      *
      * @param uuid account's unique ID
      * @return an account object with specific unique ID
      */
     @ApiStatus.Internal
     @NonNull Account pullAccount(@NonNull UUID uuid);
+
+    /**
+     * Get an account, or return null if not existing.
+     *
+     * @param uuid account's unique ID
+     * @return an account object with specific unique ID
+     */
+    @ApiStatus.Internal
+    @Nullable Account getAccount(@NonNull UUID uuid);
 
     /**
      * Check if specific account exists in database.

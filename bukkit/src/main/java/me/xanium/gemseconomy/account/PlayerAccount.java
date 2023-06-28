@@ -19,21 +19,20 @@ import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 public class PlayerAccount implements Account {
-
     private final @NonNull UUID uuid;
     private final @NonNull Map<Currency, Double> balances;
-    private final @NonNull Map<Currency, Double> cumulativeBalances;
+    private final @NonNull Map<Currency, Double> heapBalances;
     private @Nullable String nickname;
     private boolean canReceiveCurrency = true;
 
-    private final Map<Currency, ReadWriteLock> lockHolders;
+    private final Map<Currency, ReadWriteLock> locks;
 
     public PlayerAccount(@NonNull UUID uuid) {
         Preconditions.checkNotNull(uuid, "uuid");
         this.uuid = uuid;
         this.balances = new HashMap<>(8, 1f);
-        this.cumulativeBalances = new HashMap<>(8, 1f);
-        this.lockHolders = new ConcurrentHashMap<>(8, 1f); // Ensure thread safety
+        this.heapBalances = new HashMap<>(8, 1f);
+        this.locks = new ConcurrentHashMap<>(8, 1f); // Ensure thread safety
     }
 
     public PlayerAccount(@NonNull UUID uuid, @Nullable String nickname) {
@@ -51,7 +50,7 @@ public class PlayerAccount implements Account {
         if (!hasEnough(currency, amount))
             return false;
 
-        ReadWriteLock lock = lockHolders.computeIfAbsent(currency, k -> new ReentrantReadWriteLock());
+        ReadWriteLock lock = locks.computeIfAbsent(currency, k -> new ReentrantReadWriteLock());
         lock.writeLock().lock();
         try {
             double finalAmount = getBalance(currency) - amount;
@@ -80,13 +79,13 @@ public class PlayerAccount implements Account {
         if (!preEvent.callEvent())
             return false;
 
-        ReadWriteLock lock = lockHolders.computeIfAbsent(currency, k -> new ReentrantReadWriteLock());
+        ReadWriteLock lock = locks.computeIfAbsent(currency, k -> new ReentrantReadWriteLock());
         lock.writeLock().lock();
         try {
             double finalAmount = getBalance(currency) + amount;
             double cappedAmount = Math.min(finalAmount, currency.getMaximumBalance());
             balances.put(currency, cappedAmount); // Update balance
-            cumulativeBalances.merge(currency, amount, Double::sum); // Accumulate deposited amount
+            heapBalances.merge(currency, amount, Double::sum); // Accumulate deposited amount
             GemsEconomyPlugin.getInstance().getDataStore().saveAccount(this); // Save it to database
             GemsEconomyPlugin.getInstance().getMessenger().sendMessage(Action.UPDATE_ACCOUNT, getUuid()); // Sync between servers
             GemsEconomyPlugin.getInstance().getEconomyLogger().log("[DEPOSIT] Account: " + getDisplayName() + " were deposited: " + currency.simpleFormat(amount) + " and now has " + currency.simpleFormat(cappedAmount));
@@ -107,7 +106,7 @@ public class PlayerAccount implements Account {
         if (!preEvent.callEvent())
             return;
 
-        ReadWriteLock lock = lockHolders.computeIfAbsent(currency, k -> new ReentrantReadWriteLock());
+        ReadWriteLock lock = locks.computeIfAbsent(currency, k -> new ReentrantReadWriteLock());
         lock.writeLock().lock();
         try {
             double cappedAmount = Math.min(amount, currency.getMaximumBalance());
@@ -126,7 +125,7 @@ public class PlayerAccount implements Account {
     @Override
     public double getBalance(@NonNull Currency currency) {
         Preconditions.checkNotNull(currency, "currency");
-        ReadWriteLock lock = lockHolders.computeIfAbsent(currency, k -> new ReentrantReadWriteLock());
+        ReadWriteLock lock = locks.computeIfAbsent(currency, k -> new ReentrantReadWriteLock());
         lock.readLock().lock();
         try {
             return balances.computeIfAbsent(currency, Currency::getDefaultBalance);
@@ -153,32 +152,32 @@ public class PlayerAccount implements Account {
     }
 
     @Override
-    public double getCumulativeBalance(@NonNull Currency currency) {
+    public double getHeapBalance(@NonNull Currency currency) {
         Preconditions.checkNotNull(currency, "currency");
-        ReadWriteLock lock = lockHolders.computeIfAbsent(currency, k -> new ReentrantReadWriteLock());
+        ReadWriteLock lock = locks.computeIfAbsent(currency, k -> new ReentrantReadWriteLock());
         lock.readLock().lock();
         try {
-            return cumulativeBalances.computeIfAbsent(currency, ignored -> 0D);
+            return heapBalances.computeIfAbsent(currency, ignored -> 0D);
         } finally {
             lock.readLock().unlock();
         }
     }
 
     @Override
-    public double getCumulativeBalance(@NonNull String identifier) {
+    public double getHeapBalance(@NonNull String identifier) {
         Preconditions.checkNotNull(identifier, "identifier");
-        return cumulativeBalances
+        return heapBalances
             .keySet()
             .stream()
             .filter(currency -> currency.getName().equalsIgnoreCase(identifier))
             .findAny()
-            .map(cumulativeBalances::get)
+            .map(heapBalances::get)
             .orElse(0D);
     }
 
     @Override
-    public @NonNull Map<Currency, Double> getCumulativeBalances() {
-        return cumulativeBalances;
+    public @NonNull Map<Currency, Double> getHeapBalances() {
+        return heapBalances;
     }
 
     @Override
@@ -210,7 +209,7 @@ public class PlayerAccount implements Account {
     @Override
     public boolean hasEnough(@NonNull Currency currency, double amount) {
         Preconditions.checkNotNull(currency, "currency");
-        ReadWriteLock lock = lockHolders.computeIfAbsent(currency, k -> new ReentrantReadWriteLock());
+        ReadWriteLock lock = locks.computeIfAbsent(currency, k -> new ReentrantReadWriteLock());
         lock.readLock().lock();
         try {
             return getBalance(currency) >= amount;
