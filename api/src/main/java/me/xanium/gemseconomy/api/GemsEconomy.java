@@ -4,6 +4,7 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.jetbrains.annotations.ApiStatus;
 
+import java.util.List;
 import java.util.UUID;
 
 public interface GemsEconomy {
@@ -13,7 +14,7 @@ public interface GemsEconomy {
      * @param uuid account's unique ID
      * @return an account object with specific unique ID
      */
-    @ApiStatus.Internal
+    @ApiStatus.Experimental
     @NonNull Account pullAccount(@NonNull UUID uuid);
 
     /**
@@ -22,7 +23,7 @@ public interface GemsEconomy {
      * @param uuid account's unique ID
      * @return an account object with specific unique ID
      */
-    @ApiStatus.Internal
+    @ApiStatus.Experimental
     @Nullable Account getAccount(@NonNull UUID uuid);
 
     /**
@@ -88,10 +89,18 @@ public interface GemsEconomy {
      * @param name the currency name
      * @return a currency object of specific name
      */
+    @ApiStatus.Experimental
     @Nullable Currency getCurrency(@NonNull String name);
 
     /**
      * @return the default currency
      */
+    @ApiStatus.Experimental
     @NonNull Currency getDefaultCurrency();
+
+    /**
+     * @return an unmodifiable list of loaded currencies
+     */
+    @ApiStatus.Experimental
+    @NonNull List<Currency> getLoadedCurrencies();
 }
