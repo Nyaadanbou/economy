@@ -2,7 +2,7 @@ package me.xanium.gemseconomy.message;
 
 import de.themoep.connectorplugin.bukkit.BukkitConnectorPlugin;
 import me.lucko.helper.terminable.Terminable;
-import me.xanium.gemseconomy.GemsEconomy;
+import me.xanium.gemseconomy.GemsEconomyPlugin;
 import me.xanium.gemseconomy.message.impl.EmptyMessenger;
 import me.xanium.gemseconomy.message.impl.RedisMessenger;
 import org.bukkit.Bukkit;
@@ -17,7 +17,7 @@ public interface Messenger extends Terminable {
         if (connector == null) {
             return new EmptyMessenger();
         }
-        return new RedisMessenger(GemsEconomy.getInstance(), (BukkitConnectorPlugin) connector);
+        return new RedisMessenger(GemsEconomyPlugin.getInstance(), (BukkitConnectorPlugin) connector);
     }
 
     void sendMessage(String type, UUID uuid);

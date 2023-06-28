@@ -4,7 +4,7 @@ import cloud.commandframework.Command;
 import cloud.commandframework.bukkit.arguments.selector.MultiplePlayerSelector;
 import cloud.commandframework.bukkit.parsers.selector.MultiplePlayerSelectorArgument;
 import me.lucko.helper.Schedulers;
-import me.xanium.gemseconomy.GemsEconomy;
+import me.xanium.gemseconomy.GemsEconomyPlugin;
 import me.xanium.gemseconomy.account.Account;
 import me.xanium.gemseconomy.command.AbstractCommand;
 import me.xanium.gemseconomy.command.CommandManager;
@@ -25,7 +25,7 @@ import static me.xanium.gemseconomy.GemsMessages.*;
 @DefaultQualifier(NonNull.class)
 public class PayCommand extends AbstractCommand {
 
-    public PayCommand(GemsEconomy plugin, CommandManager manager) {
+    public PayCommand(GemsEconomyPlugin plugin, CommandManager manager) {
         super(plugin, manager);
     }
 
@@ -40,11 +40,11 @@ public class PayCommand extends AbstractCommand {
                 Player sender = (Player) context.getSender();
                 MultiplePlayerSelector selector = context.get("player");
                 double amount = context.get("amount");
-                Currency currency = context.getOrDefault("currency", GemsEconomy.getInstance().getCurrencyManager().getDefaultCurrency());
+                Currency currency = context.getOrDefault("currency", GemsEconomyPlugin.getInstance().getCurrencyManager().getDefaultCurrency());
                 if (selector.getPlayers().size() > 0) {
                     selector.getPlayers().forEach(p -> pay(sender, p, amount, currency));
                 } else {
-                    GemsEconomy.lang().sendComponent(sender, "err_player_is_null");
+                    GemsEconomyPlugin.lang().sendComponent(sender, "err_player_is_null");
                 }
             })
             .build();
@@ -54,7 +54,7 @@ public class PayCommand extends AbstractCommand {
 
     private void pay(Player sender, Player targetPlayer, double amount, Currency currency) {
         if (!sender.hasPermission("gemseconomy.command.pay." + currency.getName().toLowerCase())) {
-            GemsEconomy.lang().sendComponent(sender, GemsEconomy.lang()
+            GemsEconomyPlugin.lang().sendComponent(sender, GemsEconomyPlugin.lang()
                 .component(sender, "msg_pay_no_permission")
                 .replaceText(CURRENCY_REPLACEMENT.apply(currency))
             );
@@ -62,7 +62,7 @@ public class PayCommand extends AbstractCommand {
         }
 
         if (!currency.isPayable()) {
-            GemsEconomy.lang().sendComponent(sender, GemsEconomy.lang()
+            GemsEconomyPlugin.lang().sendComponent(sender, GemsEconomyPlugin.lang()
                 .component(sender, "msg_currency_is_not_payable")
                 .replaceText(CURRENCY_REPLACEMENT.apply(currency))
             );
@@ -70,34 +70,34 @@ public class PayCommand extends AbstractCommand {
         }
 
         // Check target account
-        @Nullable Account targetAccount = GemsEconomy.getInstance().getAccountManager().fetchAccount(targetPlayer);
+        @Nullable Account targetAccount = GemsEconomyPlugin.getInstance().getAccountManager().fetchAccount(targetPlayer);
         if (targetAccount == null) {
-            GemsEconomy.lang().sendComponent(sender, "err_player_is_null");
+            GemsEconomyPlugin.lang().sendComponent(sender, "err_player_is_null");
             return;
         }
 
         // Check if sender account missing
-        @Nullable Account myselfAccount = GemsEconomy.getInstance().getAccountManager().fetchAccount(sender);
+        @Nullable Account myselfAccount = GemsEconomyPlugin.getInstance().getAccountManager().fetchAccount(sender);
         if (myselfAccount == null) {
-            GemsEconomy.lang().sendComponent(sender, "err_account_missing");
+            GemsEconomyPlugin.lang().sendComponent(sender, "err_account_missing");
             return;
         }
 
         // Check self pay
         if (targetAccount.getUuid().equals(myselfAccount.getUuid())) {
-            GemsEconomy.lang().sendComponent(sender, "err_cannot_pay_yourself");
+            GemsEconomyPlugin.lang().sendComponent(sender, "err_cannot_pay_yourself");
             return;
         }
 
         // Check target receivable
         if (!targetAccount.canReceiveCurrency()) {
-            GemsEconomy.lang().sendComponent(sender, "err_cannot_receive_money", "account", targetAccount.getNickname());
+            GemsEconomyPlugin.lang().sendComponent(sender, "err_cannot_receive_money", "account", targetAccount.getNickname());
             return;
         }
 
         // Check insufficient funds
         if (!myselfAccount.hasEnough(currency, amount)) {
-            GemsEconomy.lang().sendComponent(sender, GemsEconomy.lang()
+            GemsEconomyPlugin.lang().sendComponent(sender, GemsEconomyPlugin.lang()
                 .component(sender, "err_insufficient_funds")
                 .replaceText(CURRENCY_REPLACEMENT.apply(currency))
             );
@@ -106,7 +106,7 @@ public class PayCommand extends AbstractCommand {
 
         // Check target balance overflow
         if (targetAccount.testOverflow(currency, amount)) {
-            GemsEconomy.lang().sendComponent(sender, GemsEconomy.lang()
+            GemsEconomyPlugin.lang().sendComponent(sender, GemsEconomyPlugin.lang()
                 .component(sender, "msg_currency_overflow")
                 .replaceText(ACCOUNT_REPLACEMENT.apply(targetAccount))
                 .replaceText(CURRENCY_REPLACEMENT.apply(currency))
@@ -120,18 +120,18 @@ public class PayCommand extends AbstractCommand {
         myselfAccount.withdraw(currency, amount);
         targetAccount.deposit(currency, amount);
 
-        GemsEconomy.getInstance().getEconomyLogger().log(
+        GemsEconomyPlugin.getInstance().getEconomyLogger().log(
             "[PAYMENT] " + myselfAccount.getDisplayName() +
             " (New bal: " + currency.simpleFormat(myselfAccount.getBalance(currency)) + ") -> paid " + targetAccount.getDisplayName() +
             " (New bal: " + currency.simpleFormat(targetAccount.getBalance(currency)) + ") - An amount of " + currency.simpleFormat(amount)
         );
 
-        GemsEconomy.lang().sendComponent(targetPlayer, GemsEconomy.lang()
+        GemsEconomyPlugin.lang().sendComponent(targetPlayer, GemsEconomyPlugin.lang()
             .component(targetPlayer, "msg_received_currency")
             .replaceText(ACCOUNT_REPLACEMENT.apply(myselfAccount))
             .replaceText(AMOUNT_REPLACEMENT.apply(currency, amount))
         );
-        GemsEconomy.lang().sendComponent(sender, GemsEconomy.lang()
+        GemsEconomyPlugin.lang().sendComponent(sender, GemsEconomyPlugin.lang()
             .component(sender, "msg_paid_currency")
             .replaceText(ACCOUNT_REPLACEMENT.apply(targetAccount))
             .replaceText(AMOUNT_REPLACEMENT.apply(currency, amount))

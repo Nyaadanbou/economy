@@ -3,7 +3,7 @@ package me.xanium.gemseconomy.command.command;
 import cloud.commandframework.Command;
 import cloud.commandframework.arguments.standard.DoubleArgument;
 import cloud.commandframework.arguments.standard.StringArgument;
-import me.xanium.gemseconomy.GemsEconomy;
+import me.xanium.gemseconomy.GemsEconomyPlugin;
 import me.xanium.gemseconomy.command.AbstractCommand;
 import me.xanium.gemseconomy.command.CommandManager;
 import me.xanium.gemseconomy.command.argument.AmountArgument;
@@ -21,7 +21,7 @@ import static me.xanium.gemseconomy.GemsMessages.STATUS_REPLACEMENT;
 
 public class CurrencyCommand extends AbstractCommand {
 
-    public CurrencyCommand(GemsEconomy plugin, CommandManager manager) {
+    public CurrencyCommand(GemsEconomyPlugin plugin, CommandManager manager) {
         super(plugin, manager);
     }
 
@@ -38,14 +38,14 @@ public class CurrencyCommand extends AbstractCommand {
                 CommandSender sender = context.getSender();
                 String name = context.get("name");
 
-                Currency currency = GemsEconomy.getInstance().getCurrencyManager().createCurrency(name);
+                Currency currency = GemsEconomyPlugin.getInstance().getCurrencyManager().createCurrency(name);
                 if (currency != null) {
-                    GemsEconomy.lang().sendComponent(sender, GemsEconomy.lang()
+                    GemsEconomyPlugin.lang().sendComponent(sender, GemsEconomyPlugin.lang()
                         .component(sender, "msg_created_currency")
                         .replaceText(CURRENCY_REPLACEMENT.apply(currency))
                     );
                 } else {
-                    GemsEconomy.lang().sendComponent(sender, "err_currency_exists");
+                    GemsEconomyPlugin.lang().sendComponent(sender, "err_currency_exists");
                 }
             })
             .build();
@@ -54,9 +54,9 @@ public class CurrencyCommand extends AbstractCommand {
             .literal("list")
             .handler(context -> {
                 CommandSender sender = context.getSender();
-                GemsEconomy.lang().sendComponent(sender, "msg_currency_list_header", "size", Integer.toString(GemsEconomy.getInstance().getCurrencyManager().getCurrencies().size()));
-                for (Currency currency : GemsEconomy.getInstance().getCurrencyManager().getCurrencies()) {
-                    GemsEconomy.lang().sendComponent(sender, GemsEconomy.lang()
+                GemsEconomyPlugin.lang().sendComponent(sender, "msg_currency_list_header", "size", Integer.toString(GemsEconomyPlugin.getInstance().getCurrencyManager().getCurrencies().size()));
+                for (Currency currency : GemsEconomyPlugin.getInstance().getCurrencyManager().getCurrencies()) {
+                    GemsEconomyPlugin.lang().sendComponent(sender, GemsEconomyPlugin.lang()
                         .component(sender, "msg_currency_list_entry")
                         .replaceText(CURRENCY_REPLACEMENT.apply(currency))
                     );
@@ -69,36 +69,36 @@ public class CurrencyCommand extends AbstractCommand {
             .handler(context -> {
                 CommandSender sender = context.getSender();
                 Currency currency = context.get("currency");
-                GemsEconomy.lang().sendComponent(sender, "msg_currency_uuid", "uuid", currency.getUuid().toString());
-                GemsEconomy.lang().sendComponent(sender, GemsEconomy.lang()
+                GemsEconomyPlugin.lang().sendComponent(sender, "msg_currency_uuid", "uuid", currency.getUuid().toString());
+                GemsEconomyPlugin.lang().sendComponent(sender, GemsEconomyPlugin.lang()
                     .component(sender, "msg_currency_name")
                     .replaceText(config -> {
                         config.matchLiteral("{name}");
                         config.replacement(Component.text(currency.getName(), currency.getColor()));
                     })
                 );
-                GemsEconomy.lang().sendComponent(sender, "msg_currency_default_balance", "default_balance", Double.toString(currency.getDefaultBalance()));
-                GemsEconomy.lang().sendComponent(sender, GemsEconomy.lang()
+                GemsEconomyPlugin.lang().sendComponent(sender, "msg_currency_default_balance", "default_balance", Double.toString(currency.getDefaultBalance()));
+                GemsEconomyPlugin.lang().sendComponent(sender, GemsEconomyPlugin.lang()
                     .component(sender, "msg_currency_decimal_support")
                     .replaceText(STATUS_REPLACEMENT.apply(currency.isDecimalSupported()))
                 );
-                GemsEconomy.lang().sendComponent(sender, "msg_currency_maximum_balance", "maximum_balance", Double.toString(currency.getMaxBalance()));
-                GemsEconomy.lang().sendComponent(sender, GemsEconomy.lang()
+                GemsEconomyPlugin.lang().sendComponent(sender, "msg_currency_maximum_balance", "maximum_balance", Double.toString(currency.getMaxBalance()));
+                GemsEconomyPlugin.lang().sendComponent(sender, GemsEconomyPlugin.lang()
                     .component(sender, "msg_currency_default")
                     .replaceText(STATUS_REPLACEMENT.apply(currency.isDefaultCurrency()))
                 );
-                GemsEconomy.lang().sendComponent(sender, GemsEconomy.lang()
+                GemsEconomyPlugin.lang().sendComponent(sender, GemsEconomyPlugin.lang()
                     .component(sender, "msg_currency_payable")
                     .replaceText(STATUS_REPLACEMENT.apply(currency.isPayable()))
                 );
-                GemsEconomy.lang().sendComponent(sender, GemsEconomy.lang()
+                GemsEconomyPlugin.lang().sendComponent(sender, GemsEconomyPlugin.lang()
                     .component(sender, "msg_currency_color")
                     .replaceText(config -> {
                         config.matchLiteral("{color}");
                         config.replacement(Component.text(currency.getColor().asHexString(), currency.getColor()));
                     })
                 );
-                GemsEconomy.lang().sendComponent(sender, "msg_currency_rate", "rate", Double.toString(currency.getExchangeRate()));
+                GemsEconomyPlugin.lang().sendComponent(sender, "msg_currency_rate", "rate", Double.toString(currency.getExchangeRate()));
             })
             .build();
 
@@ -112,7 +112,7 @@ public class CurrencyCommand extends AbstractCommand {
                 double amount = context.get("amount");
                 currency.setDefaultBalance(amount);
                 this.plugin.getCurrencyManager().saveCurrency(currency);
-                GemsEconomy.lang().sendComponent(sender, GemsEconomy.lang()
+                GemsEconomyPlugin.lang().sendComponent(sender, GemsEconomyPlugin.lang()
                     .component(sender, "msg_set_currency_default_balance")
                     .replaceText(CURRENCY_REPLACEMENT.apply(currency))
                     .replaceText(config -> {
@@ -133,7 +133,7 @@ public class CurrencyCommand extends AbstractCommand {
                 double amount = context.get("amount");
                 currency.setMaximumBalance(amount);
                 this.plugin.getCurrencyManager().saveCurrency(currency);
-                GemsEconomy.lang().sendComponent(sender, GemsEconomy.lang()
+                GemsEconomyPlugin.lang().sendComponent(sender, GemsEconomyPlugin.lang()
                     .component(sender, "msg_set_currency_maximum_balance")
                     .replaceText(CURRENCY_REPLACEMENT.apply(currency))
                     .replaceText(config -> {
@@ -154,7 +154,7 @@ public class CurrencyCommand extends AbstractCommand {
                 TextColor chatColor = context.get("color");
                 currency.setColor(chatColor);
                 this.plugin.getCurrencyManager().saveCurrency(currency);
-                GemsEconomy.lang().sendComponent(sender, GemsEconomy.lang()
+                GemsEconomyPlugin.lang().sendComponent(sender, GemsEconomyPlugin.lang()
                     .component(sender, "msg_set_currency_color")
                     .replaceText(CURRENCY_REPLACEMENT.apply(currency))
                     .replaceText(config -> {
@@ -175,14 +175,14 @@ public class CurrencyCommand extends AbstractCommand {
                 if (symbol.equalsIgnoreCase("remove")) {
                     currency.setSymbol(null);
                     this.plugin.getCurrencyManager().saveCurrency(currency);
-                    GemsEconomy.lang().sendComponent(sender, GemsEconomy.lang()
+                    GemsEconomyPlugin.lang().sendComponent(sender, GemsEconomyPlugin.lang()
                         .component(sender, "msg_removed_currency_symbol")
                         .replaceText(CURRENCY_REPLACEMENT.apply(currency))
                     );
                 } else {
                     currency.setSymbol(symbol);
                     this.plugin.getCurrencyManager().saveCurrency(currency);
-                    GemsEconomy.lang().sendComponent(sender, GemsEconomy.lang()
+                    GemsEconomyPlugin.lang().sendComponent(sender, GemsEconomyPlugin.lang()
                         .component(sender, "msg_set_currency_symbol")
                         .replaceText(CURRENCY_REPLACEMENT.apply(currency))
                         .replaceText(config -> {
@@ -200,13 +200,13 @@ public class CurrencyCommand extends AbstractCommand {
                 CommandSender sender = context.getSender();
                 Currency newDefault = context.get("currency");
 
-                Currency oldDefault = GemsEconomy.getInstance().getCurrencyManager().getDefaultCurrency();
+                Currency oldDefault = GemsEconomyPlugin.getInstance().getCurrencyManager().getDefaultCurrency();
                 oldDefault.setDefaultCurrency(false);
                 this.plugin.getCurrencyManager().saveCurrency(oldDefault);
 
                 newDefault.setDefaultCurrency(true);
                 this.plugin.getCurrencyManager().saveCurrency(newDefault);
-                GemsEconomy.lang().sendComponent(sender, GemsEconomy.lang()
+                GemsEconomyPlugin.lang().sendComponent(sender, GemsEconomyPlugin.lang()
                     .component(sender, "msg_set_default_currency")
                     .replaceText(CURRENCY_REPLACEMENT.apply(newDefault))
                 );
@@ -220,7 +220,7 @@ public class CurrencyCommand extends AbstractCommand {
                 Currency currency = context.get("currency");
                 currency.setPayable(!currency.isPayable());
                 this.plugin.getCurrencyManager().saveCurrency(currency);
-                GemsEconomy.lang().sendComponent(sender, GemsEconomy.lang()
+                GemsEconomyPlugin.lang().sendComponent(sender, GemsEconomyPlugin.lang()
                     .component(sender, "msg_toggled_currency_payable")
                     .replaceText(CURRENCY_REPLACEMENT.apply(currency))
                     .replaceText(STATUS_REPLACEMENT.apply(currency.isPayable()))
@@ -235,7 +235,7 @@ public class CurrencyCommand extends AbstractCommand {
                 Currency currency = context.get("currency");
                 currency.setDecimalSupported(!currency.isDecimalSupported());
                 this.plugin.getCurrencyManager().saveCurrency(currency);
-                GemsEconomy.lang().sendComponent(sender, GemsEconomy.lang()
+                GemsEconomyPlugin.lang().sendComponent(sender, GemsEconomyPlugin.lang()
                     .component(sender, "msg_toggled_currency_decimal_support")
                     .replaceText(CURRENCY_REPLACEMENT.apply(currency))
                     .replaceText(STATUS_REPLACEMENT.apply(currency.isDecimalSupported()))
@@ -248,8 +248,8 @@ public class CurrencyCommand extends AbstractCommand {
             .handler(context -> {
                 CommandSender sender = context.getSender();
                 Currency currency = context.get("currency");
-                GemsEconomy.getInstance().getCurrencyManager().removeCurrency(currency);
-                GemsEconomy.lang().sendComponent(sender, GemsEconomy.lang()
+                GemsEconomyPlugin.getInstance().getCurrencyManager().removeCurrency(currency);
+                GemsEconomyPlugin.lang().sendComponent(sender, GemsEconomyPlugin.lang()
                     .component(sender, "msg_deleted_currency")
                     .replaceText(CURRENCY_REPLACEMENT.apply(currency))
                 );
@@ -261,8 +261,8 @@ public class CurrencyCommand extends AbstractCommand {
             .handler(context -> {
                 CommandSender sender = context.getSender();
                 Currency currency = context.get("currency");
-                GemsEconomy.getInstance().getCurrencyManager().clearBalance(currency);
-                GemsEconomy.lang().sendComponent(sender, GemsEconomy.lang()
+                GemsEconomyPlugin.getInstance().getCurrencyManager().clearBalance(currency);
+                GemsEconomyPlugin.lang().sendComponent(sender, GemsEconomyPlugin.lang()
                     .component(sender, "msg_cleared_balance")
                     .replaceText(CURRENCY_REPLACEMENT.apply(currency))
                 );
@@ -278,7 +278,7 @@ public class CurrencyCommand extends AbstractCommand {
                 double rate = context.get("rate");
                 currency.setExchangeRate(rate);
                 this.plugin.getCurrencyManager().saveCurrency(currency);
-                GemsEconomy.lang().sendComponent(sender, GemsEconomy.lang()
+                GemsEconomyPlugin.lang().sendComponent(sender, GemsEconomyPlugin.lang()
                     .component(sender, "msg_set_exchange_rate")
                     .replaceText(CURRENCY_REPLACEMENT.apply(currency))
                     .replaceText(config -> {

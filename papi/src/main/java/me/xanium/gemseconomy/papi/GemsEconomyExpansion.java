@@ -1,7 +1,7 @@
 package me.xanium.gemseconomy.papi;
 
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
-import me.xanium.gemseconomy.GemsEconomy;
+import me.xanium.gemseconomy.GemsEconomyPlugin;
 import me.xanium.gemseconomy.account.Account;
 import me.xanium.gemseconomy.currency.Currency;
 import org.bukkit.Bukkit;
@@ -11,7 +11,7 @@ import org.checkerframework.checker.nullness.qual.Nullable;
 
 public class GemsEconomyExpansion extends PlaceholderExpansion {
 
-    private GemsEconomy economy;
+    private GemsEconomyPlugin economy;
 
     @Override
     public boolean register() {
@@ -19,7 +19,7 @@ public class GemsEconomyExpansion extends PlaceholderExpansion {
             return false;
         }
 
-        this.economy = (GemsEconomy) Bukkit.getPluginManager().getPlugin(getRequiredPlugin());
+        this.economy = (GemsEconomyPlugin) Bukkit.getPluginManager().getPlugin(getRequiredPlugin());
 
         if (this.economy == null) {
             return false;

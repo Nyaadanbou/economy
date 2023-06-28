@@ -7,7 +7,7 @@ import cloud.commandframework.arguments.parser.ArgumentParser;
 import cloud.commandframework.context.CommandContext;
 import cloud.commandframework.exceptions.parsing.NoInputProvidedException;
 import me.lucko.helper.utils.annotation.NonnullByDefault;
-import me.xanium.gemseconomy.GemsEconomy;
+import me.xanium.gemseconomy.GemsEconomyPlugin;
 import me.xanium.gemseconomy.currency.Currency;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
@@ -71,7 +71,7 @@ public class AmountArgument extends CommandArgument<CommandSender, Double> {
                 inputQueue.remove();
                 return parseAmount(sender, input, currency);
             } else { // Else, fallback to the default Currency
-                Currency currency = GemsEconomy.getInstance().getCurrencyManager().getDefaultCurrency();
+                Currency currency = GemsEconomyPlugin.getInstance().getCurrencyManager().getDefaultCurrency();
                 inputQueue.remove();
                 return parseAmount(sender, input, currency);
             }
@@ -93,7 +93,7 @@ public class AmountArgument extends CommandArgument<CommandSender, Double> {
                     validateInput(sender, amount);
                 } catch (NumberFormatException ex) {
                     return ArgumentParseResult.failure(new IllegalArgumentException(
-                        GemsEconomy.lang().legacy(sender, "err_invalid_amount")
+                        GemsEconomyPlugin.lang().legacy(sender, "err_invalid_amount")
                     ));
                 }
             } else {
@@ -102,7 +102,7 @@ public class AmountArgument extends CommandArgument<CommandSender, Double> {
                     validateInput(sender, amount);
                 } catch (NumberFormatException ex) {
                     return ArgumentParseResult.failure(new IllegalArgumentException(
-                        GemsEconomy.lang().legacy(sender, "err_invalid_amount")
+                        GemsEconomyPlugin.lang().legacy(sender, "err_invalid_amount")
                     ));
                 }
             }

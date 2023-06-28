@@ -4,7 +4,7 @@ import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 import me.lucko.helper.promise.Promise;
-import me.xanium.gemseconomy.GemsEconomy;
+import me.xanium.gemseconomy.GemsEconomyPlugin;
 import me.xanium.gemseconomy.data.TransientBalance;
 
 import java.time.Duration;
@@ -15,10 +15,10 @@ import java.util.UUID;
  */
 public class BalanceTopRepository {
 
-    private final GemsEconomy plugin;
+    private final GemsEconomyPlugin plugin;
     private final LoadingCache<UUID, Promise<BalanceTop>> topLists;
 
-    public BalanceTopRepository(GemsEconomy plugin) {
+    public BalanceTopRepository(GemsEconomyPlugin plugin) {
         this.plugin = plugin;
         this.topLists = CacheBuilder.newBuilder()
             .expireAfterWrite(Duration.ofMinutes(5))

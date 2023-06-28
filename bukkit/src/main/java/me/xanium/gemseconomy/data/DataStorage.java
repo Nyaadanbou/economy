@@ -9,7 +9,7 @@
 package me.xanium.gemseconomy.data;
 
 import me.lucko.helper.promise.Promise;
-import me.xanium.gemseconomy.GemsEconomy;
+import me.xanium.gemseconomy.GemsEconomyPlugin;
 import me.xanium.gemseconomy.account.Account;
 import me.xanium.gemseconomy.currency.Currency;
 import me.xanium.gemseconomy.listener.EconomyListener;
@@ -23,7 +23,7 @@ import java.util.UUID;
 
 public abstract class DataStorage {
 
-    public final GemsEconomy plugin = GemsEconomy.getInstance();
+    public final GemsEconomyPlugin plugin = GemsEconomyPlugin.getInstance();
 
     private final StorageType storageType;
     private final boolean topSupported;

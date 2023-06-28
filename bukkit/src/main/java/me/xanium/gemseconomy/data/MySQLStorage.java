@@ -11,7 +11,7 @@ package me.xanium.gemseconomy.data;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import me.lucko.helper.promise.Promise;
-import me.xanium.gemseconomy.GemsEconomy;
+import me.xanium.gemseconomy.GemsEconomyPlugin;
 import me.xanium.gemseconomy.account.Account;
 import me.xanium.gemseconomy.account.PlayerAccount;
 import me.xanium.gemseconomy.currency.Currency;
@@ -68,7 +68,7 @@ public final class MySQLStorage extends DataStorage {
     }
 
     private String getTablePrefix() {
-        return requireNonNull(GemsEconomy.getInstance().getConfig().getString("mysql.prefix"));
+        return requireNonNull(GemsEconomyPlugin.getInstance().getConfig().getString("mysql.prefix"));
     }
 
     private void setupTables(Connection conn) throws SQLException {

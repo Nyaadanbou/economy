@@ -1,7 +1,10 @@
 plugins {
-    id("cc.mewcraft.project-conventions")
+    id("cc.mewcraft.deploy-conventions")
     id("cc.mewcraft.publishing-conventions")
+    id("cc.mewcraft.paper-plugins")
 }
+
+project.ext.set("name", "GemsEconomy")
 
 // name, version and description inherited from "project-conventions"
 
@@ -34,30 +37,6 @@ dependencies {
     softDepend = listOf("Vault", "ConnectorPlugin")
     load = STARTUP
 }*/
-
-tasks {
-    jar {
-        archiveBaseName.set(rootProject.name);
-    }
-    processResources {
-        filesMatching("**/paper-plugin.yml") {
-            expand(
-                mapOf(
-                    "version" to "${project.version}",
-                    "description" to project.description
-                )
-            )
-        }
-    }
-    task("deployToServer") {
-        dependsOn(build)
-        doLast {
-            exec {
-                commandLine("rsync", "${jar.get().archiveFile.get()}", "dev:data/dev/jar")
-            }
-        }
-    }
-}
 
 // commented - now managed by "cc.mewcraft.publishing-conventions"
 /*publishing {

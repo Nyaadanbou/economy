@@ -8,7 +8,7 @@ import de.themoep.connectorplugin.connector.ConnectingPlugin;
 import de.themoep.connectorplugin.connector.Message;
 import de.themoep.connectorplugin.connector.MessageTarget;
 import me.lucko.helper.Schedulers;
-import me.xanium.gemseconomy.GemsEconomy;
+import me.xanium.gemseconomy.GemsEconomyPlugin;
 import me.xanium.gemseconomy.message.Action;
 import me.xanium.gemseconomy.message.Messenger;
 import me.xanium.gemseconomy.utils.UtilServer;
@@ -20,11 +20,11 @@ import java.util.function.BiConsumer;
 @SuppressWarnings("UnstableApiUsage")
 public class RedisMessenger implements Messenger {
 
-    private final GemsEconomy plugin;
+    private final GemsEconomyPlugin plugin;
     private final BukkitConnectorPlugin connectorPlugin;
     private final ConnectingPlugin connectingPlugin = () -> "GemsEconomy";
 
-    public RedisMessenger(GemsEconomy plugin, BukkitConnectorPlugin connectorPlugin) {
+    public RedisMessenger(GemsEconomyPlugin plugin, BukkitConnectorPlugin connectorPlugin) {
         this.plugin = plugin;
         this.connectorPlugin = connectorPlugin;
 

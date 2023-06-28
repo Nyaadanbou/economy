@@ -1,12 +1,12 @@
 package me.xanium.gemseconomy.logging;
 
-import me.xanium.gemseconomy.GemsEconomy;
+import me.xanium.gemseconomy.GemsEconomyPlugin;
 
 public class EconomyLogger extends AbstractLogger {
 
-    private final GemsEconomy plugin;
+    private final GemsEconomyPlugin plugin;
 
-    public EconomyLogger(GemsEconomy plugin) {
+    public EconomyLogger(GemsEconomyPlugin plugin) {
         super(plugin);
         this.plugin = plugin;
     }

@@ -8,7 +8,7 @@ import cloud.commandframework.bukkit.BukkitCommandContextKeys;
 import cloud.commandframework.context.CommandContext;
 import cloud.commandframework.exceptions.parsing.NoInputProvidedException;
 import me.lucko.helper.utils.annotation.NonnullByDefault;
-import me.xanium.gemseconomy.GemsEconomy;
+import me.xanium.gemseconomy.GemsEconomyPlugin;
 import me.xanium.gemseconomy.account.Account;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
@@ -59,18 +59,18 @@ public class AccountArgument extends CommandArgument<CommandSender, Account> {
             // Prevent players from creating trash accounts
             if (!sender.hasPermission("gemseconomy.account.internal") && Bukkit.getOfflinePlayerIfCached(input) == null) {
                 return ArgumentParseResult.failure(
-                    new IllegalArgumentException(GemsEconomy.lang().legacy(sender, "err_player_is_null"))
+                    new IllegalArgumentException(GemsEconomyPlugin.lang().legacy(sender, "err_player_is_null"))
                 );
             }
 
-            Account target = GemsEconomy.getInstance().getAccountManager().fetchAccount(input);
+            Account target = GemsEconomyPlugin.getInstance().getAccountManager().fetchAccount(input);
             if (target != null) {
                 inputQueue.remove();
                 return ArgumentParseResult.success(target);
             }
 
             return ArgumentParseResult.failure(
-                new IllegalArgumentException(GemsEconomy.lang().legacy(sender, "err_player_is_null"))
+                new IllegalArgumentException(GemsEconomyPlugin.lang().legacy(sender, "err_player_is_null"))
             );
         }
 

@@ -1,7 +1,7 @@
 package me.xanium.gemseconomy.command.command;
 
 import cloud.commandframework.Command;
-import me.xanium.gemseconomy.GemsEconomy;
+import me.xanium.gemseconomy.GemsEconomyPlugin;
 import me.xanium.gemseconomy.account.Account;
 import me.xanium.gemseconomy.command.AbstractCommand;
 import me.xanium.gemseconomy.command.CommandManager;
@@ -25,7 +25,7 @@ import static me.xanium.gemseconomy.GemsMessages.*;
 @DefaultQualifier(NonNull.class)
 public class EconomyCommand extends AbstractCommand {
 
-    public EconomyCommand(GemsEconomy plugin, CommandManager manager) {
+    public EconomyCommand(GemsEconomyPlugin plugin, CommandManager manager) {
         super(plugin, manager);
     }
 
@@ -86,7 +86,7 @@ public class EconomyCommand extends AbstractCommand {
             .literal("cached")
             .handler(context -> {
                 CommandSender sender = context.getSender();
-                Collection<Account> cachedAccounts = GemsEconomy.getInstance().getAccountManager().getCachedAccounts();
+                Collection<Account> cachedAccounts = GemsEconomyPlugin.getInstance().getAccountManager().getCachedAccounts();
                 for (Account account : cachedAccounts) {
                     sender.sendMessage("Account: " + account.getDisplayName());
                 }
@@ -97,8 +97,8 @@ public class EconomyCommand extends AbstractCommand {
         Command<CommandSender> flush = builder
             .literal("flush")
             .handler(context -> {
-                GemsEconomy.getInstance().getAccountManager().flushAccounts();
-                GemsEconomy.getInstance().getBalanceTopRepository().flushLists();
+                GemsEconomyPlugin.getInstance().getAccountManager().flushAccounts();
+                GemsEconomyPlugin.getInstance().getBalanceTopRepository().flushLists();
                 context.getSender().sendMessage("All caches flushed!");
             })
             .build();
@@ -109,10 +109,10 @@ public class EconomyCommand extends AbstractCommand {
             .senderType(ConsoleCommandSender.class)
             .handler(context -> {
                 CommandSender sender = context.getSender();
-                GemsEconomy.getInstance().setDebug(!GemsEconomy.getInstance().isDebug());
-                GemsEconomy.lang().sendComponent(sender, GemsEconomy.lang()
+                GemsEconomyPlugin.getInstance().setDebug(!GemsEconomyPlugin.getInstance().isDebug());
+                GemsEconomyPlugin.lang().sendComponent(sender, GemsEconomyPlugin.lang()
                     .component(sender, "msg_debug_status")
-                    .replaceText(STATUS_REPLACEMENT.apply(GemsEconomy.getInstance().isDebug()))
+                    .replaceText(STATUS_REPLACEMENT.apply(GemsEconomyPlugin.getInstance().isDebug()))
                 );
             })
             .build();
@@ -130,13 +130,13 @@ public class EconomyCommand extends AbstractCommand {
     private void changeBalance(CommandSender sender, Account account, double amount, Currency currency, boolean withdraw, boolean silent) {
         if (withdraw) {
             if (account.withdraw(currency, amount)) {
-                GemsEconomy.lang().sendComponent(sender, GemsEconomy.lang()
+                GemsEconomyPlugin.lang().sendComponent(sender, GemsEconomyPlugin.lang()
                     .component(sender, "msg_eco_taken")
                     .replaceText(AMOUNT_REPLACEMENT.apply(currency, amount))
                     .replaceText(ACCOUNT_REPLACEMENT.apply(account))
                 );
             } else {
-                GemsEconomy.lang().sendComponent(sender, GemsEconomy.lang()
+                GemsEconomyPlugin.lang().sendComponent(sender, GemsEconomyPlugin.lang()
                     .component(sender, "err_player_insufficient_funds")
                     .replaceText(CURRENCY_REPLACEMENT.apply(currency))
                     .replaceText(ACCOUNT_REPLACEMENT.apply(account))
@@ -144,19 +144,19 @@ public class EconomyCommand extends AbstractCommand {
             }
         } else {
             if (account.deposit(currency, amount)) {
-                GemsEconomy.lang().sendComponent(sender, GemsEconomy.lang()
+                GemsEconomyPlugin.lang().sendComponent(sender, GemsEconomyPlugin.lang()
                     .component(sender, "msg_eco_added")
                     .replaceText(AMOUNT_REPLACEMENT.apply(currency, amount))
                     .replaceText(ACCOUNT_REPLACEMENT.apply(account))
                 );
                 @Nullable Player target = Bukkit.getPlayer(account.getUuid());
                 if (target != null && !silent) { // Send message if target player is online
-                    GemsEconomy.lang().sendComponent(target, GemsEconomy.lang()
+                    GemsEconomyPlugin.lang().sendComponent(target, GemsEconomyPlugin.lang()
                         .component(target, "msg_received_currency")
                         .replaceText(AMOUNT_REPLACEMENT.apply(currency, amount))
                         .replaceText(config -> config
                             .matchLiteral("{account}")
-                            .replacement(GemsEconomy.lang().legacy(target, "msg_console_name"))
+                            .replacement(GemsEconomyPlugin.lang().legacy(target, "msg_console_name"))
                         ));
                 }
             }
@@ -165,7 +165,7 @@ public class EconomyCommand extends AbstractCommand {
 
     private void setBalance(CommandSender sender, Account account, double amount, Currency currency) {
         account.setBalance(currency, amount);
-        GemsEconomy.lang().sendComponent(sender, GemsEconomy.lang()
+        GemsEconomyPlugin.lang().sendComponent(sender, GemsEconomyPlugin.lang()
             .component(sender, "msg_eco_set")
             .replaceText(AMOUNT_REPLACEMENT.apply(currency, amount))
             .replaceText(ACCOUNT_REPLACEMENT.apply(account))

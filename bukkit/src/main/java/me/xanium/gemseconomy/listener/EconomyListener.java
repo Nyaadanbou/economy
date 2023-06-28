@@ -11,7 +11,7 @@ package me.xanium.gemseconomy.listener;
 import me.lucko.helper.Schedulers;
 import me.lucko.helper.terminable.Terminable;
 import me.lucko.helper.utils.Players;
-import me.xanium.gemseconomy.GemsEconomy;
+import me.xanium.gemseconomy.GemsEconomyPlugin;
 import me.xanium.gemseconomy.account.Account;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -25,7 +25,7 @@ import java.util.UUID;
 
 public class EconomyListener implements Listener, Terminable {
 
-    private final GemsEconomy plugin = GemsEconomy.getInstance();
+    private final GemsEconomyPlugin plugin = GemsEconomyPlugin.getInstance();
 
     @EventHandler(priority = EventPriority.LOWEST)
     public void onLogin(AsyncPlayerPreLoginEvent event) {

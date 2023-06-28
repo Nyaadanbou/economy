@@ -1,7 +1,7 @@
 name: GemsEconomy
 version: ${version}
 description: ${description}
-main: me.xanium.gemseconomy.GemsEconomy
+main: me.xanium.gemseconomy.GemsEconomyPlugin
 api-version: 1.19
 authors: [ Nailm ]
 load-before: [ ]

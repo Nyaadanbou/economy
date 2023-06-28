@@ -7,7 +7,7 @@ import cloud.commandframework.arguments.parser.ArgumentParser;
 import cloud.commandframework.context.CommandContext;
 import cloud.commandframework.exceptions.parsing.NoInputProvidedException;
 import me.lucko.helper.utils.annotation.NonnullByDefault;
-import me.xanium.gemseconomy.GemsEconomy;
+import me.xanium.gemseconomy.GemsEconomyPlugin;
 import me.xanium.gemseconomy.currency.Currency;
 import org.bukkit.command.CommandSender;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -55,14 +55,14 @@ public class CurrencyArgument extends CommandArgument<CommandSender, Currency> {
                 return ArgumentParseResult.failure(new NoInputProvidedException(CurrencyArgument.Parser.class, commandContext));
             }
 
-            Currency currency = GemsEconomy.getInstance().getCurrencyManager().getCurrency(input);
+            Currency currency = GemsEconomyPlugin.getInstance().getCurrencyManager().getCurrency(input);
             if (currency != null) {
                 inputQueue.remove();
                 return ArgumentParseResult.success(currency);
             }
 
             return ArgumentParseResult.failure(new IllegalArgumentException(
-                GemsEconomy.lang().legacy(sender, "err_unknown_currency")
+                GemsEconomyPlugin.lang().legacy(sender, "err_unknown_currency")
             ));
         }
 
@@ -76,7 +76,7 @@ public class CurrencyArgument extends CommandArgument<CommandSender, Currency> {
             // to see corresponding tab completions
             CommandSender sender = commandContext.getSender();
             List<String> suggestions = new ArrayList<>();
-            Collection<Currency> currencies = GemsEconomy.getInstance().getCurrencyManager().getCurrencies();
+            Collection<Currency> currencies = GemsEconomyPlugin.getInstance().getCurrencyManager().getCurrencies();
             for (Currency currency : currencies) {
                 String name = currency.getName();
                 if (sender.hasPermission("gemseconomy.currency.completion." + name)) {

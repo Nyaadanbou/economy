@@ -8,7 +8,7 @@
 
 package me.xanium.gemseconomy.api;
 
-import me.xanium.gemseconomy.GemsEconomy;
+import me.xanium.gemseconomy.GemsEconomyPlugin;
 import me.xanium.gemseconomy.account.Account;
 import me.xanium.gemseconomy.currency.Currency;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -21,7 +21,7 @@ import static java.util.Objects.requireNonNull;
 
 @SuppressWarnings("unused")
 public class GemsEconomyAPI {
-    public final GemsEconomy plugin = GemsEconomy.getInstance();
+    public final GemsEconomyPlugin plugin = GemsEconomyPlugin.getInstance();
 
     public GemsEconomyAPI() {}
 

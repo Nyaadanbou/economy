@@ -8,7 +8,7 @@
 
 package me.xanium.gemseconomy.currency;
 
-import me.xanium.gemseconomy.GemsEconomy;
+import me.xanium.gemseconomy.GemsEconomyPlugin;
 import me.xanium.gemseconomy.utils.UtilString;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -116,7 +116,7 @@ public class Currency {
     public String simpleFormat(double amount) {
         String amountString = UtilString.format(amount, this.decimalSupported);
         String nameString = getName().replace("_", " ");
-        return GemsEconomy.lang().raw("msg_balance_simple_format",
+        return GemsEconomyPlugin.lang().raw("msg_balance_simple_format",
             "amount", amountString,
             "name", nameString
         );
@@ -136,7 +136,7 @@ public class Currency {
         String amountString = UtilString.format(amount, this.decimalSupported);
         String symbolString = getSymbolOrEmpty();
         String nameString = getName().replace("_", " ");
-        return GemsEconomy.lang().raw("msg_balance_fancy_format",
+        return GemsEconomyPlugin.lang().raw("msg_balance_fancy_format",
             "amount", amountString,
             "name", nameString,
             "symbol", symbolString

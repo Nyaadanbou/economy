@@ -1,6 +1,6 @@
 package me.xanium.gemseconomy.vault;
 
-import me.xanium.gemseconomy.GemsEconomy;
+import me.xanium.gemseconomy.GemsEconomyPlugin;
 import me.xanium.gemseconomy.account.Account;
 import me.xanium.gemseconomy.currency.Currency;
 import me.xanium.gemseconomy.utils.UtilServer;
@@ -27,12 +27,12 @@ public class GEVaultHook extends AbstractEconomy {
 
     @Override
     public String format(double amount) {
-        return GemsEconomy.getInstance().getCurrencyManager().getDefaultCurrency().simpleFormat(amount);
+        return GemsEconomyPlugin.getInstance().getCurrencyManager().getDefaultCurrency().simpleFormat(amount);
     }
 
     @Override
     public String currencyNameSingular() {
-        return GemsEconomy.getInstance().getCurrencyManager().getDefaultCurrency().getName();
+        return GemsEconomyPlugin.getInstance().getCurrencyManager().getDefaultCurrency().getName();
     }
 
     @Override
@@ -42,7 +42,7 @@ public class GEVaultHook extends AbstractEconomy {
 
     @Override
     public boolean has(String playerName, double amount) {
-        Account account = GemsEconomy.getInstance().getAccountManager().fetchAccount(playerName);
+        Account account = GemsEconomyPlugin.getInstance().getAccountManager().fetchAccount(playerName);
         return account != null && account.hasEnough(amount);
     }
 
@@ -53,31 +53,31 @@ public class GEVaultHook extends AbstractEconomy {
 
     @Override
     public boolean hasAccount(String playerName) {
-        return GemsEconomy.getInstance().getAccountManager().hasAccount(playerName);
+        return GemsEconomyPlugin.getInstance().getAccountManager().hasAccount(playerName);
     }
 
     @Override
     public boolean hasAccount(OfflinePlayer player) {
-        return GemsEconomy.getInstance().getAccountManager().hasAccount(player);
+        return GemsEconomyPlugin.getInstance().getAccountManager().hasAccount(player);
     }
 
     @SuppressWarnings("DuplicatedCode")
     private @NonNull Account getAccountOrCreate(@NonNull OfflinePlayer offlinePlayer) {
         Objects.requireNonNull(offlinePlayer, "player");
-        return Objects.requireNonNull(GemsEconomy.getInstance().getAccountManager().createAccount(offlinePlayer));
+        return Objects.requireNonNull(GemsEconomyPlugin.getInstance().getAccountManager().createAccount(offlinePlayer));
     }
 
     @SuppressWarnings("DuplicatedCode")
     private @NonNull Account getAccountOrCreate(@NonNull String playerName) {
         Objects.requireNonNull(playerName, "playerName");
-        return Objects.requireNonNull(GemsEconomy.getInstance().getAccountManager().createAccount(playerName));
+        return Objects.requireNonNull(GemsEconomyPlugin.getInstance().getAccountManager().createAccount(playerName));
     }
 
     @Override
     public double getBalance(String playerName) {
         UtilServer.consoleLog("Lookup name: " + playerName);
         Account account = getAccountOrCreate(playerName);
-        Currency currency = GemsEconomy.getInstance().getCurrencyManager().getDefaultCurrency();
+        Currency currency = GemsEconomyPlugin.getInstance().getCurrencyManager().getDefaultCurrency();
         return account.getBalance(currency);
     }
 
@@ -85,7 +85,7 @@ public class GEVaultHook extends AbstractEconomy {
     public double getBalance(OfflinePlayer player) {
         UtilServer.consoleLog("Lookup name: " + player.getName() + " (" + player.getUniqueId() + ")");
         Account account = getAccountOrCreate(player);
-        Currency currency = GemsEconomy.getInstance().getCurrencyManager().getDefaultCurrency();
+        Currency currency = GemsEconomyPlugin.getInstance().getCurrencyManager().getDefaultCurrency();
         return account.getBalance(currency);
     }
 
@@ -98,7 +98,7 @@ public class GEVaultHook extends AbstractEconomy {
         }
 
         Account account = getAccountOrCreate(player);
-        Currency currency = GemsEconomy.getInstance().getCurrencyManager().getDefaultCurrency();
+        Currency currency = GemsEconomyPlugin.getInstance().getCurrencyManager().getDefaultCurrency();
 
         if (account.withdraw(currency, amount)) {
             return new EconomyResponse(
@@ -126,7 +126,7 @@ public class GEVaultHook extends AbstractEconomy {
         }
 
         Account account = getAccountOrCreate(player);
-        Currency currency = GemsEconomy.getInstance().getCurrencyManager().getDefaultCurrency();
+        Currency currency = GemsEconomyPlugin.getInstance().getCurrencyManager().getDefaultCurrency();
 
         if (account.deposit(currency, amount)) {
             return new EconomyResponse(
@@ -154,7 +154,7 @@ public class GEVaultHook extends AbstractEconomy {
         }
 
         Account account = getAccountOrCreate(playerName);
-        Currency currency = GemsEconomy.getInstance().getCurrencyManager().getDefaultCurrency();
+        Currency currency = GemsEconomyPlugin.getInstance().getCurrencyManager().getDefaultCurrency();
 
         if (account.withdraw(currency, amount)) {
             return new EconomyResponse(
@@ -182,7 +182,7 @@ public class GEVaultHook extends AbstractEconomy {
         }
 
         Account account = getAccountOrCreate(playerName);
-        Currency currency = GemsEconomy.getInstance().getCurrencyManager().getDefaultCurrency();
+        Currency currency = GemsEconomyPlugin.getInstance().getCurrencyManager().getDefaultCurrency();
 
         if (account.deposit(currency, amount)) {
             return new EconomyResponse(
@@ -203,8 +203,8 @@ public class GEVaultHook extends AbstractEconomy {
 
     @Override
     public boolean createPlayerAccount(String playerName) {
-        GemsEconomy.getInstance().getAccountManager().createAccount(playerName);
-        return GemsEconomy.getInstance().getAccountManager().hasAccount(playerName);
+        GemsEconomyPlugin.getInstance().getAccountManager().createAccount(playerName);
+        return GemsEconomyPlugin.getInstance().getAccountManager().hasAccount(playerName);
     }
 
     //<editor-fold desc="Expanded Methods">

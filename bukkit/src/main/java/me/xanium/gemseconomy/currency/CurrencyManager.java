@@ -1,7 +1,7 @@
 package me.xanium.gemseconomy.currency;
 
 import com.google.common.collect.ImmutableList;
-import me.xanium.gemseconomy.GemsEconomy;
+import me.xanium.gemseconomy.GemsEconomyPlugin;
 import me.xanium.gemseconomy.message.Action;
 import me.xanium.gemseconomy.message.Messenger;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -16,10 +16,10 @@ import java.util.concurrent.ConcurrentHashMap;
 @DefaultQualifier(NonNull.class)
 public class CurrencyManager {
 
-    private final GemsEconomy plugin;
+    private final GemsEconomyPlugin plugin;
     private final Map<UUID, Currency> currencies;
 
-    public CurrencyManager(GemsEconomy plugin) {
+    public CurrencyManager(GemsEconomyPlugin plugin) {
         this.plugin = plugin;
         currencies = new ConcurrentHashMap<>();
     }
@@ -137,7 +137,7 @@ public class CurrencyManager {
      */
     public void removeCurrency(Currency currency) {
         // Remove this currency from all accounts
-        GemsEconomy.getInstance()
+        GemsEconomyPlugin.getInstance()
             .getAccountManager()
             .getOfflineAccounts()
             .forEach(account -> {

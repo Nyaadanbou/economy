@@ -29,9 +29,9 @@ import java.util.logging.Level;
 
 import static java.util.Objects.requireNonNull;
 
-public class GemsEconomy extends ExtendedJavaPlugin {
+public class GemsEconomyPlugin extends ExtendedJavaPlugin {
 
-    private static GemsEconomy INSTANCE;
+    private static GemsEconomyPlugin INSTANCE;
 
     private GemsMessages messages;
     private GemsEconomyAPI api;
@@ -48,7 +48,7 @@ public class GemsEconomy extends ExtendedJavaPlugin {
     private boolean logging = false;
     private boolean disabling = false;
 
-    public static GemsEconomy getInstance() {
+    public static GemsEconomyPlugin getInstance() {
         return INSTANCE;
     }
 

@@ -9,7 +9,7 @@
 package me.xanium.gemseconomy.logging;
 
 import com.google.common.collect.Sets;
-import me.xanium.gemseconomy.GemsEconomy;
+import me.xanium.gemseconomy.GemsEconomyPlugin;
 import me.xanium.gemseconomy.utils.UtilTime;
 
 import java.io.*;
@@ -20,14 +20,14 @@ import java.util.zip.ZipOutputStream;
 @SuppressWarnings("unused")
 public abstract class AbstractLogger {
 
-    private final GemsEconomy plugin;
+    private final GemsEconomyPlugin plugin;
     private final File folder;
     private final File latest;
     private final Set<String> toAdd;
     private volatile boolean zipping;
 
     @SuppressWarnings("ResultOfMethodCallIgnored")
-    public AbstractLogger(GemsEconomy plugin) {
+    public AbstractLogger(GemsEconomyPlugin plugin) {
         this.plugin = plugin;
         this.folder = new File(plugin.getDataFolder() + File.separator + "logs");
         this.latest = new File(folder, "LATEST.log");

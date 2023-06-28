@@ -1,6 +1,6 @@
 package me.xanium.gemseconomy.account;
 
-import me.xanium.gemseconomy.GemsEconomy;
+import me.xanium.gemseconomy.GemsEconomyPlugin;
 import me.xanium.gemseconomy.currency.Currency;
 import me.xanium.gemseconomy.event.GemsPostTransactionEvent;
 import me.xanium.gemseconomy.event.GemsPreTransactionEvent;
@@ -53,9 +53,9 @@ public class PlayerAccount implements Account {
             double finalAmount = getBalance(currency) - amount;
             double cappedAmount = Math.min(finalAmount, currency.getMaxBalance());
             this.balances.put(currency, cappedAmount); // Update balance
-            GemsEconomy.getInstance().getDataStore().saveAccount(this); // Save it to database
-            GemsEconomy.getInstance().getMessenger().sendMessage(Action.UPDATE_ACCOUNT, getUuid()); // Sync between servers
-            GemsEconomy.getInstance().getEconomyLogger().log("[WITHDRAW] Account: " + getDisplayName() + " were withdrawn: " + currency.simpleFormat(amount) + " and now has " + currency.simpleFormat(cappedAmount));
+            GemsEconomyPlugin.getInstance().getDataStore().saveAccount(this); // Save it to database
+            GemsEconomyPlugin.getInstance().getMessenger().sendMessage(Action.UPDATE_ACCOUNT, getUuid()); // Sync between servers
+            GemsEconomyPlugin.getInstance().getEconomyLogger().log("[WITHDRAW] Account: " + getDisplayName() + " were withdrawn: " + currency.simpleFormat(amount) + " and now has " + currency.simpleFormat(cappedAmount));
         } finally {
             lock.writeLock().unlock();
         }
@@ -82,9 +82,9 @@ public class PlayerAccount implements Account {
             double cappedAmount = Math.min(finalAmount, currency.getMaxBalance());
             this.balances.put(currency, cappedAmount); // Update balance
             this.cumulativeBalances.merge(currency, amount, Double::sum); // Accumulate deposited amount
-            GemsEconomy.getInstance().getDataStore().saveAccount(this); // Save it to database
-            GemsEconomy.getInstance().getMessenger().sendMessage(Action.UPDATE_ACCOUNT, getUuid()); // Sync between servers
-            GemsEconomy.getInstance().getEconomyLogger().log("[DEPOSIT] Account: " + getDisplayName() + " were deposited: " + currency.simpleFormat(amount) + " and now has " + currency.simpleFormat(cappedAmount));
+            GemsEconomyPlugin.getInstance().getDataStore().saveAccount(this); // Save it to database
+            GemsEconomyPlugin.getInstance().getMessenger().sendMessage(Action.UPDATE_ACCOUNT, getUuid()); // Sync between servers
+            GemsEconomyPlugin.getInstance().getEconomyLogger().log("[DEPOSIT] Account: " + getDisplayName() + " were deposited: " + currency.simpleFormat(amount) + " and now has " + currency.simpleFormat(cappedAmount));
         } finally {
             lock.writeLock().unlock();
         }
@@ -106,9 +106,9 @@ public class PlayerAccount implements Account {
         try {
             double cappedAmount = Math.min(amount, currency.getMaxBalance());
             this.balances.put(currency, cappedAmount); // Update balance
-            GemsEconomy.getInstance().getDataStore().saveAccount(this); // Save it to database
-            GemsEconomy.getInstance().getMessenger().sendMessage(Action.UPDATE_ACCOUNT, getUuid()); // Sync between servers
-            GemsEconomy.getInstance().getEconomyLogger().log("[BALANCE SET] Account: " + getDisplayName() + " were set to: " + currency.simpleFormat(cappedAmount));
+            GemsEconomyPlugin.getInstance().getDataStore().saveAccount(this); // Save it to database
+            GemsEconomyPlugin.getInstance().getMessenger().sendMessage(Action.UPDATE_ACCOUNT, getUuid()); // Sync between servers
+            GemsEconomyPlugin.getInstance().getEconomyLogger().log("[BALANCE SET] Account: " + getDisplayName() + " were set to: " + currency.simpleFormat(cappedAmount));
         } finally {
             lock.writeLock().unlock();
         }
@@ -193,7 +193,7 @@ public class PlayerAccount implements Account {
 
     @Override
     public boolean hasEnough(double amount) {
-        return hasEnough(GemsEconomy.getInstance().getCurrencyManager().getDefaultCurrency(), amount);
+        return hasEnough(GemsEconomyPlugin.getInstance().getCurrencyManager().getDefaultCurrency(), amount);
     }
 
     @Override

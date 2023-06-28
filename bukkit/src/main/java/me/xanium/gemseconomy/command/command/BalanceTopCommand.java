@@ -3,7 +3,7 @@ package me.xanium.gemseconomy.command.command;
 import cloud.commandframework.Command;
 import cloud.commandframework.arguments.standard.IntegerArgument;
 import me.lucko.helper.promise.Promise;
-import me.xanium.gemseconomy.GemsEconomy;
+import me.xanium.gemseconomy.GemsEconomyPlugin;
 import me.xanium.gemseconomy.command.AbstractCommand;
 import me.xanium.gemseconomy.command.CommandManager;
 import me.xanium.gemseconomy.command.argument.CurrencyArgument;
@@ -20,7 +20,7 @@ import static me.xanium.gemseconomy.GemsMessages.CURRENCY_REPLACEMENT;
 
 public class BalanceTopCommand extends AbstractCommand {
 
-    public BalanceTopCommand(GemsEconomy plugin, CommandManager manager) {
+    public BalanceTopCommand(GemsEconomyPlugin plugin, CommandManager manager) {
         super(plugin, manager);
     }
 
@@ -33,15 +33,15 @@ public class BalanceTopCommand extends AbstractCommand {
             .argument(IntegerArgument.<CommandSender>builder("page").withMin(1).asOptional())
             .handler(context -> {
                 CommandSender sender = context.getSender();
-                Currency currency = context.getOrDefault("currency", GemsEconomy.getInstance().getCurrencyManager().getDefaultCurrency());
+                Currency currency = context.getOrDefault("currency", GemsEconomyPlugin.getInstance().getCurrencyManager().getDefaultCurrency());
                 int page = context.getOrDefault("page", 1);
 
-                if (!GemsEconomy.getInstance().getDataStore().isTopSupported()) {
-                    GemsEconomy.lang().sendComponent(sender, "err_balance_top_no_support");
+                if (!GemsEconomyPlugin.getInstance().getDataStore().isTopSupported()) {
+                    GemsEconomyPlugin.lang().sendComponent(sender, "err_balance_top_no_support");
                     return;
                 }
                 if (!sender.hasPermission("gemseconomy.command.baltop." + currency.getName())) {
-                    GemsEconomy.lang().sendComponent(sender, "err_balance_top_no_permission");
+                    GemsEconomyPlugin.lang().sendComponent(sender, "err_balance_top_no_permission");
                     return;
                 }
 
@@ -49,7 +49,7 @@ public class BalanceTopCommand extends AbstractCommand {
                 if (promise.isDone()) { // it's completed - send the top list
                     sendTopList(sender, currency, promise.join(), page);
                 } else { // tell sender we're still computing it
-                    GemsEconomy.lang().sendComponent(sender, GemsEconomy.lang().component(sender, "msg_balance_top_computing"));
+                    GemsEconomyPlugin.lang().sendComponent(sender, GemsEconomyPlugin.lang().component(sender, "msg_balance_top_computing"));
                     promise.thenAcceptSync(topList -> sendTopList(sender, currency, topList, page));
                 }
             })
@@ -69,7 +69,7 @@ public class BalanceTopCommand extends AbstractCommand {
         final int pageBounded = Math.min(page, balanceTop.getMaxPage());
 
         // send list header
-        GemsEconomy.lang().sendComponent(sender, GemsEconomy.lang()
+        GemsEconomyPlugin.lang().sendComponent(sender, GemsEconomyPlugin.lang()
             .component(sender, "msg_balance_top_header")
             .replaceText(CURRENCY_REPLACEMENT.apply(currency))
             .replaceText(config -> config.matchLiteral("{page}").replacement(Integer.toString(pageBounded)))
@@ -79,7 +79,7 @@ public class BalanceTopCommand extends AbstractCommand {
         AtomicInteger index = new AtomicInteger(1 + (pageBounded - 1) * BalanceTop.ENTRY_PER_PAGE);
         List<TransientBalance> resultsAt = balanceTop.getResultsAt(pageBounded - 1);
         for (final TransientBalance entry : resultsAt) {
-            GemsEconomy.lang().sendComponent(sender, GemsEconomy.lang()
+            GemsEconomyPlugin.lang().sendComponent(sender, GemsEconomyPlugin.lang()
                 .component(sender, "msg_balance_top_entry")
                 .replaceText(AMOUNT_REPLACEMENT.apply(currency, entry.amount()))
                 .replaceText(config -> config.matchLiteral("{account}").replacement(entry.name()))
@@ -89,9 +89,9 @@ public class BalanceTopCommand extends AbstractCommand {
 
         // send last line
         if (resultsAt.isEmpty()) {
-            GemsEconomy.lang().sendComponent(sender, "err_balance_top_empty");
+            GemsEconomyPlugin.lang().sendComponent(sender, "err_balance_top_empty");
         } else {
-            GemsEconomy.lang().sendComponent(sender, GemsEconomy.lang()
+            GemsEconomyPlugin.lang().sendComponent(sender, GemsEconomyPlugin.lang()
                 .component(sender, "msg_balance_top_next")
                 .replaceText(CURRENCY_REPLACEMENT.apply(currency))
                 .replaceText(config -> config.matchLiteral("{page}").replacement(String.valueOf(pageBounded + 1)))
@@ -99,7 +99,7 @@ public class BalanceTopCommand extends AbstractCommand {
         }
 
         // send last update
-        GemsEconomy.lang().sendComponent(sender, "msg_balance_top_last_update", "time", balanceTop.getLastUpdate());
+        GemsEconomyPlugin.lang().sendComponent(sender, "msg_balance_top_last_update", "time", balanceTop.getLastUpdate());
     }
 
 }

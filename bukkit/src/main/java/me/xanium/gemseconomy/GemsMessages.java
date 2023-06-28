@@ -19,8 +19,8 @@ public class GemsMessages {
     public static final Function<Boolean, Consumer<TextReplacementConfig.Builder>> STATUS_REPLACEMENT = bool -> config -> {
         config.matchLiteral("{status}");
         config.replacement(bool
-            ? GemsEconomy.lang().component("msg_enabled")
-            : GemsEconomy.lang().component("msg_disabled")
+            ? GemsEconomyPlugin.lang().component("msg_enabled")
+            : GemsEconomyPlugin.lang().component("msg_disabled")
         );
     };
     public static final Function<Account, Consumer<TextReplacementConfig.Builder>> ACCOUNT_REPLACEMENT = account -> config -> {

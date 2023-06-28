@@ -15,7 +15,7 @@ import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import me.lucko.helper.profiles.OfflineModeProfiles;
 import me.lucko.helper.scheduler.HelperExecutors;
-import me.xanium.gemseconomy.GemsEconomy;
+import me.xanium.gemseconomy.GemsEconomyPlugin;
 import me.xanium.gemseconomy.data.DataStorage;
 import me.xanium.gemseconomy.message.Action;
 import org.bukkit.OfflinePlayer;
@@ -31,10 +31,10 @@ import java.util.UUID;
 
 public class AccountManager {
 
-    private final @NonNull GemsEconomy plugin;
+    private final @NonNull GemsEconomyPlugin plugin;
     private final @NonNull LoadingCache<UUID, Optional<Account>> cache; // accounts loaded in memory
 
-    public AccountManager(@NonNull GemsEconomy plugin) {
+    public AccountManager(@NonNull GemsEconomyPlugin plugin) {
         this.plugin = plugin;
         this.cache = CacheBuilder.newBuilder()
             .expireAfterAccess(Duration.of(10, ChronoUnit.MINUTES))

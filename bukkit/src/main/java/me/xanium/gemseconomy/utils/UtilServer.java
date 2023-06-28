@@ -8,7 +8,7 @@
 
 package me.xanium.gemseconomy.utils;
 
-import me.xanium.gemseconomy.GemsEconomy;
+import me.xanium.gemseconomy.GemsEconomyPlugin;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Server;
@@ -23,7 +23,7 @@ public class UtilServer {
     }
 
     public static void consoleLog(String message) {
-        if (GemsEconomy.getInstance().isDebug()) {
+        if (GemsEconomyPlugin.getInstance().isDebug()) {
             // StackWalker walker = StackWalker.getInstance();
             // Optional<String> walk = walker.walk(frameStream -> frameStream
             //         .skip(1)

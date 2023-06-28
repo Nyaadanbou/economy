@@ -1,7 +1,7 @@
 package me.xanium.gemseconomy.command.command;
 
 import cloud.commandframework.Command;
-import me.xanium.gemseconomy.GemsEconomy;
+import me.xanium.gemseconomy.GemsEconomyPlugin;
 import me.xanium.gemseconomy.command.AbstractCommand;
 import me.xanium.gemseconomy.command.CommandManager;
 import org.bukkit.command.CommandSender;
@@ -10,7 +10,7 @@ import java.util.List;
 
 public class InternalCommand extends AbstractCommand {
 
-    public InternalCommand(GemsEconomy plugin, CommandManager manager) {
+    public InternalCommand(GemsEconomyPlugin plugin, CommandManager manager) {
         super(plugin, manager);
     }
 
@@ -26,10 +26,10 @@ public class InternalCommand extends AbstractCommand {
             .permission("gemseconomy.command.reload")
             .handler(context -> {
                 CommandSender sender = context.getSender();
-                GemsEconomy.getInstance().reloadLanguages();
-                GemsEconomy.lang().sendComponent(sender, "msg_reloaded_lang",
-                    "plugin", GemsEconomy.getInstance().getDescription().getName(),
-                    "version", GemsEconomy.getInstance().getDescription().getVersion());
+                GemsEconomyPlugin.getInstance().reloadLanguages();
+                GemsEconomyPlugin.lang().sendComponent(sender, "msg_reloaded_lang",
+                    "plugin", GemsEconomyPlugin.getInstance().getDescription().getName(),
+                    "version", GemsEconomyPlugin.getInstance().getDescription().getVersion());
             })
             .build();
 

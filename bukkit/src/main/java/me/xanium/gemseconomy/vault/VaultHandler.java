@@ -8,7 +8,7 @@
 
 package me.xanium.gemseconomy.vault;
 
-import me.xanium.gemseconomy.GemsEconomy;
+import me.xanium.gemseconomy.GemsEconomyPlugin;
 import me.xanium.gemseconomy.utils.UtilServer;
 import net.milkbowl.vault.economy.Economy;
 import org.bukkit.Bukkit;
@@ -18,9 +18,9 @@ import org.bukkit.plugin.ServicesManager;
 public class VaultHandler {
 
     private GEVaultHook economy = null;
-    private final GemsEconomy plugin;
+    private final GemsEconomyPlugin plugin;
 
-    public VaultHandler(GemsEconomy plugin){
+    public VaultHandler(GemsEconomyPlugin plugin){
         this.plugin = plugin;
     }
 

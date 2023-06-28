@@ -16,7 +16,7 @@ import cloud.commandframework.minecraft.extras.MinecraftExceptionHandler;
 import cloud.commandframework.paper.PaperCommandManager;
 import io.leangen.geantyref.TypeToken;
 import me.lucko.helper.scheduler.HelperExecutors;
-import me.xanium.gemseconomy.GemsEconomy;
+import me.xanium.gemseconomy.GemsEconomyPlugin;
 import me.xanium.gemseconomy.command.command.*;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -33,12 +33,12 @@ import java.util.stream.Stream;
 
 public class CommandManager extends PaperCommandManager<CommandSender> {
 
-    public static final CloudKey<GemsEconomy> PLUGIN = SimpleCloudKey.of("gemseconomy:plugin", TypeToken.get(GemsEconomy.class));
+    public static final CloudKey<GemsEconomyPlugin> PLUGIN = SimpleCloudKey.of("gemseconomy:plugin", TypeToken.get(GemsEconomyPlugin.class));
     private static final Component NULL = Component.text("null");
     private static final Pattern SYNTAX_HIGHLIGHT_PATTERN = Pattern.compile("[^\\s\\w\\-]");
     private final Map<String, CommandFlag.Builder<?>> flagRegistry = new HashMap<>();
 
-    public CommandManager(GemsEconomy plugin) throws Exception {
+    public CommandManager(GemsEconomyPlugin plugin) throws Exception {
         super(
             plugin,
             AsynchronousCommandExecutionCoordinator.<CommandSender>builder()
@@ -79,7 +79,7 @@ public class CommandManager extends PaperCommandManager<CommandSender> {
                         config.match(SYNTAX_HIGHLIGHT_PATTERN);
                         config.replacement(builder -> builder.color(NamedTextColor.WHITE));
                     });
-                return GemsEconomy.lang()
+                return GemsEconomyPlugin.lang()
                     .component("err_invalid_syntax")
                     .replaceText(config -> {
                         config.matchLiteral("{syntax}");
@@ -91,7 +91,7 @@ public class CommandManager extends PaperCommandManager<CommandSender> {
                 final Component correctSenderType = Component
                     .text(exception.getRequiredSender().getSimpleName())
                     .color(NamedTextColor.GRAY);
-                return GemsEconomy.lang()
+                return GemsEconomyPlugin.lang()
                     .component("err_invalid_sender")
                     .replaceText(config -> {
                         config.matchLiteral("{type}");
@@ -100,7 +100,7 @@ public class CommandManager extends PaperCommandManager<CommandSender> {
             })
             .withHandler(MinecraftExceptionHandler.ExceptionType.NO_PERMISSION, e -> {
                 final NoPermissionException exception = (NoPermissionException) e;
-                return GemsEconomy.lang()
+                return GemsEconomyPlugin.lang()
                     .component("err_no_permission")
                     .replaceText(config -> {
                         config.matchLiteral("{permission}");
@@ -112,7 +112,7 @@ public class CommandManager extends PaperCommandManager<CommandSender> {
             })
             .withHandler(MinecraftExceptionHandler.ExceptionType.ARGUMENT_PARSING, e -> {
                 final ArgumentParseException exception = (ArgumentParseException) e;
-                return GemsEconomy.lang()
+                return GemsEconomyPlugin.lang()
                     .component("err_argument_parsing")
                     .replaceText(config -> {
                         config.matchLiteral("{args}");
