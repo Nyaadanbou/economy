@@ -18,6 +18,9 @@ dependencies {
     // my own libs
     compileOnly(project(":mewcore"))
 
+    // libs in core
+    compileOnly(libs.hikari)
+
     // libs that present as other plugins
     compileOnly(libs.helper)
     compileOnly(libs.helper.sql)
