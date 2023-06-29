@@ -447,7 +447,7 @@ public final class MySQLStorage extends DataStorage {
     }
 
     /**
-     * Common logics of loading an Account from database.
+     * Common logics of loading an account from database.
      */
     private Account loadAccountFromDatabase(final ResultSet rs) throws SQLException, ParseException {
         Account account = new PlayerAccount(
@@ -458,7 +458,7 @@ public final class MySQLStorage extends DataStorage {
     }
 
     /**
-     * Common logics of updating an Account from database.
+     * Common logics of updating an account from database.
      */
     private Account updateAccountFromDatabase(final ResultSet resultSet, final Account account) throws SQLException, ParseException {
         account.setCanReceiveCurrency(resultSet.getInt("payable") == 1);
@@ -491,7 +491,7 @@ public final class MySQLStorage extends DataStorage {
     }
 
     /**
-     * Common logics of saving an Account to database.
+     * Common logics of saving an account to database.
      */
     @SuppressWarnings("unchecked")
     private void saveAccountToDatabase(final @NonNull Account account) {
@@ -518,7 +518,7 @@ public final class MySQLStorage extends DataStorage {
     }
 
     /**
-     * Common logics of loading a Currency from database.
+     * Common logics of loading a currency from database.
      */
     private Currency loadCurrencyFromDatabase(ResultSet rs) throws SQLException {
         UUID uuid = UUID.fromString(rs.getString("uuid"));

@@ -60,10 +60,10 @@ public class CurrencyManager {
     /* ---------------- Setters ---------------- */
 
     /**
-     * Creates a new Currency and saves it to database.
+     * Creates a new currency and saves it to database.
      *
-     * @param name the name of the new Currency
-     * @return the new Currency, or <code>null</code> if already existed
+     * @param name the name of the new currency
+     * @return the new currency, or <code>null</code> if already existed
      */
     public @Nullable Currency createCurrency(String name) {
         if (hasCurrency(name)) {
@@ -86,11 +86,11 @@ public class CurrencyManager {
     }
 
     /**
-     * Adds given Currency object to this manager.
+     * Adds given currency object to this manager.
      * <p>
-     * This method will do nothing if this manager already contains specific Currency.
+     * This method will do nothing if this manager already contains specific currency.
      *
-     * @param currency a Currency object
+     * @param currency a currency object
      */
     public void addCurrency(Currency currency) {
         currencies.putIfAbsent(currency.getUuid(), currency);
@@ -99,7 +99,7 @@ public class CurrencyManager {
     /**
      * Saves specific currency to database.
      *
-     * @param currency a Currency
+     * @param currency a currency
      */
     public void saveCurrency(Currency currency) {
         plugin.getDataStore().saveCurrency(currency);
@@ -107,29 +107,29 @@ public class CurrencyManager {
     }
 
     /**
-     * Updates specific Currency in this manager so that it syncs with database.
+     * Updates specific currency in this manager so that it syncs with database.
      * <p>
      * This method is specifically used by {@link Messenger}.
      *
-     * @param uuid   the uuid of specific Currency
+     * @param uuid   the uuid of specific currency
      * @param create if true, it will create specific currency if not existing in this manager; otherwise false
      */
     public void updateCurrency(UUID uuid, boolean create) {
         @Nullable Currency newCurrency = plugin.getDataStore().loadCurrency(uuid);
         @Nullable Currency oldCurrency = getCurrency(uuid);
         if (newCurrency != null) { // Only update it if the new currency is actually loaded
-            if (oldCurrency != null) { // This manager has specific Currency, but not synced with database
+            if (oldCurrency != null) { // This manager has specific currency, but not synced with database
                 oldCurrency.update(newCurrency);
-            } else if (create) { // This manager doesn't have specific Currency - just create it
+            } else if (create) { // This manager doesn't have specific currency - just create it
                 addCurrency(newCurrency);
             }
         }
     }
 
     /**
-     * Removes specified Currency from this manager, all Accounts, and database.
+     * Removes specified currency from this manager, all accounts, and database.
      *
-     * @param currency the Currency to remove
+     * @param currency the currency to remove
      */
     public void removeCurrency(Currency currency) {
         // Remove this currency from all accounts
@@ -156,7 +156,7 @@ public class CurrencyManager {
     /**
      * The same as {@link #removeCurrency(Currency)} but it accepts a UUID.
      * <p>
-     * If the UUID does not map to a Currency in this manager, this method will do nothing.
+     * If the UUID does not map to a currency in this manager, this method will do nothing.
      */
     public void removeCurrency(UUID uuid) {
         Currency currency = currencies.get(uuid);
@@ -165,9 +165,9 @@ public class CurrencyManager {
     }
 
     /**
-     * Sets the balances of specific Currency to default value for <b>ALL</b> Accounts.
+     * Sets the balances of specific currency to default value for <b>ALL</b> accounts.
      *
-     * @param currency the Currency to clear balance
+     * @param currency the currency to clear balance
      */
     public void clearBalance(Currency currency) {
         plugin.getAccountManager().getOfflineAccounts().forEach(account -> {

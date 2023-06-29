@@ -57,7 +57,7 @@ public class AmountArgument extends CommandArgument<CommandSender, Double> {
             }
 
             Optional<String> currencyReferrer = commandContext.getOptional("currencyReferrer");
-            if (currencyReferrer.isPresent()) { // If this AmountArgument should refer to a specific Currency
+            if (currencyReferrer.isPresent()) { // If this AmountArgument should refer to a specific currency
                 String key = currencyReferrer.get();
                 Optional<Currency> currency = commandContext.getOptional(key);
                 if (currency.isPresent()) {
@@ -66,11 +66,11 @@ public class AmountArgument extends CommandArgument<CommandSender, Double> {
                 } else {
                     return ArgumentParseResult.failure(new IllegalArgumentException());
                 }
-            } else if (commandContext.contains("currency")) { // If no Currency is specified, check the CurrencyArgument with "currency" key
+            } else if (commandContext.contains("currency")) { // If no Currency is specified, check the currencyArgument with "currency" key
                 Currency currency = commandContext.get("currency");
                 inputQueue.remove();
                 return parseAmount(sender, input, currency);
-            } else { // Else, fallback to the default Currency
+            } else { // Else, fallback to the default currency
                 Currency currency = GemsEconomyPlugin.getInstance().getCurrencyManager().getDefaultCurrency();
                 inputQueue.remove();
                 return parseAmount(sender, input, currency);

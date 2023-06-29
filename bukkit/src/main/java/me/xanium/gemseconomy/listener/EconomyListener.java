@@ -39,7 +39,7 @@ public class EconomyListener implements Listener, Terminable {
         final UUID uuid = event.getUniqueId();
         final Account account = plugin.getAccountManager().createAccount(uuid);
 
-        // Update nickname of the Account
+        // Update nickname of the account
         Schedulers.async().runLater(() -> Players.get(uuid).map(Player::getName).ifPresent(playerName -> {
             if (!playerName.equals(account.getNickname())) {
                 account.setNickname(playerName);
