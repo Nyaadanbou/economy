@@ -3,7 +3,6 @@ package me.xanium.gemseconomy.command.command;
 import cloud.commandframework.Command;
 import cloud.commandframework.bukkit.arguments.selector.MultiplePlayerSelector;
 import cloud.commandframework.bukkit.parsers.selector.MultiplePlayerSelectorArgument;
-import me.lucko.helper.Schedulers;
 import me.xanium.gemseconomy.GemsEconomyPlugin;
 import me.xanium.gemseconomy.api.Account;
 import me.xanium.gemseconomy.api.Currency;
@@ -115,7 +114,7 @@ public class PayCommand extends AbstractCommand {
         }
 
         GemsPayEvent event = new GemsPayEvent(currency, myselfAccount, targetAccount, amount);
-        if (!Schedulers.sync().call(event::callEvent).join()) return;
+        if (!event.callEvent()) return;
 
         myselfAccount.withdraw(currency, amount);
         targetAccount.deposit(currency, amount);
