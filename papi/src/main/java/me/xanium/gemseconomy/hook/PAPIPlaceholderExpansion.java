@@ -31,6 +31,15 @@ public class PAPIPlaceholderExpansion implements Terminable {
     }
 
     class Expansion extends PlaceholderExpansion {
+        // --- Keys ---
+        private static final String BALANCE_KEY = "balance";
+        private static final String SIMPLE_BALANCE_KEY = "simple_balance";
+        private static final String FANCY_BALANCE_KEY = "fancy_balance";
+        // --- Lengths ---
+        private static final int BALANCE_KEY_LENGTH = BALANCE_KEY.length() + 1; // plus 1 to not include the first ":" symbol
+        private static final int SIMPLE_BALANCE_KEY_LENGTH = SIMPLE_BALANCE_KEY.length() + 1;
+        private static final int FANCY_BALANCE_KEY_LENGTH = FANCY_BALANCE_KEY.length() + 1;
+
         @Override
         public @NonNull String getIdentifier() {
             return "econ";
@@ -57,23 +66,23 @@ public class PAPIPlaceholderExpansion implements Terminable {
                 return "";
             }
 
-            if (params.startsWith("balance")) {
+            if (params.startsWith(BALANCE_KEY)) {
                 // <econ_balance:r>
                 // <econ_balance:c>
-                // <econ_balance:c:acc>
-                return parse(account, params.substring(7), (currency, balance) -> String.valueOf(balance));
+                // <econ_balance:c:heap>
+                return parse(account, params.substring(BALANCE_KEY_LENGTH), (currency, balance) -> String.valueOf(balance));
 
-            } else if (params.startsWith("simple_balance")) {
+            } else if (params.startsWith(SIMPLE_BALANCE_KEY)) {
                 // <econ_simple_balance:r>
                 // <econ_simple_balance:c>
-                // <econ_simple_balance:c:acc>
-                return parse(account, params.substring(14), Currency::simpleFormat);
+                // <econ_simple_balance:c:heap>
+                return parse(account, params.substring(SIMPLE_BALANCE_KEY_LENGTH), Currency::simpleFormat);
 
-            } else if (params.startsWith("fancy_balance")) {
+            } else if (params.startsWith(FANCY_BALANCE_KEY)) {
                 // <econ_fancy_balance:r>
                 // <econ_fancy_balance:c>
-                // <econ_fancy_balance:c:acc>
-                return parse(account, params.substring(13), Currency::fancyFormat);
+                // <econ_fancy_balance:c:heap>
+                return parse(account, params.substring(FANCY_BALANCE_KEY_LENGTH), Currency::fancyFormat);
             }
 
             return "";
