@@ -108,11 +108,9 @@ public class PAPIPlaceholderExpansion implements Terminable {
                 return "";
             }
 
-            if (asHeap) {
-                return balanceStringFunc.apply(currency, account.getBalance(currency));
-            } else {
-                return balanceStringFunc.apply(currency, account.getHeapBalance(currency));
-            }
+            return asHeap
+                ? balanceStringFunc.apply(currency, account.getHeapBalance(currency))
+                : balanceStringFunc.apply(currency, account.getBalance(currency));
         }
     }
 }
