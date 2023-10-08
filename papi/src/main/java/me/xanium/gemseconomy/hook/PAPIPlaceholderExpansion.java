@@ -7,11 +7,12 @@ import me.xanium.gemseconomy.api.Currency;
 import me.xanium.gemseconomy.api.GemsEconomy;
 import me.xanium.gemseconomy.api.GemsEconomyProvider;
 import org.bukkit.OfflinePlayer;
-import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.util.Objects;
 import java.util.function.BiFunction;
+
+import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 public class PAPIPlaceholderExpansion implements Terminable {
     private final Expansion expansion;
@@ -109,8 +110,8 @@ public class PAPIPlaceholderExpansion implements Terminable {
             }
 
             return asHeap
-                ? balanceStringFunc.apply(currency, account.getHeapBalance(currency))
-                : balanceStringFunc.apply(currency, account.getBalance(currency));
+                    ? balanceStringFunc.apply(currency, account.getHeapBalance(currency))
+                    : balanceStringFunc.apply(currency, account.getBalance(currency));
         }
     }
 }

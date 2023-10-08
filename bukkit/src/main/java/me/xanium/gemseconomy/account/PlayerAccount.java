@@ -1,6 +1,5 @@
 package me.xanium.gemseconomy.account;
 
-import com.google.common.base.Preconditions;
 import me.xanium.gemseconomy.GemsEconomyPlugin;
 import me.xanium.gemseconomy.api.Account;
 import me.xanium.gemseconomy.api.Currency;
@@ -8,8 +7,8 @@ import me.xanium.gemseconomy.event.GemsPostTransactionEvent;
 import me.xanium.gemseconomy.event.GemsPreTransactionEvent;
 import me.xanium.gemseconomy.message.Action;
 import me.xanium.gemseconomy.utils.TransactionType;
-import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.checker.nullness.qual.Nullable;
+
+import com.google.common.base.Preconditions;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -17,6 +16,9 @@ import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
+
+import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 public class PlayerAccount implements Account {
     private final @NonNull UUID uuid;
@@ -138,12 +140,12 @@ public class PlayerAccount implements Account {
     public double getBalance(@NonNull String identifier) {
         Preconditions.checkNotNull(identifier, "identifier");
         return balances
-            .keySet()
-            .stream()
-            .filter(currency -> currency.getName().equalsIgnoreCase(identifier))
-            .findAny()
-            .map(this::getBalance)
-            .orElse(0D);
+                .keySet()
+                .stream()
+                .filter(currency -> currency.getName().equalsIgnoreCase(identifier))
+                .findAny()
+                .map(this::getBalance)
+                .orElse(0D);
     }
 
     @Override
@@ -167,12 +169,12 @@ public class PlayerAccount implements Account {
     public double getHeapBalance(@NonNull String identifier) {
         Preconditions.checkNotNull(identifier, "identifier");
         return heapBalances
-            .keySet()
-            .stream()
-            .filter(currency -> currency.getName().equalsIgnoreCase(identifier))
-            .findAny()
-            .map(heapBalances::get)
-            .orElse(0D);
+                .keySet()
+                .stream()
+                .filter(currency -> currency.getName().equalsIgnoreCase(identifier))
+                .findAny()
+                .map(heapBalances::get)
+                .orElse(0D);
     }
 
     @Override

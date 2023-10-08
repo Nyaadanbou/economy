@@ -8,9 +8,10 @@
 
 package me.xanium.gemseconomy.logging;
 
-import com.google.common.collect.Sets;
 import me.xanium.gemseconomy.GemsEconomyPlugin;
 import me.xanium.gemseconomy.utils.UtilTime;
+
+import com.google.common.collect.Sets;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -136,8 +137,8 @@ public abstract class AbstractLogger {
             StackTraceElement element = ex.getStackTrace()[0];
             builder.append('[').append(ex).append(']').append(' ');
             builder.append('[').append("ERROR - ").append(ex.getMessage()).append(" -- ").append(element.getFileName())
-                .append(" where ").append(element.getMethodName()).append(" at ").append(element.getLineNumber())
-                .append(']').append(' ');
+                    .append(" where ").append(element.getMethodName()).append(" at ").append(element.getLineNumber())
+                    .append(']').append(' ');
             builder.append(message);
             writeToFile(builder.toString());
         } catch (IOException e) {

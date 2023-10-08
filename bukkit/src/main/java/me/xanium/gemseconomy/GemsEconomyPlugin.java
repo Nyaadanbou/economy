@@ -28,6 +28,7 @@ import me.xanium.gemseconomy.message.Messenger;
 import me.xanium.gemseconomy.utils.UtilServer;
 import me.xanium.gemseconomy.vault.VaultHandler;
 import org.bukkit.plugin.ServicePriority;
+
 import org.checkerframework.checker.nullness.qual.Nullable;
 
 import static java.util.Objects.requireNonNull;
@@ -207,11 +208,11 @@ public class GemsEconomyPlugin extends ExtendedJavaPlugin {
 
     private void initializeDataStore(@Nullable StorageType strategy) {
         DataStorage.getMethods().add(new MySQLStorage(
-            requireNonNull(getConfig().getString("mysql.host")),
-            getConfig().getInt("mysql.port", 3306),
-            requireNonNull(getConfig().getString("mysql.database")),
-            requireNonNull(getConfig().getString("mysql.username")),
-            requireNonNull(getConfig().getString("mysql.password"))
+                requireNonNull(getConfig().getString("mysql.host")),
+                getConfig().getInt("mysql.port", 3306),
+                requireNonNull(getConfig().getString("mysql.database")),
+                requireNonNull(getConfig().getString("mysql.username")),
+                requireNonNull(getConfig().getString("mysql.password"))
         ));
 
         if (strategy != null) {

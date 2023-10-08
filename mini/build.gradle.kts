@@ -2,12 +2,15 @@
 version = "1.0.0"
 
 dependencies {
+    // internal
     compileOnly(project(":economy:api"))
 
-    // the server api
+    // server
     compileOnly(libs.server.paper)
 
-    // libs that present as other plugins
+    // helper
     compileOnly(libs.helper)
+
+    // standalone plugins
     compileOnly(libs.minipapi)
 }

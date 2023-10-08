@@ -6,28 +6,29 @@ import cloud.commandframework.arguments.parser.ArgumentParseResult;
 import cloud.commandframework.arguments.parser.ArgumentParser;
 import cloud.commandframework.context.CommandContext;
 import cloud.commandframework.exceptions.parsing.NoInputProvidedException;
-import me.lucko.helper.utils.annotation.NonnullByDefault;
 import me.xanium.gemseconomy.GemsEconomyPlugin;
 import me.xanium.gemseconomy.api.Currency;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
-import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.util.List;
 import java.util.Optional;
 import java.util.Queue;
 import java.util.function.BiFunction;
 
-@SuppressWarnings("unused")
-@NonnullByDefault
+import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
+import org.checkerframework.framework.qual.DefaultQualifier;
+
+@DefaultQualifier(NonNull.class)
 public class AmountArgument extends CommandArgument<CommandSender, Double> {
 
     public AmountArgument(
-        boolean required,
-        String name,
-        String defaultValue,
-        @Nullable BiFunction<CommandContext<CommandSender>, String, List<String>> suggestionsProvider,
-        ArgumentDescription defaultDescription) {
+            boolean required,
+            String name,
+            String defaultValue,
+            @Nullable BiFunction<CommandContext<CommandSender>, String, List<String>> suggestionsProvider,
+            ArgumentDescription defaultDescription) {
         super(required, name, new Parser(), defaultValue, Double.class, suggestionsProvider, defaultDescription);
     }
 
@@ -47,8 +48,8 @@ public class AmountArgument extends CommandArgument<CommandSender, Double> {
 
         @Override
         public ArgumentParseResult<Double> parse(
-            final CommandContext<CommandSender> commandContext,
-            final Queue<String> inputQueue
+                final CommandContext<CommandSender> commandContext,
+                final Queue<String> inputQueue
         ) {
             CommandSender sender = commandContext.getSender();
             String input = inputQueue.peek();
@@ -79,8 +80,8 @@ public class AmountArgument extends CommandArgument<CommandSender, Double> {
 
         @Override
         public List<String> suggestions(
-            final CommandContext<CommandSender> commandContext,
-            final String input
+                final CommandContext<CommandSender> commandContext,
+                final String input
         ) {
             return List.of("1", "10", "100", "1000");
         }
@@ -93,7 +94,7 @@ public class AmountArgument extends CommandArgument<CommandSender, Double> {
                     validateInput(sender, amount);
                 } catch (NumberFormatException ex) {
                     return ArgumentParseResult.failure(new IllegalArgumentException(
-                        GemsEconomyPlugin.lang().legacy(sender, "err_invalid_amount")
+                            GemsEconomyPlugin.lang().legacy(sender, "err_invalid_amount")
                     ));
                 }
             } else {
@@ -102,7 +103,7 @@ public class AmountArgument extends CommandArgument<CommandSender, Double> {
                     validateInput(sender, amount);
                 } catch (NumberFormatException ex) {
                     return ArgumentParseResult.failure(new IllegalArgumentException(
-                        GemsEconomyPlugin.lang().legacy(sender, "err_invalid_amount")
+                            GemsEconomyPlugin.lang().legacy(sender, "err_invalid_amount")
                     ));
                 }
             }
@@ -128,11 +129,11 @@ public class AmountArgument extends CommandArgument<CommandSender, Double> {
         @Override
         public AmountArgument build() {
             return new AmountArgument(
-                this.isRequired(),
-                this.getName(),
-                this.getDefaultValue(),
-                this.getSuggestionsProvider(),
-                this.getDefaultDescription()
+                    this.isRequired(),
+                    this.getName(),
+                    this.getDefaultValue(),
+                    this.getSuggestionsProvider(),
+                    this.getDefaultDescription()
             );
         }
     }

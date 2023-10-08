@@ -1,18 +1,20 @@
 package me.xanium.gemseconomy.currency;
 
-import com.google.common.collect.ImmutableList;
 import me.xanium.gemseconomy.GemsEconomyPlugin;
 import me.xanium.gemseconomy.api.Currency;
 import me.xanium.gemseconomy.message.Action;
 import me.xanium.gemseconomy.message.Messenger;
-import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.checker.nullness.qual.Nullable;
-import org.checkerframework.framework.qual.DefaultQualifier;
+
+import com.google.common.collect.ImmutableList;
 
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
+
+import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
+import org.checkerframework.framework.qual.DefaultQualifier;
 
 @DefaultQualifier(NonNull.class)
 public class CurrencyManager {
@@ -134,13 +136,13 @@ public class CurrencyManager {
     public void removeCurrency(Currency currency) {
         // Remove this currency from all accounts
         GemsEconomyPlugin.getInstance()
-            .getAccountManager()
-            .getOfflineAccounts()
-            .forEach(account -> {
-                account.getBalances().remove(currency);
-                plugin.getDataStore().saveAccount(account);
-                plugin.getMessenger().sendMessage(Action.UPDATE_ACCOUNT, account.getUuid());
-            });
+                .getAccountManager()
+                .getOfflineAccounts()
+                .forEach(account -> {
+                    account.getBalances().remove(currency);
+                    plugin.getDataStore().saveAccount(account);
+                    plugin.getMessenger().sendMessage(Action.UPDATE_ACCOUNT, account.getUuid());
+                });
 
         // Remove this currency from this manager
         currencies.remove(currency.getUuid());

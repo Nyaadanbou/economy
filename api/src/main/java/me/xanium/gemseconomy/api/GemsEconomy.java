@@ -1,11 +1,12 @@
 package me.xanium.gemseconomy.api;
 
-import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.checker.nullness.qual.Nullable;
-import org.jetbrains.annotations.ApiStatus;
-
 import java.util.List;
 import java.util.UUID;
+
+import org.jetbrains.annotations.ApiStatus;
+
+import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 public interface GemsEconomy {
     /**

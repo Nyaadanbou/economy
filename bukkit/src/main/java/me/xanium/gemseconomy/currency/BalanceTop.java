@@ -1,8 +1,9 @@
 package me.xanium.gemseconomy.currency;
 
-import com.google.common.collect.Lists;
 import me.xanium.gemseconomy.data.TransientBalance;
 import me.xanium.gemseconomy.utils.UtilTime;
+
+import com.google.common.collect.Lists;
 
 import java.util.ArrayList;
 import java.util.Comparator;

@@ -15,10 +15,10 @@ public class UtilString {
 
     public static String format(double money, boolean decimal) {
         return BigDecimal
-            .valueOf(money)
-            .setScale(decimal ? 2 : 0, RoundingMode.HALF_UP)
-            .stripTrailingZeros()
-            .toPlainString();
+                .valueOf(money)
+                .setScale(decimal ? 2 : 0, RoundingMode.HALF_UP)
+                .stripTrailingZeros()
+                .toPlainString();
     }
 
 }

@@ -1,14 +1,12 @@
-// name and description inherited from "project-conventions"
+group = "me.xanium.gemseconomy"
 version = "1.0.0"
+description = "A modern multi-currency economy plugin on Velocity"
 
 dependencies {
-    // the proxy api
+    // server
     compileOnly(libs.proxy.velocity)
     annotationProcessor(libs.proxy.velocity)
 
-    // libs to be shaded
-    compileOnly(libs.hikari)
-
-    // libs that present as other plugins
-    compileOnly(libs.luckperms)
+    // internal
+    implementation(libs.hikari)
 }

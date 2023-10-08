@@ -1,8 +1,5 @@
 package me.xanium.gemseconomy.message.impl;
 
-import com.google.common.io.ByteArrayDataInput;
-import com.google.common.io.ByteArrayDataOutput;
-import com.google.common.io.ByteStreams;
 import de.themoep.connectorplugin.bukkit.BukkitConnectorPlugin;
 import de.themoep.connectorplugin.connector.ConnectingPlugin;
 import de.themoep.connectorplugin.connector.Message;
@@ -13,6 +10,10 @@ import me.xanium.gemseconomy.message.Action;
 import me.xanium.gemseconomy.message.Messenger;
 import me.xanium.gemseconomy.utils.UtilServer;
 import org.bukkit.entity.Player;
+
+import com.google.common.io.ByteArrayDataInput;
+import com.google.common.io.ByteArrayDataOutput;
+import com.google.common.io.ByteStreams;
 
 import java.util.UUID;
 import java.util.function.BiConsumer;

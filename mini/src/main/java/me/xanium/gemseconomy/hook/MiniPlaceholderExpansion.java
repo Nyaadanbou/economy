@@ -12,11 +12,12 @@ import net.kyori.adventure.text.minimessage.Context;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.minimessage.tag.Tag;
 import net.kyori.adventure.text.minimessage.tag.resolver.ArgumentQueue;
-import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.util.Optional;
 import java.util.UUID;
 import java.util.function.BiFunction;
+
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 public class MiniPlaceholderExpansion implements Terminable {
     private final Expansion expansion;
@@ -25,32 +26,32 @@ public class MiniPlaceholderExpansion implements Terminable {
     public MiniPlaceholderExpansion() {
         economy = GemsEconomyProvider.get();
         expansion = Expansion.builder("econ")
-            .audiencePlaceholder("balance", (audience, queue, ctx) -> {
-                // <econ_balance:r>
-                // <econ_balance:c>
-                // <econ_balance:c:acc>
-                return parse(audience, queue, ctx, (currency, number) -> Tag.preProcessParsed(String.valueOf(number)));
-            })
-            .audiencePlaceholder("simple_balance", (audience, queue, ctx) -> {
-                // <econ_simple_balance:r>
-                // <econ_simple_balance:c>
-                // <econ_simple_balance:c:acc>
-                return parse(audience, queue, ctx, (currency, number) -> Tag.preProcessParsed(currency.simpleFormat(number)));
-            })
-            .audiencePlaceholder("fancy_balance", (audience, queue, ctx) -> {
-                // <econ_fancy_balance:r>
-                // <econ_fancy_balance:c>
-                // <econ_fancy_balance:c:acc>
-                return parse(audience, queue, ctx, (currency, number) -> Tag.selfClosingInserting(MiniMessage.miniMessage().deserialize(currency.fancyFormat(number))));
-            })
-            .build();
+                .audiencePlaceholder("balance", (audience, queue, ctx) -> {
+                    // <econ_balance:r>
+                    // <econ_balance:c>
+                    // <econ_balance:c:acc>
+                    return parse(audience, queue, ctx, (currency, number) -> Tag.preProcessParsed(String.valueOf(number)));
+                })
+                .audiencePlaceholder("simple_balance", (audience, queue, ctx) -> {
+                    // <econ_simple_balance:r>
+                    // <econ_simple_balance:c>
+                    // <econ_simple_balance:c:acc>
+                    return parse(audience, queue, ctx, (currency, number) -> Tag.preProcessParsed(currency.simpleFormat(number)));
+                })
+                .audiencePlaceholder("fancy_balance", (audience, queue, ctx) -> {
+                    // <econ_fancy_balance:r>
+                    // <econ_fancy_balance:c>
+                    // <econ_fancy_balance:c:acc>
+                    return parse(audience, queue, ctx, (currency, number) -> Tag.selfClosingInserting(MiniMessage.miniMessage().deserialize(currency.fancyFormat(number))));
+                })
+                .build();
     }
 
     private @Nullable Tag parse(
-        Audience audience,
-        ArgumentQueue queue,
-        Context ctx,
-        BiFunction<Currency, Double, Tag> balanceStringFunc
+            Audience audience,
+            ArgumentQueue queue,
+            Context ctx,
+            BiFunction<Currency, Double, Tag> balanceStringFunc
     ) {
         Optional<UUID> optional = audience.get(Identity.UUID);
         if (optional.isEmpty()) {

@@ -1,16 +1,18 @@
 package me.xanium.gemseconomy.currency;
 
-import com.google.common.base.Preconditions;
 import me.xanium.gemseconomy.GemsEconomyPlugin;
 import me.xanium.gemseconomy.api.Currency;
 import me.xanium.gemseconomy.utils.UtilString;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextColor;
+
+import com.google.common.base.Preconditions;
+
+import java.util.UUID;
+
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
-
-import java.util.UUID;
 
 @SuppressWarnings("unused")
 @DefaultQualifier(NonNull.class)
@@ -81,8 +83,8 @@ public class ServerCurrency implements Currency {
         String amountString = UtilString.format(amount, decimalSupported);
         String nameString = getName().replace("_", " ");
         return GemsEconomyPlugin.lang().raw("msg_balance_simple_format",
-            "amount", amountString,
-            "name", nameString
+                "amount", amountString,
+                "name", nameString
         );
     }
 
@@ -91,9 +93,9 @@ public class ServerCurrency implements Currency {
         String symbolString = getSymbolOrEmpty();
         String nameString = getName().replace("_", " ");
         return GemsEconomyPlugin.lang().raw("msg_balance_fancy_format",
-            "amount", amountString,
-            "name", nameString,
-            "symbol", symbolString
+                "amount", amountString,
+                "name", nameString,
+                "symbol", symbolString
         );
     }
 

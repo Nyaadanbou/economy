@@ -1,27 +1,29 @@
+import net.minecrell.pluginyml.paper.PaperPluginDescription
+
 plugins {
     id("cc.mewcraft.deploy-conventions")
-    id("cc.mewcraft.paper-plugins")
+    alias(libs.plugins.pluginyml.paper)
 }
+
+group = "me.xanium.gemseconomy"
+version = "2.0.1"
+description = "A modern multi-currency economy plugin on Bukkit"
 
 project.ext.set("name", "GemsEconomy")
 
-// name, version and description inherited from "project-conventions"
-
 dependencies {
+    // server
+    compileOnly(libs.server.paper)
+
+    // internal
     implementation(project(":economy:api"))
     implementation(project(":economy:papi"))
     implementation(project(":economy:mini"))
+    implementation(project(":spatula:bukkit:command"))
+    implementation(project(":spatula:bukkit:message"))
+    implementation(libs.hikari)
 
-    // the server api
-    compileOnly(libs.server.paper)
-
-    // my own libs
-    compileOnly(project(":mewcore"))
-
-    // libs in core
-    compileOnly(libs.hikari)
-
-    // libs that present as other plugins
+    // standalone plugins
     compileOnly(libs.helper)
     compileOnly(libs.helper.sql)
     compileOnly(libs.helper.redis)
@@ -32,24 +34,38 @@ dependencies {
     }
 }
 
-// TODO remove/replace it with paper plugin specifications
-/*bukkit {
-    main = "me.xanium.gemseconomy.GemsEconomy"
-    name = rootProject.name
+paper {
+    main = "me.xanium.gemseconomy.GemsEconomyPlugin"
+    name = project.ext.get("name") as String
     version = "${project.version}"
-    apiVersion = "1.17"
-    authors = listOf("Nailm", "other contributors")
-    depend = listOf("helper", "MewCore")
-    softDepend = listOf("Vault", "ConnectorPlugin")
-    load = STARTUP
-}*/
-
-// commented - now managed by "cc.mewcraft.publishing-conventions"
-/*publishing {
-    publications {
-        create<MavenPublication>("maven") {
-            artifactId = "GemsEconomy"
-            from(components["java"])
+    description = project.description
+    apiVersion = "1.19"
+    authors = listOf("Nailm")
+    serverDependencies {
+        register("helper") {
+            required = true
+            joinClasspath = true
+            load = PaperPluginDescription.RelativeLoadOrder.BEFORE
+        }
+        register("Vault") {
+            required = false
+            joinClasspath = true
+            load = PaperPluginDescription.RelativeLoadOrder.OMIT
+        }
+        register("ConnectorPlugin") {
+            required = false
+            joinClasspath = true
+            load = PaperPluginDescription.RelativeLoadOrder.OMIT
+        }
+        register("PlaceholderAPI") {
+            required = false
+            joinClasspath = true
+            load = PaperPluginDescription.RelativeLoadOrder.OMIT
+        }
+        register("MiniPlaceholders") {
+            required = false
+            joinClasspath = true
+            load = PaperPluginDescription.RelativeLoadOrder.OMIT
         }
     }
-}*/
+}

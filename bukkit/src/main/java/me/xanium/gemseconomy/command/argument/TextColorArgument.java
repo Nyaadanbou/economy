@@ -6,27 +6,28 @@ import cloud.commandframework.arguments.parser.ArgumentParseResult;
 import cloud.commandframework.arguments.parser.ArgumentParser;
 import cloud.commandframework.context.CommandContext;
 import cloud.commandframework.exceptions.parsing.NoInputProvidedException;
-import me.lucko.helper.utils.annotation.NonnullByDefault;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextColor;
 import org.bukkit.command.CommandSender;
-import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.util.HexFormat;
 import java.util.List;
 import java.util.Queue;
 import java.util.function.BiFunction;
 
-@SuppressWarnings("unused")
-@NonnullByDefault
+import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
+import org.checkerframework.framework.qual.DefaultQualifier;
+
+@DefaultQualifier(NonNull.class)
 public class TextColorArgument extends CommandArgument<CommandSender, TextColor> {
 
     public TextColorArgument(
-        boolean required,
-        String name,
-        String defaultValue,
-        @Nullable BiFunction<CommandContext<CommandSender>, String, List<String>> suggestionsProvider,
-        ArgumentDescription defaultDescription) {
+            boolean required,
+            String name,
+            String defaultValue,
+            @Nullable BiFunction<CommandContext<CommandSender>, String, List<String>> suggestionsProvider,
+            ArgumentDescription defaultDescription) {
         super(required, name, new TextColorArgument.Parser(), defaultValue, TextColor.class, suggestionsProvider, defaultDescription);
     }
 
@@ -46,8 +47,8 @@ public class TextColorArgument extends CommandArgument<CommandSender, TextColor>
 
         @Override
         public ArgumentParseResult<TextColor> parse(
-            final CommandContext<CommandSender> commandContext,
-            final Queue<String> inputQueue
+                final CommandContext<CommandSender> commandContext,
+                final Queue<String> inputQueue
         ) {
             String input = inputQueue.peek();
             if (input == null) {
@@ -72,8 +73,8 @@ public class TextColorArgument extends CommandArgument<CommandSender, TextColor>
 
         @Override
         public List<String> suggestions(
-            final CommandContext<CommandSender> commandContext,
-            final String input
+                final CommandContext<CommandSender> commandContext,
+                final String input
         ) {
             return NamedTextColor.NAMES.keys().stream().toList();
         }
@@ -87,11 +88,11 @@ public class TextColorArgument extends CommandArgument<CommandSender, TextColor>
         @Override
         public TextColorArgument build() {
             return new TextColorArgument(
-                this.isRequired(),
-                this.getName(),
-                this.getDefaultValue(),
-                this.getSuggestionsProvider(),
-                this.getDefaultDescription()
+                    this.isRequired(),
+                    this.getName(),
+                    this.getDefaultValue(),
+                    this.getSuggestionsProvider(),
+                    this.getDefaultDescription()
             );
         }
     }

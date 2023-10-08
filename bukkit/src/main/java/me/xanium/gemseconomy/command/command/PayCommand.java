@@ -13,11 +13,12 @@ import me.xanium.gemseconomy.command.argument.CurrencyArgument;
 import me.xanium.gemseconomy.event.GemsPayEvent;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+
+import java.util.List;
+
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
-
-import java.util.List;
 
 import static me.xanium.gemseconomy.GemsMessages.*;
 
@@ -30,23 +31,23 @@ public class PayCommand extends AbstractCommand {
 
     public void register() {
         Command<CommandSender> pay = this.manager.commandBuilder("pay")
-            .permission("gemseconomy.command.pay")
-            .argument(MultiplePlayerSelectorArgument.of("player"))
-            .argument(AmountArgument.of("amount"))
-            .argument(CurrencyArgument.optional("currency"))
-            .senderType(Player.class)
-            .handler(context -> {
-                Player sender = (Player) context.getSender();
-                MultiplePlayerSelector selector = context.get("player");
-                double amount = context.get("amount");
-                Currency currency = context.getOrDefault("currency", GemsEconomyPlugin.getInstance().getCurrencyManager().getDefaultCurrency());
-                if (selector.getPlayers().size() > 0) {
-                    selector.getPlayers().forEach(p -> pay(sender, p, amount, currency));
-                } else {
-                    GemsEconomyPlugin.lang().sendComponent(sender, "err_player_is_null");
-                }
-            })
-            .build();
+                .permission("gemseconomy.command.pay")
+                .argument(MultiplePlayerSelectorArgument.of("player"))
+                .argument(AmountArgument.of("amount"))
+                .argument(CurrencyArgument.optional("currency"))
+                .senderType(Player.class)
+                .handler(context -> {
+                    Player sender = (Player) context.getSender();
+                    MultiplePlayerSelector selector = context.get("player");
+                    double amount = context.get("amount");
+                    Currency currency = context.getOrDefault("currency", GemsEconomyPlugin.getInstance().getCurrencyManager().getDefaultCurrency());
+                    if (selector.getPlayers().size() > 0) {
+                        selector.getPlayers().forEach(p -> pay(sender, p, amount, currency));
+                    } else {
+                        GemsEconomyPlugin.lang().sendComponent(sender, "err_player_is_null");
+                    }
+                })
+                .build();
 
         this.manager.register(List.of(pay));
     }
@@ -54,16 +55,16 @@ public class PayCommand extends AbstractCommand {
     private void pay(Player sender, Player targetPlayer, double amount, Currency currency) {
         if (!sender.hasPermission("gemseconomy.command.pay." + currency.getName().toLowerCase())) {
             GemsEconomyPlugin.lang().sendComponent(sender, GemsEconomyPlugin.lang()
-                .component(sender, "msg_pay_no_permission")
-                .replaceText(CURRENCY_REPLACEMENT.apply(currency))
+                    .component(sender, "msg_pay_no_permission")
+                    .replaceText(CURRENCY_REPLACEMENT.apply(currency))
             );
             return;
         }
 
         if (!currency.isPayable()) {
             GemsEconomyPlugin.lang().sendComponent(sender, GemsEconomyPlugin.lang()
-                .component(sender, "msg_currency_is_not_payable")
-                .replaceText(CURRENCY_REPLACEMENT.apply(currency))
+                    .component(sender, "msg_currency_is_not_payable")
+                    .replaceText(CURRENCY_REPLACEMENT.apply(currency))
             );
             return;
         }
@@ -97,8 +98,8 @@ public class PayCommand extends AbstractCommand {
         // Check insufficient funds
         if (!myselfAccount.hasEnough(currency, amount)) {
             GemsEconomyPlugin.lang().sendComponent(sender, GemsEconomyPlugin.lang()
-                .component(sender, "err_insufficient_funds")
-                .replaceText(CURRENCY_REPLACEMENT.apply(currency))
+                    .component(sender, "err_insufficient_funds")
+                    .replaceText(CURRENCY_REPLACEMENT.apply(currency))
             );
             return;
         }
@@ -106,9 +107,9 @@ public class PayCommand extends AbstractCommand {
         // Check target balance overflow
         if (targetAccount.testOverflow(currency, amount)) {
             GemsEconomyPlugin.lang().sendComponent(sender, GemsEconomyPlugin.lang()
-                .component(sender, "msg_currency_overflow")
-                .replaceText(ACCOUNT_REPLACEMENT.apply(targetAccount))
-                .replaceText(CURRENCY_REPLACEMENT.apply(currency))
+                    .component(sender, "msg_currency_overflow")
+                    .replaceText(ACCOUNT_REPLACEMENT.apply(targetAccount))
+                    .replaceText(CURRENCY_REPLACEMENT.apply(currency))
             );
             return;
         }
@@ -120,20 +121,20 @@ public class PayCommand extends AbstractCommand {
         targetAccount.deposit(currency, amount);
 
         GemsEconomyPlugin.getInstance().getEconomyLogger().log(
-            "[PAYMENT] " + myselfAccount.getDisplayName() +
-            " (New bal: " + currency.simpleFormat(myselfAccount.getBalance(currency)) + ") -> paid " + targetAccount.getDisplayName() +
-            " (New bal: " + currency.simpleFormat(targetAccount.getBalance(currency)) + ") - An amount of " + currency.simpleFormat(amount)
+                "[PAYMENT] " + myselfAccount.getDisplayName() +
+                " (New bal: " + currency.simpleFormat(myselfAccount.getBalance(currency)) + ") -> paid " + targetAccount.getDisplayName() +
+                " (New bal: " + currency.simpleFormat(targetAccount.getBalance(currency)) + ") - An amount of " + currency.simpleFormat(amount)
         );
 
         GemsEconomyPlugin.lang().sendComponent(targetPlayer, GemsEconomyPlugin.lang()
-            .component(targetPlayer, "msg_received_currency")
-            .replaceText(ACCOUNT_REPLACEMENT.apply(myselfAccount))
-            .replaceText(AMOUNT_REPLACEMENT.apply(currency, amount))
+                .component(targetPlayer, "msg_received_currency")
+                .replaceText(ACCOUNT_REPLACEMENT.apply(myselfAccount))
+                .replaceText(AMOUNT_REPLACEMENT.apply(currency, amount))
         );
         GemsEconomyPlugin.lang().sendComponent(sender, GemsEconomyPlugin.lang()
-            .component(sender, "msg_paid_currency")
-            .replaceText(ACCOUNT_REPLACEMENT.apply(targetAccount))
-            .replaceText(AMOUNT_REPLACEMENT.apply(currency, amount))
+                .component(sender, "msg_paid_currency")
+                .replaceText(ACCOUNT_REPLACEMENT.apply(targetAccount))
+                .replaceText(AMOUNT_REPLACEMENT.apply(currency, amount))
         );
     }
 

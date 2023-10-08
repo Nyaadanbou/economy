@@ -28,7 +28,6 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.util.ComponentMessageThrowable;
 import org.bukkit.command.CommandSender;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.HashMap;
 import java.util.List;
@@ -36,6 +35,8 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
+
+import org.jetbrains.annotations.Nullable;
 
 public class CommandManager extends PaperCommandManager<CommandSender> {
 
@@ -46,13 +47,13 @@ public class CommandManager extends PaperCommandManager<CommandSender> {
 
     public CommandManager(GemsEconomyPlugin plugin) throws Exception {
         super(
-            plugin,
-            AsynchronousCommandExecutionCoordinator.<CommandSender>builder()
-                .withAsynchronousParsing()
-                .withExecutor(HelperExecutors.asyncHelper()) // Reuse helper's executor
-                .build(),
-            Function.identity(),
-            Function.identity()
+                plugin,
+                AsynchronousCommandExecutionCoordinator.<CommandSender>builder()
+                        .withAsynchronousParsing()
+                        .withExecutor(HelperExecutors.asyncHelper()) // Reuse helper's executor
+                        .build(),
+                Function.identity(),
+                Function.identity()
         );
 
         // ---- Register Brigadier ----
@@ -76,67 +77,67 @@ public class CommandManager extends PaperCommandManager<CommandSender> {
 
         // ---- Change default exception messages ----
         new MinecraftExceptionHandler<CommandSender>()
-            .withHandler(MinecraftExceptionHandler.ExceptionType.INVALID_SYNTAX, e -> {
-                final InvalidSyntaxException exception = (InvalidSyntaxException) e;
-                final Component correctSyntaxMessage = Component
-                    .text("/%s".formatted(exception.getCorrectSyntax()))
-                    .color(NamedTextColor.GRAY)
-                    .replaceText(config -> {
-                        config.match(SYNTAX_HIGHLIGHT_PATTERN);
-                        config.replacement(builder -> builder.color(NamedTextColor.WHITE));
-                    });
-                return GemsEconomyPlugin.lang()
-                    .component("err_invalid_syntax")
-                    .replaceText(config -> {
-                        config.matchLiteral("{syntax}");
-                        config.replacement(correctSyntaxMessage);
-                    });
-            })
-            .withHandler(MinecraftExceptionHandler.ExceptionType.INVALID_SENDER, e -> {
-                final InvalidCommandSenderException exception = (InvalidCommandSenderException) e;
-                final Component correctSenderType = Component
-                    .text(exception.getRequiredSender().getSimpleName())
-                    .color(NamedTextColor.GRAY);
-                return GemsEconomyPlugin.lang()
-                    .component("err_invalid_sender")
-                    .replaceText(config -> {
-                        config.matchLiteral("{type}");
-                        config.replacement(correctSenderType);
-                    });
-            })
-            .withHandler(MinecraftExceptionHandler.ExceptionType.NO_PERMISSION, e -> {
-                final NoPermissionException exception = (NoPermissionException) e;
-                return GemsEconomyPlugin.lang()
-                    .component("err_no_permission")
-                    .replaceText(config -> {
-                        config.matchLiteral("{permission}");
-                        Component permission = Component
-                            .text(exception.getMissingPermission())
-                            .color(NamedTextColor.YELLOW);
-                        config.replacement(permission);
-                    });
-            })
-            .withHandler(MinecraftExceptionHandler.ExceptionType.ARGUMENT_PARSING, e -> {
-                final ArgumentParseException exception = (ArgumentParseException) e;
-                return GemsEconomyPlugin.lang()
-                    .component("err_argument_parsing")
-                    .replaceText(config -> {
-                        config.matchLiteral("{args}");
-                        config.replacement(getMessage(exception.getCause()).colorIfAbsent(NamedTextColor.GRAY));
-                    });
-            })
-            .withCommandExecutionHandler()
-            .apply(this, AudienceProvider.nativeAudience());
+                .withHandler(MinecraftExceptionHandler.ExceptionType.INVALID_SYNTAX, e -> {
+                    final InvalidSyntaxException exception = (InvalidSyntaxException) e;
+                    final Component correctSyntaxMessage = Component
+                            .text("/%s".formatted(exception.getCorrectSyntax()))
+                            .color(NamedTextColor.GRAY)
+                            .replaceText(config -> {
+                                config.match(SYNTAX_HIGHLIGHT_PATTERN);
+                                config.replacement(builder -> builder.color(NamedTextColor.WHITE));
+                            });
+                    return GemsEconomyPlugin.lang()
+                            .component("err_invalid_syntax")
+                            .replaceText(config -> {
+                                config.matchLiteral("{syntax}");
+                                config.replacement(correctSyntaxMessage);
+                            });
+                })
+                .withHandler(MinecraftExceptionHandler.ExceptionType.INVALID_SENDER, e -> {
+                    final InvalidCommandSenderException exception = (InvalidCommandSenderException) e;
+                    final Component correctSenderType = Component
+                            .text(exception.getRequiredSender().getSimpleName())
+                            .color(NamedTextColor.GRAY);
+                    return GemsEconomyPlugin.lang()
+                            .component("err_invalid_sender")
+                            .replaceText(config -> {
+                                config.matchLiteral("{type}");
+                                config.replacement(correctSenderType);
+                            });
+                })
+                .withHandler(MinecraftExceptionHandler.ExceptionType.NO_PERMISSION, e -> {
+                    final NoPermissionException exception = (NoPermissionException) e;
+                    return GemsEconomyPlugin.lang()
+                            .component("err_no_permission")
+                            .replaceText(config -> {
+                                config.matchLiteral("{permission}");
+                                Component permission = Component
+                                        .text(exception.getMissingPermission())
+                                        .color(NamedTextColor.YELLOW);
+                                config.replacement(permission);
+                            });
+                })
+                .withHandler(MinecraftExceptionHandler.ExceptionType.ARGUMENT_PARSING, e -> {
+                    final ArgumentParseException exception = (ArgumentParseException) e;
+                    return GemsEconomyPlugin.lang()
+                            .component("err_argument_parsing")
+                            .replaceText(config -> {
+                                config.matchLiteral("{args}");
+                                config.replacement(getMessage(exception.getCause()).colorIfAbsent(NamedTextColor.GRAY));
+                            });
+                })
+                .withCommandExecutionHandler()
+                .apply(this, AudienceProvider.nativeAudience());
 
         // ---- Register all commands ----
         Stream.of(
-            new InternalCommand(plugin, this),
-            new BalanceCommand(plugin, this),
-            new BalanceAccCommand(plugin, this),
-            new BalanceTopCommand(plugin, this),
-            new CurrencyCommand(plugin, this),
-            new EconomyCommand(plugin, this),
-            new PayCommand(plugin, this)
+                new InternalCommand(plugin, this),
+                new BalanceCommand(plugin, this),
+                new BalanceAccCommand(plugin, this),
+                new BalanceTopCommand(plugin, this),
+                new CurrencyCommand(plugin, this),
+                new EconomyCommand(plugin, this),
+                new PayCommand(plugin, this)
         ).forEach(AbstractCommand::register);
     }
 

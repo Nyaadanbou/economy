@@ -27,33 +27,33 @@ public class BalanceTopCommand extends AbstractCommand {
     @Override
     public void register() {
         Command<CommandSender> balanceTop = this.manager
-            .commandBuilder("balancetop", "baltop")
-            .permission("gemseconomy.command.baltop")
-            .argument(CurrencyArgument.optional("currency"))
-            .argument(IntegerArgument.<CommandSender>builder("page").withMin(1).asOptional())
-            .handler(context -> {
-                CommandSender sender = context.getSender();
-                Currency currency = context.getOrDefault("currency", GemsEconomyPlugin.getInstance().getCurrencyManager().getDefaultCurrency());
-                int page = context.getOrDefault("page", 1);
+                .commandBuilder("balancetop", "baltop")
+                .permission("gemseconomy.command.baltop")
+                .argument(CurrencyArgument.optional("currency"))
+                .argument(IntegerArgument.<CommandSender>builder("page").withMin(1).asOptional())
+                .handler(context -> {
+                    CommandSender sender = context.getSender();
+                    Currency currency = context.getOrDefault("currency", GemsEconomyPlugin.getInstance().getCurrencyManager().getDefaultCurrency());
+                    int page = context.getOrDefault("page", 1);
 
-                if (!GemsEconomyPlugin.getInstance().getDataStore().isTopSupported()) {
-                    GemsEconomyPlugin.lang().sendComponent(sender, "err_balance_top_no_support");
-                    return;
-                }
-                if (!sender.hasPermission("gemseconomy.command.baltop." + currency.getName())) {
-                    GemsEconomyPlugin.lang().sendComponent(sender, "err_balance_top_no_permission");
-                    return;
-                }
+                    if (!GemsEconomyPlugin.getInstance().getDataStore().isTopSupported()) {
+                        GemsEconomyPlugin.lang().sendComponent(sender, "err_balance_top_no_support");
+                        return;
+                    }
+                    if (!sender.hasPermission("gemseconomy.command.baltop." + currency.getName())) {
+                        GemsEconomyPlugin.lang().sendComponent(sender, "err_balance_top_no_permission");
+                        return;
+                    }
 
-                Promise<BalanceTop> promise = this.plugin.getBalanceTopRepository().computeByCurrency(currency);
-                if (promise.isDone()) { // it's completed - send the top list
-                    sendTopList(sender, currency, promise.join(), page);
-                } else { // tell sender we're still computing it
-                    GemsEconomyPlugin.lang().sendComponent(sender, GemsEconomyPlugin.lang().component(sender, "msg_balance_top_computing"));
-                    promise.thenAcceptSync(topList -> sendTopList(sender, currency, topList, page));
-                }
-            })
-            .build();
+                    Promise<BalanceTop> promise = this.plugin.getBalanceTopRepository().computeByCurrency(currency);
+                    if (promise.isDone()) { // it's completed - send the top list
+                        sendTopList(sender, currency, promise.join(), page);
+                    } else { // tell sender we're still computing it
+                        GemsEconomyPlugin.lang().sendComponent(sender, GemsEconomyPlugin.lang().component(sender, "msg_balance_top_computing"));
+                        promise.thenAcceptSync(topList -> sendTopList(sender, currency, topList, page));
+                    }
+                })
+                .build();
 
         this.manager.register(List.of(balanceTop));
     }
@@ -70,9 +70,9 @@ public class BalanceTopCommand extends AbstractCommand {
 
         // send list header
         GemsEconomyPlugin.lang().sendComponent(sender, GemsEconomyPlugin.lang()
-            .component(sender, "msg_balance_top_header")
-            .replaceText(CURRENCY_REPLACEMENT.apply(currency))
-            .replaceText(config -> config.matchLiteral("{page}").replacement(Integer.toString(pageBounded)))
+                .component(sender, "msg_balance_top_header")
+                .replaceText(CURRENCY_REPLACEMENT.apply(currency))
+                .replaceText(config -> config.matchLiteral("{page}").replacement(Integer.toString(pageBounded)))
         );
 
         // send list entries
@@ -80,10 +80,10 @@ public class BalanceTopCommand extends AbstractCommand {
         List<TransientBalance> resultsAt = balanceTop.getResultsAt(pageBounded - 1);
         for (final TransientBalance entry : resultsAt) {
             GemsEconomyPlugin.lang().sendComponent(sender, GemsEconomyPlugin.lang()
-                .component(sender, "msg_balance_top_entry")
-                .replaceText(AMOUNT_REPLACEMENT.apply(currency, entry.amount()))
-                .replaceText(config -> config.matchLiteral("{account}").replacement(entry.name()))
-                .replaceText(config -> config.matchLiteral("{index}").replacement(String.valueOf(index.getAndIncrement())))
+                    .component(sender, "msg_balance_top_entry")
+                    .replaceText(AMOUNT_REPLACEMENT.apply(currency, entry.amount()))
+                    .replaceText(config -> config.matchLiteral("{account}").replacement(entry.name()))
+                    .replaceText(config -> config.matchLiteral("{index}").replacement(String.valueOf(index.getAndIncrement())))
             );
         }
 
@@ -92,9 +92,9 @@ public class BalanceTopCommand extends AbstractCommand {
             GemsEconomyPlugin.lang().sendComponent(sender, "err_balance_top_empty");
         } else {
             GemsEconomyPlugin.lang().sendComponent(sender, GemsEconomyPlugin.lang()
-                .component(sender, "msg_balance_top_next")
-                .replaceText(CURRENCY_REPLACEMENT.apply(currency))
-                .replaceText(config -> config.matchLiteral("{page}").replacement(String.valueOf(pageBounded + 1)))
+                    .component(sender, "msg_balance_top_next")
+                    .replaceText(CURRENCY_REPLACEMENT.apply(currency))
+                    .replaceText(config -> config.matchLiteral("{page}").replacement(String.valueOf(pageBounded + 1)))
             );
         }
 

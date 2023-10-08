@@ -1,12 +1,13 @@
 package me.xanium.gemseconomy.currency;
 
-import com.google.common.cache.CacheBuilder;
-import com.google.common.cache.CacheLoader;
-import com.google.common.cache.LoadingCache;
 import me.lucko.helper.promise.Promise;
 import me.xanium.gemseconomy.GemsEconomyPlugin;
 import me.xanium.gemseconomy.api.Currency;
 import me.xanium.gemseconomy.data.TransientBalance;
+
+import com.google.common.cache.CacheBuilder;
+import com.google.common.cache.CacheLoader;
+import com.google.common.cache.LoadingCache;
 
 import java.time.Duration;
 import java.util.UUID;
@@ -22,18 +23,18 @@ public class BalanceTopRepository {
     public BalanceTopRepository(GemsEconomyPlugin plugin) {
         this.plugin = plugin;
         this.topLists = CacheBuilder.newBuilder()
-            .expireAfterWrite(Duration.ofMinutes(5))
-            .build(CacheLoader.from(uuid -> {
-                Currency currency = this.plugin.getCurrencyManager().getCurrency(uuid);
+                .expireAfterWrite(Duration.ofMinutes(5))
+                .build(CacheLoader.from(uuid -> {
+                    Currency currency = this.plugin.getCurrencyManager().getCurrency(uuid);
 
-                if (currency == null)
-                    return Promise.completed(BalanceTop.EMPTY); // should not happen, but anyway
+                    if (currency == null)
+                        return Promise.completed(BalanceTop.EMPTY); // should not happen, but anyway
 
-                return this.plugin.getDataStore()
-                    .getTransientBalances(currency)
-                    .thenApplyAsync(result -> result.stream().filter(TransientBalance::significant).toList()) // ignore "ghost" accounts
-                    .thenApplyAsync(BalanceTop::new);
-            }));
+                    return this.plugin.getDataStore()
+                            .getTransientBalances(currency)
+                            .thenApplyAsync(result -> result.stream().filter(TransientBalance::significant).toList()) // ignore "ghost" accounts
+                            .thenApplyAsync(BalanceTop::new);
+                }));
     }
 
     /**

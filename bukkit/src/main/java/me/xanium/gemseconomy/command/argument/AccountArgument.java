@@ -7,27 +7,29 @@ import cloud.commandframework.arguments.parser.ArgumentParser;
 import cloud.commandframework.bukkit.BukkitCommandContextKeys;
 import cloud.commandframework.context.CommandContext;
 import cloud.commandframework.exceptions.parsing.NoInputProvidedException;
-import me.lucko.helper.utils.annotation.NonnullByDefault;
 import me.xanium.gemseconomy.GemsEconomyPlugin;
 import me.xanium.gemseconomy.api.Account;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Queue;
 import java.util.function.BiFunction;
 
-@NonnullByDefault
+import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
+import org.checkerframework.framework.qual.DefaultQualifier;
+
+@DefaultQualifier(NonNull.class)
 public class AccountArgument extends CommandArgument<CommandSender, Account> {
 
     public AccountArgument(boolean required,
-        String name,
-        String defaultValue,
-        @Nullable BiFunction<CommandContext<CommandSender>, String, List<String>> suggestionsProvider,
-        ArgumentDescription defaultDescription) {
+            String name,
+            String defaultValue,
+            @Nullable BiFunction<CommandContext<CommandSender>, String, List<String>> suggestionsProvider,
+            ArgumentDescription defaultDescription) {
         super(required, name, new Parser(), defaultValue, Account.class, suggestionsProvider, defaultDescription);
     }
 
@@ -46,8 +48,8 @@ public class AccountArgument extends CommandArgument<CommandSender, Account> {
     public static final class Parser implements ArgumentParser<CommandSender, Account> {
         @Override
         public ArgumentParseResult<Account> parse(
-            final CommandContext<CommandSender> commandContext,
-            final Queue<String> inputQueue
+                final CommandContext<CommandSender> commandContext,
+                final Queue<String> inputQueue
         ) {
             String input = inputQueue.peek();
             if (input == null) {
@@ -59,7 +61,7 @@ public class AccountArgument extends CommandArgument<CommandSender, Account> {
             // Prevent players from creating trash accounts
             if (!sender.hasPermission("gemseconomy.account.internal") && Bukkit.getOfflinePlayerIfCached(input) == null) {
                 return ArgumentParseResult.failure(
-                    new IllegalArgumentException(GemsEconomyPlugin.lang().legacy(sender, "err_player_is_null"))
+                        new IllegalArgumentException(GemsEconomyPlugin.lang().legacy(sender, "err_player_is_null"))
                 );
             }
 
@@ -70,14 +72,14 @@ public class AccountArgument extends CommandArgument<CommandSender, Account> {
             }
 
             return ArgumentParseResult.failure(
-                new IllegalArgumentException(GemsEconomyPlugin.lang().legacy(sender, "err_player_is_null"))
+                    new IllegalArgumentException(GemsEconomyPlugin.lang().legacy(sender, "err_player_is_null"))
             );
         }
 
         @Override
         public List<String> suggestions(
-            final CommandContext<CommandSender> commandContext,
-            final String input
+                final CommandContext<CommandSender> commandContext,
+                final String input
         ) {
             List<String> output = new ArrayList<>();
 
@@ -101,11 +103,11 @@ public class AccountArgument extends CommandArgument<CommandSender, Account> {
         @Override
         public AccountArgument build() {
             return new AccountArgument(
-                this.isRequired(),
-                this.getName(),
-                this.getDefaultValue(),
-                this.getSuggestionsProvider(),
-                this.getDefaultDescription()
+                    this.isRequired(),
+                    this.getName(),
+                    this.getDefaultValue(),
+                    this.getSuggestionsProvider(),
+                    this.getDefaultDescription()
             );
         }
     }

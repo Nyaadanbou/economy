@@ -8,13 +8,15 @@
 
 package me.xanium.gemseconomy.api;
 
-import com.google.common.base.Preconditions;
 import me.xanium.gemseconomy.GemsEconomyPlugin;
-import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.checker.nullness.qual.Nullable;
+
+import com.google.common.base.Preconditions;
 
 import java.util.List;
 import java.util.UUID;
+
+import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 @SuppressWarnings("unused")
 public class GemsEconomyImpl implements GemsEconomy {

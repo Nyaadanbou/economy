@@ -8,11 +8,6 @@
 
 package me.xanium.gemseconomy.account;
 
-import com.google.common.cache.CacheBuilder;
-import com.google.common.cache.CacheLoader;
-import com.google.common.cache.LoadingCache;
-import com.google.common.util.concurrent.Futures;
-import com.google.common.util.concurrent.ListenableFuture;
 import me.lucko.helper.profiles.OfflineModeProfiles;
 import me.lucko.helper.scheduler.HelperExecutors;
 import me.xanium.gemseconomy.GemsEconomyPlugin;
@@ -21,14 +16,21 @@ import me.xanium.gemseconomy.data.DataStorage;
 import me.xanium.gemseconomy.message.Action;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
-import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.checker.nullness.qual.Nullable;
+
+import com.google.common.cache.CacheBuilder;
+import com.google.common.cache.CacheLoader;
+import com.google.common.cache.LoadingCache;
+import com.google.common.util.concurrent.Futures;
+import com.google.common.util.concurrent.ListenableFuture;
 
 import java.time.Duration;
 import java.time.temporal.ChronoUnit;
 import java.util.Collection;
 import java.util.Optional;
 import java.util.UUID;
+
+import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 public class AccountManager {
 
@@ -38,19 +40,19 @@ public class AccountManager {
     public AccountManager(@NonNull GemsEconomyPlugin plugin) {
         this.plugin = plugin;
         this.cache = CacheBuilder.newBuilder()
-            .expireAfterAccess(Duration.of(10, ChronoUnit.MINUTES))
-            .build(CacheLoader.asyncReloading(new CacheLoader<>() {
-                @Override public @NonNull Optional<Account> load(final @NonNull UUID key) {
-                    return Optional.ofNullable(plugin.getDataStore().loadAccount(key));
-                }
+                .expireAfterAccess(Duration.of(10, ChronoUnit.MINUTES))
+                .build(CacheLoader.asyncReloading(new CacheLoader<>() {
+                    @Override public @NonNull Optional<Account> load(final @NonNull UUID key) {
+                        return Optional.ofNullable(plugin.getDataStore().loadAccount(key));
+                    }
 
-                @Override public @NonNull ListenableFuture<Optional<Account>> reload(final @NonNull UUID key, final @NonNull Optional<Account> oldValue) {
-                    return oldValue
-                        .map(account -> plugin.getDataStore().updateAccount(account) /* Note that it doesn't change reference */)
-                        .map(value -> Futures.immediateFuture(Optional.of(value)))
-                        .orElseGet(() -> Futures.immediateFuture(oldValue));
-                }
-            }, HelperExecutors.asyncHelper()));
+                    @Override public @NonNull ListenableFuture<Optional<Account>> reload(final @NonNull UUID key, final @NonNull Optional<Account> oldValue) {
+                        return oldValue
+                                .map(account -> plugin.getDataStore().updateAccount(account) /* Note that it doesn't change reference */)
+                                .map(value -> Futures.immediateFuture(Optional.of(value)))
+                                .orElseGet(() -> Futures.immediateFuture(oldValue));
+                    }
+                }, HelperExecutors.asyncHelper()));
     }
 
     /**
@@ -72,7 +74,7 @@ public class AccountManager {
 
         // Set default balances
         plugin.getCurrencyManager().getLoadedCurrencies().forEach(currency ->
-            account.setBalance(currency, currency.getDefaultBalance())
+                account.setBalance(currency, currency.getDefaultBalance())
         );
 
         cacheAccount(account);
@@ -117,17 +119,17 @@ public class AccountManager {
         }
 
         Account account = new PlayerAccount(
-            // Get the UUID of the name by using the Mojang offline player method
-            // so that we can ensure same nicknames always point to the same UUID.
-            OfflineModeProfiles.getUniqueId(nickname),
-            // The nickname must be stored for this account
-            // because it is the identifier of the account!
-            nickname
+                // Get the UUID of the name by using the Mojang offline player method
+                // so that we can ensure same nicknames always point to the same UUID.
+                OfflineModeProfiles.getUniqueId(nickname),
+                // The nickname must be stored for this account
+                // because it is the identifier of the account!
+                nickname
         );
 
         // Set default balances
         plugin.getCurrencyManager().getLoadedCurrencies().forEach(currency ->
-            account.setBalance(currency, currency.getDefaultBalance())
+                account.setBalance(currency, currency.getDefaultBalance())
         );
 
         cacheAccount(account);

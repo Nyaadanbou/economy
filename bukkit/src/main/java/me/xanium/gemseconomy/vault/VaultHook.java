@@ -1,6 +1,5 @@
 package me.xanium.gemseconomy.vault;
 
-import com.google.common.base.Preconditions;
 import me.xanium.gemseconomy.GemsEconomyPlugin;
 import me.xanium.gemseconomy.api.Account;
 import me.xanium.gemseconomy.api.Currency;
@@ -8,10 +7,13 @@ import me.xanium.gemseconomy.utils.UtilServer;
 import net.milkbowl.vault.economy.AbstractEconomy;
 import net.milkbowl.vault.economy.EconomyResponse;
 import org.bukkit.OfflinePlayer;
-import org.checkerframework.checker.nullness.qual.NonNull;
+
+import com.google.common.base.Preconditions;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import org.checkerframework.checker.nullness.qual.NonNull;
 
 public class VaultHook extends AbstractEconomy {
 
@@ -102,17 +104,17 @@ public class VaultHook extends AbstractEconomy {
 
         if (account.withdraw(currency, amount)) {
             return new EconomyResponse(
-                amount,
-                account.getBalance(currency),
-                EconomyResponse.ResponseType.SUCCESS,
-                null
+                    amount,
+                    account.getBalance(currency),
+                    EconomyResponse.ResponseType.SUCCESS,
+                    null
             );
         } else {
             return new EconomyResponse(
-                amount,
-                account.getBalance(currency),
-                EconomyResponse.ResponseType.FAILURE,
-                "Could not withdraw " + amount + " from " + player.getName() + " because they don't have enough funds"
+                    amount,
+                    account.getBalance(currency),
+                    EconomyResponse.ResponseType.FAILURE,
+                    "Could not withdraw " + amount + " from " + player.getName() + " because they don't have enough funds"
             );
         }
     }
@@ -130,17 +132,17 @@ public class VaultHook extends AbstractEconomy {
 
         if (account.deposit(currency, amount)) {
             return new EconomyResponse(
-                amount,
-                account.getBalance(currency),
-                EconomyResponse.ResponseType.SUCCESS,
-                null
+                    amount,
+                    account.getBalance(currency),
+                    EconomyResponse.ResponseType.SUCCESS,
+                    null
             );
         } else {
             return new EconomyResponse(
-                amount,
-                account.getBalance(currency),
-                EconomyResponse.ResponseType.FAILURE,
-                "Could not deposit " + amount + " to " + player.getName() + " because they are not allowed to receive currency."
+                    amount,
+                    account.getBalance(currency),
+                    EconomyResponse.ResponseType.FAILURE,
+                    "Could not deposit " + amount + " to " + player.getName() + " because they are not allowed to receive currency."
             );
         }
     }
@@ -158,17 +160,17 @@ public class VaultHook extends AbstractEconomy {
 
         if (account.withdraw(currency, amount)) {
             return new EconomyResponse(
-                amount,
-                account.getBalance(currency),
-                EconomyResponse.ResponseType.SUCCESS,
-                null
+                    amount,
+                    account.getBalance(currency),
+                    EconomyResponse.ResponseType.SUCCESS,
+                    null
             );
         } else {
             return new EconomyResponse(
-                amount,
-                account.getBalance(currency),
-                EconomyResponse.ResponseType.FAILURE,
-                "Could not withdraw " + amount + " from " + playerName + " because they don't have enough funds"
+                    amount,
+                    account.getBalance(currency),
+                    EconomyResponse.ResponseType.FAILURE,
+                    "Could not withdraw " + amount + " from " + playerName + " because they don't have enough funds"
             );
         }
     }
@@ -186,17 +188,17 @@ public class VaultHook extends AbstractEconomy {
 
         if (account.deposit(currency, amount)) {
             return new EconomyResponse(
-                amount,
-                account.getBalance(currency),
-                EconomyResponse.ResponseType.SUCCESS,
-                null
+                    amount,
+                    account.getBalance(currency),
+                    EconomyResponse.ResponseType.SUCCESS,
+                    null
             );
         } else {
             return new EconomyResponse(
-                amount,
-                account.getBalance(currency),
-                EconomyResponse.ResponseType.FAILURE,
-                "Could not deposit " + amount + " to " + playerName + " because they are not allowed to receive currency."
+                    amount,
+                    account.getBalance(currency),
+                    EconomyResponse.ResponseType.FAILURE,
+                    "Could not deposit " + amount + " to " + playerName + " because they are not allowed to receive currency."
             );
         }
     }
