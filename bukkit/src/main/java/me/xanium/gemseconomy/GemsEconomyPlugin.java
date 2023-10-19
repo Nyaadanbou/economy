@@ -108,7 +108,7 @@ public class GemsEconomyPlugin extends ExtendedJavaPlugin {
         messenger = bind(Messenger.get());
 
         // Register listeners
-        bind(registerListener(new EconomyListener()));
+        registerTerminableListener(new EconomyListener()).bindWith(this);
 
         // Register placeholder expansions
         if (isPluginPresent("PlaceholderAPI"))
