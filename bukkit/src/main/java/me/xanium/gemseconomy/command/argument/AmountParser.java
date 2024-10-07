@@ -41,18 +41,18 @@ public class AmountParser implements ArgumentParser<CommandSourceStack, Double>,
             String key = currencyReferrer.get();
             Optional<Currency> currency = commandContext.optional(key);
             if (currency.isPresent()) {
-                commandInput.peekString();
+                commandInput.readString();
                 return parseAmount(sender, input, currency.get());
             } else {
                 return ArgumentParseResult.failure(new IllegalArgumentException());
             }
         } else if (commandContext.contains("currency")) { // If no Currency is specified, check the currencyArgument with "currency" key
             Currency currency = commandContext.get("currency");
-            commandInput.peekString();
+            commandInput.readString();
             return parseAmount(sender, input, currency);
         } else { // Else, fallback to the default currency
             Currency currency = GemsEconomyPlugin.getInstance().getCurrencyManager().getDefaultCurrency();
-            commandInput.peekString();
+            commandInput.readString();
             return parseAmount(sender, input, currency);
         }
     }
