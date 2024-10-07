@@ -1,16 +1,23 @@
-// name and description inherited from "project-conventions"
+plugins {
+    id("economy-conventions.commons")
+    id("nyaadanbou-conventions.repositories")
+}
+
 version = "1.0.0"
+
+repositories {
+}
 
 dependencies {
     // internal
-    compileOnly(project(":economy:api"))
+    compileOnly(project(":api"))
 
     // server
     compileOnly(libs.server.paper)
 
     // helper
-    compileOnly(libs.helper)
+    compileOnly(local.helper)
 
     // standalone plugins
-    compileOnly(libs.papi)
+    compileOnly(local.placeholderapi)
 }

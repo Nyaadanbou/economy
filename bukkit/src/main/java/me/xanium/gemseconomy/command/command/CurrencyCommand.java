@@ -1,24 +1,26 @@
 package me.xanium.gemseconomy.command.command;
 
-import cloud.commandframework.Command;
-import cloud.commandframework.arguments.standard.DoubleArgument;
-import cloud.commandframework.arguments.standard.StringArgument;
+import io.papermc.paper.command.brigadier.CommandSourceStack;
 import me.xanium.gemseconomy.GemsEconomyPlugin;
 import me.xanium.gemseconomy.api.Currency;
 import me.xanium.gemseconomy.command.AbstractCommand;
 import me.xanium.gemseconomy.command.CommandManager;
-import me.xanium.gemseconomy.command.argument.AmountArgument;
-import me.xanium.gemseconomy.command.argument.CurrencyArgument;
-import me.xanium.gemseconomy.command.argument.TextColorArgument;
+import me.xanium.gemseconomy.command.argument.AmountParser;
+import me.xanium.gemseconomy.command.argument.CurrencyParser;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextColor;
 import org.bukkit.command.CommandSender;
+import org.incendo.cloud.Command;
+import org.incendo.cloud.minecraft.extras.parser.TextColorParser;
+import org.incendo.cloud.parser.standard.DoubleParser;
+import org.incendo.cloud.parser.standard.StringParser;
 
 import java.util.List;
 
 import static me.xanium.gemseconomy.GemsMessages.CURRENCY_REPLACEMENT;
 import static me.xanium.gemseconomy.GemsMessages.STATUS_REPLACEMENT;
 
+@SuppressWarnings("UnstableApiUsage")
 public class CurrencyCommand extends AbstractCommand {
 
     public CurrencyCommand(GemsEconomyPlugin plugin, CommandManager manager) {
@@ -27,15 +29,15 @@ public class CurrencyCommand extends AbstractCommand {
 
     @Override
     public void register() {
-        Command.Builder<CommandSender> builder = this.manager
+        Command.Builder<CommandSourceStack> builder = this.manager.getCommandManager()
                 .commandBuilder("currency")
                 .permission("gemseconomy.command.currency");
 
-        Command<CommandSender> createCurrency = builder
+        Command<CommandSourceStack> createCurrency = builder
                 .literal("create")
-                .argument(StringArgument.of("name"))
+                .required("name", StringParser.quotedStringParser())
                 .handler(context -> {
-                    CommandSender sender = context.getSender();
+                    CommandSender sender = context.sender().getSender();
                     String name = context.get("name");
 
                     Currency currency = GemsEconomyPlugin.getInstance().getCurrencyManager().createCurrency(name);
@@ -50,10 +52,10 @@ public class CurrencyCommand extends AbstractCommand {
                 })
                 .build();
 
-        Command<CommandSender> listCurrency = builder
+        Command<CommandSourceStack> listCurrency = builder
                 .literal("list")
                 .handler(context -> {
-                    CommandSender sender = context.getSender();
+                    CommandSender sender = context.sender().getSender();
                     GemsEconomyPlugin.lang().sendComponent(sender, "msg_currency_list_header", "size", Integer.toString(GemsEconomyPlugin.getInstance().getCurrencyManager().getLoadedCurrencies().size()));
                     for (Currency currency : GemsEconomyPlugin.getInstance().getCurrencyManager().getLoadedCurrencies()) {
                         GemsEconomyPlugin.lang().sendComponent(sender, GemsEconomyPlugin.lang()
@@ -63,11 +65,11 @@ public class CurrencyCommand extends AbstractCommand {
                     }
                 }).build();
 
-        Command<CommandSender> viewCurrency = builder
+        Command<CommandSourceStack> viewCurrency = builder
                 .literal("view")
-                .argument(CurrencyArgument.of("currency"))
+                .required("currency", CurrencyParser.currencyParser())
                 .handler(context -> {
-                    CommandSender sender = context.getSender();
+                    CommandSender sender = context.sender().getSender();
                     Currency currency = context.get("currency");
                     GemsEconomyPlugin.lang().sendComponent(sender, "msg_currency_uuid", "uuid", currency.getUuid().toString());
                     GemsEconomyPlugin.lang().sendComponent(sender, GemsEconomyPlugin.lang()
@@ -102,12 +104,12 @@ public class CurrencyCommand extends AbstractCommand {
                 })
                 .build();
 
-        Command<CommandSender> setCurrencyDefaultBalance = builder
+        Command<CommandSourceStack> setCurrencyDefaultBalance = builder
                 .literal("startbal")
-                .argument(CurrencyArgument.of("currency"))
-                .argument(AmountArgument.of("amount"))
+                .required("currency", CurrencyParser.currencyParser())
+                .required("amount", AmountParser.amountParser())
                 .handler(context -> {
-                    CommandSender sender = context.getSender();
+                    CommandSender sender = context.sender().getSender();
                     Currency currency = context.get("currency");
                     double amount = context.get("amount");
                     currency.setDefaultBalance(amount);
@@ -123,12 +125,12 @@ public class CurrencyCommand extends AbstractCommand {
                 })
                 .build();
 
-        Command<CommandSender> setCurrencyMaximumBalance = builder
+        Command<CommandSourceStack> setCurrencyMaximumBalance = builder
                 .literal("maxbal")
-                .argument(CurrencyArgument.of("currency"))
-                .argument(AmountArgument.of("amount"))
+                .required("currency", CurrencyParser.currencyParser())
+                .required("amount", AmountParser.amountParser())
                 .handler(context -> {
-                    CommandSender sender = context.getSender();
+                    CommandSender sender = context.sender().getSender();
                     Currency currency = context.get("currency");
                     double amount = context.get("amount");
                     currency.setMaximumBalance(amount);
@@ -144,12 +146,12 @@ public class CurrencyCommand extends AbstractCommand {
                 })
                 .build();
 
-        Command<CommandSender> setCurrencyColor = builder
+        Command<CommandSourceStack> setCurrencyColor = builder
                 .literal("color")
-                .argument(CurrencyArgument.of("currency"))
-                .argument(TextColorArgument.of("color"))
+                .required("currency", CurrencyParser.currencyParser())
+                .required("color", TextColorParser.textColorParser())
                 .handler(context -> {
-                    CommandSender sender = context.getSender();
+                    CommandSender sender = context.sender().getSender();
                     Currency currency = context.get("currency");
                     TextColor chatColor = context.get("color");
                     currency.setColor(chatColor);
@@ -165,11 +167,11 @@ public class CurrencyCommand extends AbstractCommand {
                 })
                 .build();
 
-        Command<CommandSender> setCurrencySymbol = builder.literal("symbol")
-                .argument(CurrencyArgument.of("currency"))
-                .argument(StringArgument.of("symbol"))
+        Command<CommandSourceStack> setCurrencySymbol = builder.literal("symbol")
+                .required("currency", CurrencyParser.currencyParser())
+                .required("symbol", StringParser.quotedStringParser())
                 .handler(context -> {
-                    CommandSender sender = context.getSender();
+                    CommandSender sender = context.sender().getSender();
                     Currency currency = context.get("currency");
                     String symbol = context.get("symbol");
                     if (symbol.equalsIgnoreCase("remove")) {
@@ -194,10 +196,10 @@ public class CurrencyCommand extends AbstractCommand {
                 })
                 .build();
 
-        Command<CommandSender> setDefaultCurrency = builder.literal("default")
-                .argument(CurrencyArgument.of("currency"))
+        Command<CommandSourceStack> setDefaultCurrency = builder.literal("default")
+                .required("currency", CurrencyParser.currencyParser())
                 .handler(context -> {
-                    CommandSender sender = context.getSender();
+                    CommandSender sender = context.sender().getSender();
                     Currency newDefault = context.get("currency");
 
                     Currency oldDefault = GemsEconomyPlugin.getInstance().getCurrencyManager().getDefaultCurrency();
@@ -213,10 +215,10 @@ public class CurrencyCommand extends AbstractCommand {
                 })
                 .build();
 
-        Command<CommandSender> toggleCurrencyPayable = builder.literal("payable")
-                .argument(CurrencyArgument.of("currency"))
+        Command<CommandSourceStack> toggleCurrencyPayable = builder.literal("payable")
+                .required("currency", CurrencyParser.currencyParser())
                 .handler(context -> {
-                    CommandSender sender = context.getSender();
+                    CommandSender sender = context.sender().getSender();
                     Currency currency = context.get("currency");
                     currency.setPayable(!currency.isPayable());
                     this.plugin.getCurrencyManager().saveCurrency(currency);
@@ -228,10 +230,10 @@ public class CurrencyCommand extends AbstractCommand {
                 })
                 .build();
 
-        Command<CommandSender> toggleCurrencyDecimals = builder.literal("decimals")
-                .argument(CurrencyArgument.of("currency"))
+        Command<CommandSourceStack> toggleCurrencyDecimals = builder.literal("decimals")
+                .required("currency", CurrencyParser.currencyParser())
                 .handler(context -> {
-                    CommandSender sender = context.getSender();
+                    CommandSender sender = context.sender().getSender();
                     Currency currency = context.get("currency");
                     currency.setDecimalSupported(!currency.isDecimalSupported());
                     this.plugin.getCurrencyManager().saveCurrency(currency);
@@ -243,10 +245,10 @@ public class CurrencyCommand extends AbstractCommand {
                 })
                 .build();
 
-        Command<CommandSender> deleteCurrency = builder.literal("delete")
-                .argument(CurrencyArgument.of("currency"))
+        Command<CommandSourceStack> deleteCurrency = builder.literal("delete")
+                .required("currency", CurrencyParser.currencyParser())
                 .handler(context -> {
-                    CommandSender sender = context.getSender();
+                    CommandSender sender = context.sender().getSender();
                     Currency currency = context.get("currency");
                     GemsEconomyPlugin.getInstance().getCurrencyManager().removeCurrency(currency);
                     GemsEconomyPlugin.lang().sendComponent(sender, GemsEconomyPlugin.lang()
@@ -256,10 +258,10 @@ public class CurrencyCommand extends AbstractCommand {
                 })
                 .build();
 
-        Command<CommandSender> clearBalance = builder.literal("clear")
-                .argument(CurrencyArgument.of("currency"))
+        Command<CommandSourceStack> clearBalance = builder.literal("clear")
+                .required("currency", CurrencyParser.currencyParser())
                 .handler(context -> {
-                    CommandSender sender = context.getSender();
+                    CommandSender sender = context.sender().getSender();
                     Currency currency = context.get("currency");
                     GemsEconomyPlugin.getInstance().getCurrencyManager().clearBalance(currency);
                     GemsEconomyPlugin.lang().sendComponent(sender, GemsEconomyPlugin.lang()
@@ -269,11 +271,11 @@ public class CurrencyCommand extends AbstractCommand {
                 })
                 .build();
 
-        Command<CommandSender> setCurrencyRate = builder.literal("setrate")
-                .argument(CurrencyArgument.of("currency"))
-                .argument(DoubleArgument.<CommandSender>builder("rate").withMin(0).build())
+        Command<CommandSourceStack> setCurrencyRate = builder.literal("setrate")
+                .required("currency", CurrencyParser.currencyParser())
+                .required("rate", DoubleParser.doubleParser(.0))
                 .handler(context -> {
-                    CommandSender sender = context.getSender();
+                    CommandSender sender = context.sender().getSender();
                     Currency currency = context.get("currency");
                     double rate = context.get("rate");
                     currency.setExchangeRate(rate);

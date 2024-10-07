@@ -1,7 +1,9 @@
 import net.minecrell.pluginyml.paper.PaperPluginDescription
 
 plugins {
-    id("cc.mewcraft.deploy-conventions")
+    id("economy-conventions.commons")
+    id("nyaadanbou-conventions.repositories")
+    id("nyaadanbou-conventions.copy-jar")
     alias(libs.plugins.pluginyml.paper)
 }
 
@@ -16,21 +18,30 @@ dependencies {
     compileOnly(libs.server.paper)
 
     // internal
-    implementation(project(":economy:api"))
-    implementation(project(":economy:papi"))
-    implementation(project(":economy:mini"))
-    implementation(project(":spatula:bukkit:command"))
-    implementation(project(":spatula:bukkit:message"))
+    implementation(project(":api"))
+    implementation(project(":papi"))
+    implementation(project(":mini"))
+    implementation(libs.cloud2.core)
+    implementation(libs.cloud2.paper)
+    implementation(libs.cloud2.minecraft.extras)
+    implementation(local.lang.bukkit)
     implementation(libs.hikari)
 
     // standalone plugins
-    compileOnly(libs.helper)
+    compileOnly(local.helper)
     compileOnly(libs.helper.sql)
     compileOnly(libs.helper.redis)
     compileOnly(libs.connector.core)
     compileOnly(libs.connector.bukkit)
     compileOnly(libs.vault) {
         exclude("org.bukkit")
+    }
+}
+
+tasks {
+    copyJar {
+        environment = "paper"
+        jarFileName = "economy-${project.version}.jar"
     }
 }
 

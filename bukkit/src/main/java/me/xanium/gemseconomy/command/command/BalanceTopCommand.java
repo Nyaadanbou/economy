@@ -1,16 +1,17 @@
 package me.xanium.gemseconomy.command.command;
 
-import cloud.commandframework.Command;
-import cloud.commandframework.arguments.standard.IntegerArgument;
+import io.papermc.paper.command.brigadier.CommandSourceStack;
 import me.lucko.helper.promise.Promise;
 import me.xanium.gemseconomy.GemsEconomyPlugin;
 import me.xanium.gemseconomy.api.Currency;
 import me.xanium.gemseconomy.command.AbstractCommand;
 import me.xanium.gemseconomy.command.CommandManager;
-import me.xanium.gemseconomy.command.argument.CurrencyArgument;
+import me.xanium.gemseconomy.command.argument.CurrencyParser;
 import me.xanium.gemseconomy.currency.BalanceTop;
 import me.xanium.gemseconomy.data.TransientBalance;
 import org.bukkit.command.CommandSender;
+import org.incendo.cloud.Command;
+import org.incendo.cloud.parser.standard.IntegerParser;
 
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -18,6 +19,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import static me.xanium.gemseconomy.GemsMessages.AMOUNT_REPLACEMENT;
 import static me.xanium.gemseconomy.GemsMessages.CURRENCY_REPLACEMENT;
 
+@SuppressWarnings("UnstableApiUsage")
 public class BalanceTopCommand extends AbstractCommand {
 
     public BalanceTopCommand(GemsEconomyPlugin plugin, CommandManager manager) {
@@ -26,13 +28,13 @@ public class BalanceTopCommand extends AbstractCommand {
 
     @Override
     public void register() {
-        Command<CommandSender> balanceTop = this.manager
+        Command<CommandSourceStack> balanceTop = this.manager.getCommandManager()
                 .commandBuilder("balancetop", "baltop")
                 .permission("gemseconomy.command.baltop")
-                .argument(CurrencyArgument.optional("currency"))
-                .argument(IntegerArgument.<CommandSender>builder("page").withMin(1).asOptional())
+                .optional("currency", CurrencyParser.currencyParser())
+                .optional("page", IntegerParser.integerParser(1))
                 .handler(context -> {
-                    CommandSender sender = context.getSender();
+                    CommandSender sender = context.sender().getSender();
                     Currency currency = context.getOrDefault("currency", GemsEconomyPlugin.getInstance().getCurrencyManager().getDefaultCurrency());
                     int page = context.getOrDefault("page", 1);
 

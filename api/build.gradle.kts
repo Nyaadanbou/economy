@@ -1,5 +1,7 @@
 plugins {
-    id("cc.mewcraft.publishing-conventions")
+    id("economy-conventions.commons")
+    id("nyaadanbou-conventions.repositories")
+    `maven-publish`
 }
 
 group = "me.xanium.gemseconomy"

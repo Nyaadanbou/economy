@@ -1,20 +1,7 @@
 package me.xanium.gemseconomy.command;
 
-import cloud.commandframework.Command;
-import cloud.commandframework.arguments.flags.CommandFlag;
-import cloud.commandframework.brigadier.CloudBrigadierManager;
-import cloud.commandframework.bukkit.CloudBukkitCapabilities;
-import cloud.commandframework.exceptions.ArgumentParseException;
-import cloud.commandframework.exceptions.InvalidCommandSenderException;
-import cloud.commandframework.exceptions.InvalidSyntaxException;
-import cloud.commandframework.exceptions.NoPermissionException;
-import cloud.commandframework.execution.AsynchronousCommandExecutionCoordinator;
-import cloud.commandframework.keys.CloudKey;
-import cloud.commandframework.keys.SimpleCloudKey;
-import cloud.commandframework.minecraft.extras.AudienceProvider;
-import cloud.commandframework.minecraft.extras.MinecraftExceptionHandler;
-import cloud.commandframework.paper.PaperCommandManager;
 import io.leangen.geantyref.TypeToken;
+import io.papermc.paper.command.brigadier.CommandSourceStack;
 import me.lucko.helper.scheduler.HelperExecutors;
 import me.xanium.gemseconomy.GemsEconomyPlugin;
 import me.xanium.gemseconomy.command.command.BalanceAccCommand;
@@ -27,60 +14,52 @@ import me.xanium.gemseconomy.command.command.PayCommand;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.util.ComponentMessageThrowable;
-import org.bukkit.command.CommandSender;
 
+import java.lang.reflect.Type;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Function;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
-import org.jetbrains.annotations.Nullable;
+import org.incendo.cloud.Command;
+import org.incendo.cloud.exception.ArgumentParseException;
+import org.incendo.cloud.exception.InvalidCommandSenderException;
+import org.incendo.cloud.exception.InvalidSyntaxException;
+import org.incendo.cloud.exception.NoPermissionException;
+import org.incendo.cloud.execution.ExecutionCoordinator;
+import org.incendo.cloud.key.CloudKey;
+import org.incendo.cloud.minecraft.extras.MinecraftExceptionHandler;
+import org.incendo.cloud.paper.PaperCommandManager;
+import org.incendo.cloud.parser.flag.CommandFlag;
 
-public class CommandManager extends PaperCommandManager<CommandSender> {
+@SuppressWarnings("UnstableApiUsage")
+public class CommandManager {
 
-    public static final CloudKey<GemsEconomyPlugin> PLUGIN = SimpleCloudKey.of("gemseconomy:plugin", TypeToken.get(GemsEconomyPlugin.class));
+    public static final CloudKey<GemsEconomyPlugin> PLUGIN = CloudKey.of("gemseconomy:plugin", TypeToken.get(GemsEconomyPlugin.class));
     private static final Component NULL = Component.text("null");
     private static final Pattern SYNTAX_HIGHLIGHT_PATTERN = Pattern.compile("[^\\s\\w\\-]");
-    private final Map<String, CommandFlag.Builder<?>> flagRegistry = new HashMap<>();
+    private final PaperCommandManager<CommandSourceStack> manager;
+    private final Map<String, CommandFlag.Builder<?, ?>> flagRegistry = new HashMap<>();
 
     public CommandManager(GemsEconomyPlugin plugin) throws Exception {
-        super(
-                plugin,
-                AsynchronousCommandExecutionCoordinator.<CommandSender>builder()
-                        .withAsynchronousParsing()
-                        .withExecutor(HelperExecutors.asyncHelper()) // Reuse helper's executor
-                        .build(),
-                Function.identity(),
-                Function.identity()
-        );
-
-        // ---- Register Brigadier ----
-        if (hasCapability(CloudBukkitCapabilities.NATIVE_BRIGADIER)) {
-            registerBrigadier();
-            final @Nullable CloudBrigadierManager<CommandSender, ?> brigManager = brigadierManager();
-            if (brigManager != null) {
-                brigManager.setNativeNumberSuggestions(false);
-            }
-            plugin.getLogger().info("Successfully registered Mojang Brigadier support for commands.");
-        }
-
-        // ---- Register Asynchronous Completion Listener ----
-        if (hasCapability(CloudBukkitCapabilities.ASYNCHRONOUS_COMPLETION)) {
-            registerAsynchronousCompletions();
-            plugin.getLogger().info("Successfully registered asynchronous command completion listener.");
-        }
+        manager = PaperCommandManager.builder()
+                .executionCoordinator(
+                        ExecutionCoordinator.<CommandSourceStack>builder()
+                                .executor(HelperExecutors.asyncHelper())
+                                .build()
+                )
+                .buildOnEnable(plugin);
 
         // ---- Inject instances into the command context ----
-        this.registerCommandPreProcessor(ctx -> ctx.getCommandContext().store(PLUGIN, plugin));
+        manager.registerCommandPreProcessor(ctx -> ctx.commandContext().store(PLUGIN, plugin));
 
         // ---- Change default exception messages ----
-        new MinecraftExceptionHandler<CommandSender>()
-                .withHandler(MinecraftExceptionHandler.ExceptionType.INVALID_SYNTAX, e -> {
-                    final InvalidSyntaxException exception = (InvalidSyntaxException) e;
+        MinecraftExceptionHandler.create(CommandSourceStack::getSender)
+                .handler(InvalidSyntaxException.class, (formatter, ctx) -> {
+                    final InvalidSyntaxException exception = ctx.exception();
                     final Component correctSyntaxMessage = Component
-                            .text("/%s".formatted(exception.getCorrectSyntax()))
+                            .text("/%s".formatted(exception.correctSyntax()))
                             .color(NamedTextColor.GRAY)
                             .replaceText(config -> {
                                 config.match(SYNTAX_HIGHLIGHT_PATTERN);
@@ -93,10 +72,10 @@ public class CommandManager extends PaperCommandManager<CommandSender> {
                                 config.replacement(correctSyntaxMessage);
                             });
                 })
-                .withHandler(MinecraftExceptionHandler.ExceptionType.INVALID_SENDER, e -> {
-                    final InvalidCommandSenderException exception = (InvalidCommandSenderException) e;
+                .handler(InvalidCommandSenderException.class, (formatter, ctx) -> {
+                    final InvalidCommandSenderException exception = ctx.exception();
                     final Component correctSenderType = Component
-                            .text(exception.getRequiredSender().getSimpleName())
+                            .text(exception.requiredSenderTypes().stream().map(Type::getTypeName).reduce((a, b) -> a + " or " + b).orElse("null"))
                             .color(NamedTextColor.GRAY);
                     return GemsEconomyPlugin.lang()
                             .component("err_invalid_sender")
@@ -105,20 +84,20 @@ public class CommandManager extends PaperCommandManager<CommandSender> {
                                 config.replacement(correctSenderType);
                             });
                 })
-                .withHandler(MinecraftExceptionHandler.ExceptionType.NO_PERMISSION, e -> {
-                    final NoPermissionException exception = (NoPermissionException) e;
+                .handler(NoPermissionException.class, (formatter, ctx) -> {
+                    final NoPermissionException exception = ctx.exception();
                     return GemsEconomyPlugin.lang()
                             .component("err_no_permission")
                             .replaceText(config -> {
                                 config.matchLiteral("{permission}");
                                 Component permission = Component
-                                        .text(exception.getMissingPermission())
+                                        .text(exception.missingPermission().permissionString())
                                         .color(NamedTextColor.YELLOW);
                                 config.replacement(permission);
                             });
                 })
-                .withHandler(MinecraftExceptionHandler.ExceptionType.ARGUMENT_PARSING, e -> {
-                    final ArgumentParseException exception = (ArgumentParseException) e;
+                .handler(ArgumentParseException.class, (formatter, ctx) -> {
+                    final ArgumentParseException exception = ctx.exception();
                     return GemsEconomyPlugin.lang()
                             .component("err_argument_parsing")
                             .replaceText(config -> {
@@ -126,8 +105,8 @@ public class CommandManager extends PaperCommandManager<CommandSender> {
                                 config.replacement(getMessage(exception.getCause()).colorIfAbsent(NamedTextColor.GRAY));
                             });
                 })
-                .withCommandExecutionHandler()
-                .apply(this, AudienceProvider.nativeAudience());
+                .defaultCommandExecutionHandler()
+                .registerTo(manager);
 
         // ---- Register all commands ----
         Stream.of(
@@ -141,16 +120,20 @@ public class CommandManager extends PaperCommandManager<CommandSender> {
         ).forEach(AbstractCommand::register);
     }
 
-    public CommandFlag.Builder<?> getFlag(final String name) {
+    public CommandFlag.Builder<?, ?> getFlag(final String name) {
         return this.flagRegistry.get(name);
     }
 
-    public void registerFlag(final String name, final CommandFlag.Builder<?> flagBuilder) {
+    public void registerFlag(final String name, final CommandFlag.Builder<?, ?> flagBuilder) {
         this.flagRegistry.put(name, flagBuilder);
     }
 
-    public void register(final List<Command<CommandSender>> commands) {
-        commands.forEach(this::command);
+    public void register(final List<Command<CommandSourceStack>> commands) {
+        commands.forEach(manager::command);
+    }
+
+    public PaperCommandManager<CommandSourceStack> getCommandManager() {
+        return manager;
     }
 
     private static Component getMessage(final Throwable throwable) {

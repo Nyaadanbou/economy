@@ -1,12 +1,12 @@
 package me.xanium.gemseconomy.command.command;
 
-import cloud.commandframework.Command;
+import io.papermc.paper.command.brigadier.CommandSourceStack;
 import me.xanium.gemseconomy.GemsEconomyPlugin;
 import me.xanium.gemseconomy.api.Account;
 import me.xanium.gemseconomy.api.Currency;
 import me.xanium.gemseconomy.command.AbstractCommand;
 import me.xanium.gemseconomy.command.CommandManager;
-import me.xanium.gemseconomy.command.argument.AccountArgument;
+import me.xanium.gemseconomy.command.argument.AccountParser;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -16,10 +16,12 @@ import java.util.Optional;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
+import org.incendo.cloud.Command;
 
 import static me.xanium.gemseconomy.GemsMessages.ACCOUNT_REPLACEMENT;
 import static me.xanium.gemseconomy.GemsMessages.AMOUNT_REPLACEMENT;
 
+@SuppressWarnings("UnstableApiUsage")
 @DefaultQualifier(NonNull.class)
 public class BalanceAccCommand extends AbstractCommand {
 
@@ -29,13 +31,13 @@ public class BalanceAccCommand extends AbstractCommand {
 
     @Override
     public void register() {
-        Command<CommandSender> balance = this.manager
+        Command<CommandSourceStack> balance = this.manager.getCommandManager()
                 .commandBuilder("balanceacc", "balacc")
                 .permission("gemseconomy.command.balanceacc")
-                .argument(AccountArgument.optional("account"))
+                .optional("account", AccountParser.accountParser())
                 .handler(context -> {
-                    CommandSender sender = context.getSender();
-                    Optional<Account> account = context.getOptional("account");
+                    CommandSender sender = context.sender().getSender();
+                    Optional<Account> account = context.optional("account");
                     if (sender instanceof Player player) {
                         if (account.isEmpty()) { // Player did not specify account, so view the account of their own
                             @Nullable Account ownAccount = GemsEconomyPlugin.getInstance().getAccountManager().fetchAccount(player);

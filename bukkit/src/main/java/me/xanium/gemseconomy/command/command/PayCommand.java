@@ -1,17 +1,14 @@
 package me.xanium.gemseconomy.command.command;
 
-import cloud.commandframework.Command;
-import cloud.commandframework.bukkit.arguments.selector.MultiplePlayerSelector;
-import cloud.commandframework.bukkit.parsers.selector.MultiplePlayerSelectorArgument;
+import io.papermc.paper.command.brigadier.CommandSourceStack;
 import me.xanium.gemseconomy.GemsEconomyPlugin;
 import me.xanium.gemseconomy.api.Account;
 import me.xanium.gemseconomy.api.Currency;
 import me.xanium.gemseconomy.command.AbstractCommand;
 import me.xanium.gemseconomy.command.CommandManager;
-import me.xanium.gemseconomy.command.argument.AmountArgument;
-import me.xanium.gemseconomy.command.argument.CurrencyArgument;
+import me.xanium.gemseconomy.command.argument.AmountParser;
+import me.xanium.gemseconomy.command.argument.CurrencyParser;
 import me.xanium.gemseconomy.event.GemsPayEvent;
-import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import java.util.List;
@@ -19,9 +16,13 @@ import java.util.List;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
+import org.incendo.cloud.Command;
+import org.incendo.cloud.bukkit.data.MultiplePlayerSelector;
+import org.incendo.cloud.bukkit.parser.selector.MultiplePlayerSelectorParser;
 
 import static me.xanium.gemseconomy.GemsMessages.*;
 
+@SuppressWarnings("UnstableApiUsage")
 @DefaultQualifier(NonNull.class)
 public class PayCommand extends AbstractCommand {
 
@@ -30,19 +31,19 @@ public class PayCommand extends AbstractCommand {
     }
 
     public void register() {
-        Command<CommandSender> pay = this.manager.commandBuilder("pay")
+        Command<CommandSourceStack> pay = this.manager.getCommandManager()
+                .commandBuilder("pay")
                 .permission("gemseconomy.command.pay")
-                .argument(MultiplePlayerSelectorArgument.of("player"))
-                .argument(AmountArgument.of("amount"))
-                .argument(CurrencyArgument.optional("currency"))
-                .senderType(Player.class)
+                .required("player", MultiplePlayerSelectorParser.multiplePlayerSelectorParser())
+                .required("amount", AmountParser.amountParser())
+                .required("currency", CurrencyParser.currencyParser())
                 .handler(context -> {
-                    Player sender = (Player) context.getSender();
+                    Player sender = (Player) context.sender().getSender();
                     MultiplePlayerSelector selector = context.get("player");
                     double amount = context.get("amount");
                     Currency currency = context.getOrDefault("currency", GemsEconomyPlugin.getInstance().getCurrencyManager().getDefaultCurrency());
-                    if (selector.getPlayers().size() > 0) {
-                        selector.getPlayers().forEach(p -> pay(sender, p, amount, currency));
+                    if (!selector.values().isEmpty()) {
+                        selector.values().forEach(p -> pay(sender, p, amount, currency));
                     } else {
                         GemsEconomyPlugin.lang().sendComponent(sender, "err_player_is_null");
                     }

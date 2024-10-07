@@ -1,14 +1,14 @@
 package me.xanium.gemseconomy.command.command;
 
-import cloud.commandframework.Command;
+import io.papermc.paper.command.brigadier.CommandSourceStack;
 import me.xanium.gemseconomy.GemsEconomyPlugin;
 import me.xanium.gemseconomy.api.Account;
 import me.xanium.gemseconomy.api.Currency;
 import me.xanium.gemseconomy.command.AbstractCommand;
 import me.xanium.gemseconomy.command.CommandManager;
-import me.xanium.gemseconomy.command.argument.AccountArgument;
-import me.xanium.gemseconomy.command.argument.AmountArgument;
-import me.xanium.gemseconomy.command.argument.CurrencyArgument;
+import me.xanium.gemseconomy.command.argument.AccountParser;
+import me.xanium.gemseconomy.command.argument.AmountParser;
+import me.xanium.gemseconomy.command.argument.CurrencyParser;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
@@ -20,9 +20,12 @@ import java.util.List;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
+import org.incendo.cloud.Command;
+import org.incendo.cloud.parser.flag.CommandFlag;
 
 import static me.xanium.gemseconomy.GemsMessages.*;
 
+@SuppressWarnings("UnstableApiUsage")
 @DefaultQualifier(NonNull.class)
 public class EconomyCommand extends AbstractCommand {
 
@@ -32,18 +35,18 @@ public class EconomyCommand extends AbstractCommand {
 
     @Override
     public void register() {
-        Command.Builder<CommandSender> builder = this.manager
+        Command.Builder<CommandSourceStack> builder = this.manager.getCommandManager()
                 .commandBuilder("economy", "eco")
                 .permission("gemseconomy.command.economy");
 
-        Command<CommandSender> give = builder
+        Command<CommandSourceStack> give = builder
                 .literal("give")
-                .argument(AccountArgument.of("account"))
-                .argument(AmountArgument.of("amount"))
-                .argument(CurrencyArgument.of("currency"))
-                .flag(this.manager.flagBuilder("silent"))
+                .required("account", AccountParser.accountParser())
+                .required("amount", AmountParser.amountParser())
+                .required("currency", CurrencyParser.currencyParser())
+                .flag(CommandFlag.builder("silent"))
                 .handler(context -> {
-                    CommandSender sender = context.getSender();
+                    CommandSender sender = context.sender().getSender();
                     Account account = context.get("account");
                     double amount = context.get("amount");
                     Currency currency = context.get("currency");
@@ -53,13 +56,13 @@ public class EconomyCommand extends AbstractCommand {
                 })
                 .build();
 
-        Command<CommandSender> take = builder
+        Command<CommandSourceStack> take = builder
                 .literal("take")
-                .argument(AccountArgument.of("account"))
-                .argument(AmountArgument.of("amount"))
-                .argument(CurrencyArgument.of("currency"))
+                .required("account", AccountParser.accountParser())
+                .required("amount", AmountParser.amountParser())
+                .required("currency", CurrencyParser.currencyParser())
                 .handler(context -> {
-                    CommandSender sender = context.getSender();
+                    CommandSender sender = context.sender().getSender();
                     Account account = context.get("account");
                     double amount = context.get("amount");
                     Currency currency = context.get("currency");
@@ -68,13 +71,13 @@ public class EconomyCommand extends AbstractCommand {
                 })
                 .build();
 
-        Command<CommandSender> set = builder
+        Command<CommandSourceStack> set = builder
                 .literal("set")
-                .argument(AccountArgument.of("account"))
-                .argument(AmountArgument.of("amount"))
-                .argument(CurrencyArgument.of("currency"))
+                .required("account", AccountParser.accountParser())
+                .required("amount", AmountParser.amountParser())
+                .required("currency", CurrencyParser.currencyParser())
                 .handler(context -> {
-                    CommandSender sender = context.getSender();
+                    CommandSender sender = context.sender().getSender();
                     Account account = context.get("account");
                     double amount = context.get("amount");
                     Currency currency = context.get("currency");
@@ -83,10 +86,10 @@ public class EconomyCommand extends AbstractCommand {
                 })
                 .build();
 
-        Command<CommandSender> cached = builder
+        Command<CommandSourceStack> cached = builder
                 .literal("cached")
                 .handler(context -> {
-                    CommandSender sender = context.getSender();
+                    CommandSender sender = context.sender().getSender();
                     Collection<Account> cachedAccounts = GemsEconomyPlugin.getInstance().getAccountManager().getCachedAccounts();
                     for (Account account : cachedAccounts) {
                         sender.sendMessage("Account: " + account.getDisplayName());
@@ -95,21 +98,20 @@ public class EconomyCommand extends AbstractCommand {
                 })
                 .build();
 
-        Command<CommandSender> flush = builder
+        Command<CommandSourceStack> flush = builder
                 .literal("flush")
                 .handler(context -> {
                     GemsEconomyPlugin.getInstance().getAccountManager().flushAccounts();
                     GemsEconomyPlugin.getInstance().getBalanceTopRepository().flushLists();
-                    context.getSender().sendMessage("All caches flushed!");
+                    context.sender().getSender().sendMessage("All caches flushed!");
                 })
                 .build();
 
-        Command<CommandSender> debug = builder
+        Command<CommandSourceStack> debug = builder
                 .literal("debug")
                 .permission("gemseconomy.command.debug")
-                .senderType(ConsoleCommandSender.class)
                 .handler(context -> {
-                    CommandSender sender = context.getSender();
+                    CommandSender sender = context.sender().getSender();
                     GemsEconomyPlugin.getInstance().setDebug(!GemsEconomyPlugin.getInstance().isDebug());
                     GemsEconomyPlugin.lang().sendComponent(sender, GemsEconomyPlugin.lang()
                             .component(sender, "msg_debug_status")

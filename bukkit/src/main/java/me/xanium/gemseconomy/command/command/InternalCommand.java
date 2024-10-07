@@ -1,13 +1,15 @@
 package me.xanium.gemseconomy.command.command;
 
-import cloud.commandframework.Command;
+import io.papermc.paper.command.brigadier.CommandSourceStack;
 import me.xanium.gemseconomy.GemsEconomyPlugin;
 import me.xanium.gemseconomy.command.AbstractCommand;
 import me.xanium.gemseconomy.command.CommandManager;
 import org.bukkit.command.CommandSender;
+import org.incendo.cloud.Command;
 
 import java.util.List;
 
+@SuppressWarnings("UnstableApiUsage")
 public class InternalCommand extends AbstractCommand {
 
     public InternalCommand(GemsEconomyPlugin plugin, CommandManager manager) {
@@ -17,15 +19,15 @@ public class InternalCommand extends AbstractCommand {
     @SuppressWarnings("deprecation")
     @Override
     public void register() {
-        Command.Builder<CommandSender> builder = manager
+        Command.Builder<CommandSourceStack> builder = manager.getCommandManager()
                 .commandBuilder("gemseconomy");
 
-        Command<CommandSender> reloadLanguages = builder
+        Command<CommandSourceStack> reloadLanguages = builder
                 .literal("reload")
                 .literal("lang", "languages")
                 .permission("gemseconomy.command.reload")
                 .handler(context -> {
-                    CommandSender sender = context.getSender();
+                    CommandSender sender = context.sender().getSender();
                     GemsEconomyPlugin.getInstance().reloadLanguages();
                     GemsEconomyPlugin.lang().sendComponent(sender, "msg_reloaded_lang",
                             "plugin", GemsEconomyPlugin.getInstance().getDescription().getName(),
