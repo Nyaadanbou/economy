@@ -7,11 +7,11 @@ plugins {
     alias(libs.plugins.pluginyml.paper)
 }
 
-group = "me.xanium.gemseconomy"
+group = "cc.mewcraft.economy"
 version = "2.0.1"
 description = "A modern multi-currency economy plugin on Bukkit"
 
-project.ext.set("name", "GemsEconomy")
+project.ext.set("name", "economy")
 
 dependencies {
     // server
@@ -46,7 +46,7 @@ tasks {
 }
 
 paper {
-    main = "me.xanium.gemseconomy.GemsEconomyPlugin"
+    main = "cc.mewcraft.economy.EconomyPlugin"
     name = project.ext.get("name") as String
     version = "${project.version}"
     description = project.description

@@ -4,7 +4,7 @@ plugins {
     `maven-publish`
 }
 
-group = "me.xanium.gemseconomy"
+group = "cc.mewcraft.economy"
 version = "2.0.1"
 description = "A modern multi-currency economy API"
 

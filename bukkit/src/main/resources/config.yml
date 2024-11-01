@@ -1,5 +1,5 @@
 #
-# GemsEconomy Main Configuration file.
+# Economy Main Configuration file.
 # Developer(s): [ Nailm, Xanium ]
 
 storage: mysql
@@ -8,7 +8,7 @@ debug: false
 transaction_log: false
 mysql:
   database: bungeecord
-  prefix: gemseconomy
+  prefix: economy
   host: localhost
   port: 3306
   username: minecraft
