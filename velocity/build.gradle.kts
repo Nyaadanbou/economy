@@ -2,7 +2,6 @@ plugins {
     id("economy-conventions.commons")
     id("nyaadanbou-conventions.repositories")
     id("nyaadanbou-conventions.copy-jar")
-    `maven-publish`
 }
 
 group = "cc.mewcraft.economy"
