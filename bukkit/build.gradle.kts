@@ -11,7 +11,7 @@ group = "cc.mewcraft.economy"
 version = "2.0.1"
 description = "A modern multi-currency economy plugin on Bukkit"
 
-project.ext.set("name", "economy")
+project.ext.set("name", "Economy")
 
 dependencies {
     // server
