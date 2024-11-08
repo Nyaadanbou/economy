@@ -18,7 +18,6 @@ import com.google.common.io.ByteStreams;
 import java.util.UUID;
 import java.util.function.BiConsumer;
 
-@SuppressWarnings("UnstableApiUsage")
 public class RedisMessenger implements Messenger {
 
     private final EconomyPlugin plugin;
