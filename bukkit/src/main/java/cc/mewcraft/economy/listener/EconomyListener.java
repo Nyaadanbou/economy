@@ -9,11 +9,8 @@
 package cc.mewcraft.economy.listener;
 
 import cc.mewcraft.economy.EconomyPlugin;
-import me.lucko.helper.Schedulers;
-import me.lucko.helper.terminable.Terminable;
-import me.lucko.helper.utils.Players;
 import cc.mewcraft.economy.api.Account;
-import org.bukkit.entity.Player;
+import me.lucko.helper.terminable.Terminable;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.HandlerList;
@@ -37,16 +34,15 @@ public class EconomyListener implements Listener, Terminable {
         // If the player already has an account, we simply load it from database.
 
         final UUID uuid = event.getUniqueId();
-        final Account account = plugin.getAccountManager().createAccount(uuid);
+        final String name = event.getName();
+        final Account account = plugin.getAccountManager().createAccount(uuid, name);
 
         // Update nickname of the account
-        Schedulers.async().runLater(() -> Players.get(uuid).map(Player::getName).ifPresent(playerName -> {
-            if (!playerName.equals(account.getNickname())) {
-                account.setNickname(playerName);
-                plugin.getDataStore().saveAccount(account);
-                plugin.getLogger().info("Account name changes detected, updating: " + playerName);
-            }
-        }), 20);
+        if (!name.equals(account.getNickname())) {
+            account.setNickname(name);
+            plugin.getDataStore().saveAccount(account);
+            plugin.getLogger().info("Account name changes detected, updating: " + name);
+        }
     }
 
     @EventHandler

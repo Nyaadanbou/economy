@@ -8,29 +8,27 @@
 
 package cc.mewcraft.economy.account;
 
-import me.lucko.helper.profiles.OfflineModeProfiles;
-import me.lucko.helper.scheduler.HelperExecutors;
 import cc.mewcraft.economy.EconomyPlugin;
 import cc.mewcraft.economy.api.Account;
 import cc.mewcraft.economy.data.DataStorage;
 import cc.mewcraft.economy.message.Action;
-import org.bukkit.OfflinePlayer;
-import org.bukkit.entity.Player;
-
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
+import me.lucko.helper.profiles.OfflineModeProfiles;
+import me.lucko.helper.scheduler.HelperExecutors;
+import org.bukkit.OfflinePlayer;
+import org.bukkit.entity.Player;
+import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.time.Duration;
 import java.time.temporal.ChronoUnit;
 import java.util.Collection;
 import java.util.Optional;
 import java.util.UUID;
-
-import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.checker.nullness.qual.Nullable;
 
 public class AccountManager {
 
@@ -65,12 +63,25 @@ public class AccountManager {
      * @return a newly created account if there wasn't one, or the existing one
      */
     public @NonNull Account createAccount(@NonNull UUID uuid) {
+        return createAccount(uuid, null);
+    }
+
+    /**
+     * Creates an account and returns it.
+     * <p>
+     * If the account with specific UUID is already loaded in cache or exists in database, this method will just return
+     * the existing object. Otherwise, this method will create a new account and return it.
+     *
+     * @param uuid the uuid of the new account
+     * @return a newly created account if there wasn't one, or the existing one
+     */
+    public @NonNull Account createAccount(@NonNull UUID uuid, @Nullable String nickname) {
         Account test = fetchAccount(uuid);
         if (test != null) {
             return test;
         }
 
-        Account account = new PlayerAccount(uuid);
+        Account account = new PlayerAccount(uuid, nickname);
 
         // Set default balances
         plugin.getCurrencyManager().getLoadedCurrencies().forEach(currency ->
