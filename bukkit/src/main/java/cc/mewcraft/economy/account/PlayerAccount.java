@@ -7,8 +7,12 @@ import cc.mewcraft.economy.event.EconomyPostTransactionEvent;
 import cc.mewcraft.economy.event.EconomyPreTransactionEvent;
 import cc.mewcraft.economy.message.Action;
 import cc.mewcraft.economy.utils.TransactionType;
-
 import com.google.common.base.Preconditions;
+import net.kyori.examination.Examinable;
+import net.kyori.examination.ExaminableProperty;
+import net.kyori.examination.string.StringExaminer;
+import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -16,11 +20,9 @@ import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
+import java.util.stream.Stream;
 
-import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.checker.nullness.qual.Nullable;
-
-public class PlayerAccount implements Account {
+public class PlayerAccount implements Account, Examinable {
     private final @NonNull UUID uuid;
     private final @NonNull Map<Currency, Double> balances;
     private final @NonNull Map<Currency, Double> heapBalances;
@@ -235,16 +237,19 @@ public class PlayerAccount implements Account {
         this.nickname = nickname;
     }
 
-    /*@Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        PlayerAccount account = (PlayerAccount) o;
-        return uuid.equals(account.uuid);
+    @Override
+    public @NonNull Stream<? extends ExaminableProperty> examinableProperties() {
+        return Stream.of(
+                ExaminableProperty.of("uuid", uuid),
+                ExaminableProperty.of("nickname", nickname),
+                ExaminableProperty.of("balances", balances),
+                ExaminableProperty.of("heapBalances", heapBalances),
+                ExaminableProperty.of("canReceiveCurrency", canReceiveCurrency)
+        );
     }
 
     @Override
-    public int hashCode() {
-        return uuid.hashCode();
-    }*/
+    public String toString() {
+        return StringExaminer.simpleEscaping().examine(this);
+    }
 }

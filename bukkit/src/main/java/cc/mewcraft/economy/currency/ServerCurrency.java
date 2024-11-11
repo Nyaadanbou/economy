@@ -3,20 +3,22 @@ package cc.mewcraft.economy.currency;
 import cc.mewcraft.economy.EconomyPlugin;
 import cc.mewcraft.economy.api.Currency;
 import cc.mewcraft.economy.utils.UtilString;
+import com.google.common.base.Preconditions;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextColor;
-
-import com.google.common.base.Preconditions;
-
-import java.util.UUID;
-
+import net.kyori.examination.Examinable;
+import net.kyori.examination.ExaminableProperty;
+import net.kyori.examination.string.StringExaminer;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
 
+import java.util.UUID;
+import java.util.stream.Stream;
+
 @SuppressWarnings("unused")
 @DefaultQualifier(NonNull.class)
-public class ServerCurrency implements Currency {
+public class ServerCurrency implements Currency, Examinable {
     private final UUID uuid;
     private String name;
     private @Nullable String symbol;
@@ -161,6 +163,21 @@ public class ServerCurrency implements Currency {
         this.exchangeRate = exchangeRate;
     }
 
+    @Override public @NonNull Stream<? extends ExaminableProperty> examinableProperties() {
+        return Stream.of(
+                ExaminableProperty.of("uuid", uuid),
+                ExaminableProperty.of("name", name),
+                ExaminableProperty.of("symbol", symbol),
+                ExaminableProperty.of("color", color),
+                ExaminableProperty.of("decimalSupported", decimalSupported),
+                ExaminableProperty.of("payable", payable),
+                ExaminableProperty.of("defaultCurrency", defaultCurrency),
+                ExaminableProperty.of("defaultBalance", defaultBalance),
+                ExaminableProperty.of("maxBalance", maxBalance),
+                ExaminableProperty.of("exchangeRate", exchangeRate)
+        );
+    }
+
     @Override public boolean equals(final @Nullable Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
@@ -170,6 +187,10 @@ public class ServerCurrency implements Currency {
 
     @Override public int hashCode() {
         return uuid.hashCode();
+    }
+
+    @Override public String toString() {
+        return StringExaminer.simpleEscaping().examine(this);
     }
 }
 

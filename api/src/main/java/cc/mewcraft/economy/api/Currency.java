@@ -2,11 +2,10 @@ package cc.mewcraft.economy.api;
 
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextColor;
-
-import java.util.UUID;
-
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
+
+import java.util.UUID;
 
 public interface Currency {
     @NonNull UUID getUuid();
@@ -14,14 +13,6 @@ public interface Currency {
     @NonNull String getName();
 
     void setName(@NonNull String name);
-
-    /**
-     * @deprecated in favor of {@link #getName()}
-     */
-    @Deprecated
-    default @NonNull String getSingular() {
-        return getName();
-    }
 
     double getDefaultBalance();
 
@@ -32,17 +23,9 @@ public interface Currency {
     void setMaximumBalance(double maxBalance);
 
     /**
-     * @deprecated in favor of {@link #simpleFormat(double)} and {@link #fancyFormat(double)}
-     */
-    @Deprecated
-    default @NonNull String format(double amount) {
-        return simpleFormat(amount);
-    }
-
-    /**
      * Gets a plain string describing the balance amount.
      * <p>
-     * This string is used for logging or anywhere that does not support {@link Component}.
+     * This string can be used for logging or anywhere that does not support {@link Component}.
      *
      * @param amount the balance amount
      * @return a plain string describing the balance amount
@@ -52,8 +35,8 @@ public interface Currency {
     /**
      * Gets a MiniMessage string describing the balance amount.
      * <p>
-     * Since this is a MiniMessage string, it is meant to be used for display that support {@link Component}.
-     * The caller of this method should deserialize the MiniMessage string on their own.
+     * Since this is a MiniMessage string, it is meant to be used where {@link Component} is supported.
+     * The caller of this method is responsible to deserialize the MiniMessage string on their own.
      *
      * @param amount the balance amount
      * @return a MiniMessage string describing the balance amount
@@ -65,14 +48,6 @@ public interface Currency {
     @NonNull TextColor getColor();
 
     void setColor(@Nullable TextColor color);
-
-    /**
-     * @deprecated in favor of {@link #getSymbolNullable()} and {@link #getSymbolOrEmpty()}
-     */
-    @Deprecated
-    default @Nullable String getSymbol() {
-        return getSymbolNullable();
-    }
 
     @Nullable String getSymbolNullable();
 

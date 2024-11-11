@@ -1,12 +1,11 @@
 package cc.mewcraft.economy.api;
 
-import java.util.Map;
-import java.util.UUID;
-
-import org.jetbrains.annotations.ApiStatus;
-
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
+import org.jetbrains.annotations.ApiStatus;
+
+import java.util.Map;
+import java.util.UUID;
 
 public interface Account {
     @NonNull UUID getUuid();
@@ -46,8 +45,4 @@ public interface Account {
     void setCanReceiveCurrency(boolean canReceiveCurrency);
 
     void setNickname(@Nullable String nickname);
-
-    /*@Override boolean equals(Object o);
-
-    @Override int hashCode();*/
 }
