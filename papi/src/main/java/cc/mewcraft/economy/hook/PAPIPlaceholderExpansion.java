@@ -27,8 +27,11 @@ public class PAPIPlaceholderExpansion implements Terminable {
         expansion.register();
     }
 
+    @SuppressWarnings("ConstantValue")
     @Override public void close() {
-        expansion.unregister();
+        if (expansion.getPlaceholderAPI() != null) {
+            expansion.unregister();
+        }
     }
 
     class Expansion extends PlaceholderExpansion {
