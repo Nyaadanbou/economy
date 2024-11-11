@@ -22,7 +22,6 @@ import static cc.mewcraft.economy.EconomyMessages.ACCOUNT_REPLACEMENT;
 import static cc.mewcraft.economy.EconomyMessages.AMOUNT_REPLACEMENT;
 
 @SuppressWarnings("UnstableApiUsage")
-@DefaultQualifier(NonNull.class)
 public class BalanceAccCommand extends AbstractCommand {
 
     public BalanceAccCommand(EconomyPlugin plugin, CommandManager manager) {

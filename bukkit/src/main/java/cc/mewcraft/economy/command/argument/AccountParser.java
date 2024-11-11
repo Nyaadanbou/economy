@@ -1,17 +1,12 @@
 package cc.mewcraft.economy.command.argument;
 
 import cc.mewcraft.economy.EconomyPlugin;
-import io.papermc.paper.command.brigadier.CommandSourceStack;
 import cc.mewcraft.economy.api.Account;
+import io.papermc.paper.command.brigadier.CommandSourceStack;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-
-import java.util.ArrayList;
-import java.util.List;
-
 import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.framework.qual.DefaultQualifier;
 import org.incendo.cloud.bukkit.BukkitCommandContextKeys;
 import org.incendo.cloud.component.CommandComponent;
 import org.incendo.cloud.context.CommandContext;
@@ -21,8 +16,10 @@ import org.incendo.cloud.parser.ArgumentParser;
 import org.incendo.cloud.parser.ParserDescriptor;
 import org.incendo.cloud.suggestion.BlockingSuggestionProvider;
 
-@SuppressWarnings("UnstableApiUsage")
-@DefaultQualifier(NonNull.class)
+import java.util.ArrayList;
+import java.util.List;
+
+@SuppressWarnings({"UnstableApiUsage", "unused"})
 public class AccountParser implements ArgumentParser<CommandSourceStack, Account>, BlockingSuggestionProvider.Strings<CommandSourceStack> {
 
     public static @NonNull ParserDescriptor<CommandSourceStack, Account> accountParser() {

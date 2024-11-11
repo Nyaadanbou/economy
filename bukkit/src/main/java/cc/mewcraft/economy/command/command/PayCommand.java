@@ -1,7 +1,6 @@
 package cc.mewcraft.economy.command.command;
 
 import cc.mewcraft.economy.EconomyPlugin;
-import io.papermc.paper.command.brigadier.CommandSourceStack;
 import cc.mewcraft.economy.api.Account;
 import cc.mewcraft.economy.api.Currency;
 import cc.mewcraft.economy.command.AbstractCommand;
@@ -9,21 +8,19 @@ import cc.mewcraft.economy.command.CommandManager;
 import cc.mewcraft.economy.command.argument.AmountParser;
 import cc.mewcraft.economy.command.argument.CurrencyParser;
 import cc.mewcraft.economy.event.EconomyPayEvent;
+import io.papermc.paper.command.brigadier.CommandSourceStack;
 import org.bukkit.entity.Player;
-
-import java.util.List;
-
-import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.checker.nullness.qual.Nullable;
-import org.checkerframework.framework.qual.DefaultQualifier;
 import org.incendo.cloud.Command;
 import org.incendo.cloud.bukkit.data.MultiplePlayerSelector;
 import org.incendo.cloud.bukkit.parser.selector.MultiplePlayerSelectorParser;
 
-import static cc.mewcraft.economy.EconomyMessages.*;
+import java.util.List;
+
+import static cc.mewcraft.economy.EconomyMessages.ACCOUNT_REPLACEMENT;
+import static cc.mewcraft.economy.EconomyMessages.AMOUNT_REPLACEMENT;
+import static cc.mewcraft.economy.EconomyMessages.CURRENCY_REPLACEMENT;
 
 @SuppressWarnings("UnstableApiUsage")
-@DefaultQualifier(NonNull.class)
 public class PayCommand extends AbstractCommand {
 
     public PayCommand(EconomyPlugin plugin, CommandManager manager) {
@@ -71,14 +68,14 @@ public class PayCommand extends AbstractCommand {
         }
 
         // Check target account
-        @Nullable Account targetAccount = EconomyPlugin.getInstance().getAccountManager().fetchAccount(targetPlayer);
+        Account targetAccount = EconomyPlugin.getInstance().getAccountManager().fetchAccount(targetPlayer);
         if (targetAccount == null) {
             EconomyPlugin.lang().sendComponent(sender, "err_player_is_null");
             return;
         }
 
         // Check if sender account missing
-        @Nullable Account myselfAccount = EconomyPlugin.getInstance().getAccountManager().fetchAccount(sender);
+        Account myselfAccount = EconomyPlugin.getInstance().getAccountManager().fetchAccount(sender);
         if (myselfAccount == null) {
             EconomyPlugin.lang().sendComponent(sender, "err_account_missing");
             return;

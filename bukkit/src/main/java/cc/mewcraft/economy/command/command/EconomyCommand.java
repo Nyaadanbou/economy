@@ -12,9 +12,7 @@ import io.papermc.paper.command.brigadier.CommandSourceStack;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
-import org.checkerframework.framework.qual.DefaultQualifier;
 import org.incendo.cloud.Command;
 import org.incendo.cloud.parser.flag.CommandFlag;
 
@@ -27,7 +25,6 @@ import static cc.mewcraft.economy.EconomyMessages.CURRENCY_REPLACEMENT;
 import static cc.mewcraft.economy.EconomyMessages.STATUS_REPLACEMENT;
 
 @SuppressWarnings("UnstableApiUsage")
-@DefaultQualifier(NonNull.class)
 public class EconomyCommand extends AbstractCommand {
 
     public EconomyCommand(EconomyPlugin plugin, CommandManager manager) {

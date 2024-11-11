@@ -1,28 +1,23 @@
 package cc.mewcraft.economy.command.command;
 
 import cc.mewcraft.economy.EconomyPlugin;
-import io.papermc.paper.command.brigadier.CommandSourceStack;
 import cc.mewcraft.economy.api.Account;
 import cc.mewcraft.economy.api.Currency;
 import cc.mewcraft.economy.command.AbstractCommand;
 import cc.mewcraft.economy.command.CommandManager;
 import cc.mewcraft.economy.command.argument.AccountParser;
+import io.papermc.paper.command.brigadier.CommandSourceStack;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.incendo.cloud.Command;
 
 import java.util.List;
 import java.util.Optional;
-
-import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.checker.nullness.qual.Nullable;
-import org.checkerframework.framework.qual.DefaultQualifier;
-import org.incendo.cloud.Command;
 
 import static cc.mewcraft.economy.EconomyMessages.ACCOUNT_REPLACEMENT;
 import static cc.mewcraft.economy.EconomyMessages.AMOUNT_REPLACEMENT;
 
 @SuppressWarnings("UnstableApiUsage")
-@DefaultQualifier(NonNull.class)
 public class BalanceCommand extends AbstractCommand {
 
     public BalanceCommand(EconomyPlugin plugin, CommandManager manager) {
@@ -40,7 +35,7 @@ public class BalanceCommand extends AbstractCommand {
                     Optional<Account> account = context.optional("account");
                     if (sender instanceof Player player) {
                         if (account.isEmpty()) { // Player did not specify account, so view the account of their own
-                            @Nullable Account ownAccount = EconomyPlugin.getInstance().getAccountManager().fetchAccount(player);
+                            Account ownAccount = EconomyPlugin.getInstance().getAccountManager().fetchAccount(player);
                             if (ownAccount == null) { // Double check in case the player's account is not loaded for some reason
                                 EconomyPlugin.lang().sendComponent(sender, "err_account_missing");
                                 return;

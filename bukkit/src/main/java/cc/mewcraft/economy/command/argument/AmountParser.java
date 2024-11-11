@@ -1,16 +1,11 @@
 package cc.mewcraft.economy.command.argument;
 
 import cc.mewcraft.economy.EconomyPlugin;
-import io.papermc.paper.command.brigadier.CommandSourceStack;
 import cc.mewcraft.economy.api.Currency;
+import io.papermc.paper.command.brigadier.CommandSourceStack;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
-
-import java.util.List;
-import java.util.Optional;
-
 import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.framework.qual.DefaultQualifier;
 import org.incendo.cloud.component.CommandComponent;
 import org.incendo.cloud.context.CommandContext;
 import org.incendo.cloud.context.CommandInput;
@@ -19,8 +14,10 @@ import org.incendo.cloud.parser.ArgumentParser;
 import org.incendo.cloud.parser.ParserDescriptor;
 import org.incendo.cloud.suggestion.BlockingSuggestionProvider;
 
-@SuppressWarnings("UnstableApiUsage")
-@DefaultQualifier(NonNull.class)
+import java.util.List;
+import java.util.Optional;
+
+@SuppressWarnings({"UnstableApiUsage", "unused"})
 public class AmountParser implements ArgumentParser<CommandSourceStack, Double>, BlockingSuggestionProvider.Strings<CommandSourceStack> {
 
     public static @NonNull ParserDescriptor<CommandSourceStack, Double> amountParser() {
