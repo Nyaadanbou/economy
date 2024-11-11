@@ -5,7 +5,7 @@ plugins {
 }
 
 group = "cc.mewcraft.economy"
-version = "2.0.1"
+version = "2.1.0"
 description = "The API of Economy"
 
 dependencies {
