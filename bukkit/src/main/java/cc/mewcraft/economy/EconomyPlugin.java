@@ -192,7 +192,7 @@ public class EconomyPlugin extends ExtendedJavaPlugin {
     }
 
     public boolean isVault() {
-        return vault;
+        return isPluginPresent("Vault") && vault;
     }
 
     public boolean isLogging() {
