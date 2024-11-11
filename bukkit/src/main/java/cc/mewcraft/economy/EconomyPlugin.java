@@ -8,11 +8,10 @@
 
 package cc.mewcraft.economy;
 
-import cc.mewcraft.economy.api.EconomyImpl;
-import me.lucko.helper.plugin.ExtendedJavaPlugin;
 import cc.mewcraft.economy.account.AccountManager;
 import cc.mewcraft.economy.api.Currency;
 import cc.mewcraft.economy.api.Economy;
+import cc.mewcraft.economy.api.EconomyImpl;
 import cc.mewcraft.economy.api.EconomyProvider;
 import cc.mewcraft.economy.command.CommandManager;
 import cc.mewcraft.economy.currency.BalanceTopRepository;
@@ -27,8 +26,8 @@ import cc.mewcraft.economy.logging.EconomyLogger;
 import cc.mewcraft.economy.message.Messenger;
 import cc.mewcraft.economy.utils.UtilServer;
 import cc.mewcraft.economy.vault.VaultHandler;
+import me.lucko.helper.plugin.ExtendedJavaPlugin;
 import org.bukkit.plugin.ServicePriority;
-
 import org.checkerframework.checker.nullness.qual.Nullable;
 
 import static java.util.Objects.requireNonNull;
@@ -83,9 +82,7 @@ public class EconomyPlugin extends ExtendedJavaPlugin {
 
         // Check if default currency is set
         if (currencyManager.getLoadedCurrencies().stream().noneMatch(Currency::isDefaultCurrency)) {
-            getLogger().severe("No default currency is provided");
-            getServer().getPluginManager().disablePlugin(this);
-            return;
+            getLogger().severe("No default currency is provided. Please create one using `/currency` command otherwise the plugin will not work properly!");
         }
 
         // Initialize API instances

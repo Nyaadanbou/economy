@@ -1,7 +1,6 @@
 package cc.mewcraft.economy.command.command;
 
 import cc.mewcraft.economy.EconomyPlugin;
-import io.papermc.paper.command.brigadier.CommandSourceStack;
 import cc.mewcraft.economy.api.Account;
 import cc.mewcraft.economy.api.Currency;
 import cc.mewcraft.economy.command.AbstractCommand;
@@ -9,20 +8,23 @@ import cc.mewcraft.economy.command.CommandManager;
 import cc.mewcraft.economy.command.argument.AccountParser;
 import cc.mewcraft.economy.command.argument.AmountParser;
 import cc.mewcraft.economy.command.argument.CurrencyParser;
+import io.papermc.paper.command.brigadier.CommandSourceStack;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-
-import java.util.Collection;
-import java.util.List;
-
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.framework.qual.DefaultQualifier;
 import org.incendo.cloud.Command;
 import org.incendo.cloud.parser.flag.CommandFlag;
 
-import static cc.mewcraft.economy.EconomyMessages.*;
+import java.util.Collection;
+import java.util.List;
+
+import static cc.mewcraft.economy.EconomyMessages.ACCOUNT_REPLACEMENT;
+import static cc.mewcraft.economy.EconomyMessages.AMOUNT_REPLACEMENT;
+import static cc.mewcraft.economy.EconomyMessages.CURRENCY_REPLACEMENT;
+import static cc.mewcraft.economy.EconomyMessages.STATUS_REPLACEMENT;
 
 @SuppressWarnings("UnstableApiUsage")
 @DefaultQualifier(NonNull.class)
@@ -35,7 +37,7 @@ public class EconomyCommand extends AbstractCommand {
     @Override
     public void register() {
         Command.Builder<CommandSourceStack> builder = this.manager.getCommandManager()
-                .commandBuilder("economy", "eco")
+                .commandBuilder("eco")
                 .permission("economy.command.economy");
 
         Command<CommandSourceStack> give = builder

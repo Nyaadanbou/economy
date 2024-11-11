@@ -32,8 +32,8 @@ public class BalanceAccCommand extends AbstractCommand {
     @Override
     public void register() {
         Command<CommandSourceStack> balance = this.manager.getCommandManager()
-                .commandBuilder("balanceacc", "balacc")
-                .permission("economy.command.balanceacc")
+                .commandBuilder("balacc")
+                .permission("economy.command.balacc")
                 .optional("account", AccountParser.accountParser())
                 .handler(context -> {
                     CommandSender sender = context.sender().getSender();

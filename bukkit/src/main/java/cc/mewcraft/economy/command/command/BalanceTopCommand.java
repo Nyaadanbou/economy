@@ -29,7 +29,7 @@ public class BalanceTopCommand extends AbstractCommand {
     @Override
     public void register() {
         Command<CommandSourceStack> balanceTop = this.manager.getCommandManager()
-                .commandBuilder("balancetop", "baltop")
+                .commandBuilder("baltop")
                 .permission("economy.command.baltop")
                 .optional("currency", CurrencyParser.currencyParser())
                 .optional("page", IntegerParser.integerParser(1))

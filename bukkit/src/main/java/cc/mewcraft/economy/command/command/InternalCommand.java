@@ -1,9 +1,9 @@
 package cc.mewcraft.economy.command.command;
 
 import cc.mewcraft.economy.EconomyPlugin;
-import io.papermc.paper.command.brigadier.CommandSourceStack;
 import cc.mewcraft.economy.command.AbstractCommand;
 import cc.mewcraft.economy.command.CommandManager;
+import io.papermc.paper.command.brigadier.CommandSourceStack;
 import org.bukkit.command.CommandSender;
 import org.incendo.cloud.Command;
 
@@ -20,7 +20,7 @@ public class InternalCommand extends AbstractCommand {
     @Override
     public void register() {
         Command.Builder<CommandSourceStack> builder = manager.getCommandManager()
-                .commandBuilder("economy");
+                .commandBuilder("eco");
 
         Command<CommandSourceStack> reloadLanguages = builder
                 .literal("reload")

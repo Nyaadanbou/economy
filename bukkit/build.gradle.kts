@@ -51,32 +51,33 @@ paper {
     description = project.description
     apiVersion = "1.19"
     authors = listOf("Nailm")
-    load = BukkitPluginDescription.PluginLoadOrder.STARTUP
     serverDependencies {
         register("helper") {
             required = true
-            joinClasspath = true
             load = PaperPluginDescription.RelativeLoadOrder.BEFORE
         }
         register("Vault") {
             required = false
-            joinClasspath = true
             load = PaperPluginDescription.RelativeLoadOrder.OMIT
         }
         register("ConnectorPlugin") {
             required = false
-            joinClasspath = true
             load = PaperPluginDescription.RelativeLoadOrder.OMIT
         }
         register("PlaceholderAPI") {
             required = false
-            joinClasspath = true
             load = PaperPluginDescription.RelativeLoadOrder.OMIT
         }
         register("MiniPlaceholders") {
             required = false
-            joinClasspath = true
             load = PaperPluginDescription.RelativeLoadOrder.OMIT
+        }
+
+        // 用于覆盖 Essentials 的经济指令
+        register("Essentials") {
+            required = false
+            joinClasspath = false
+            load = PaperPluginDescription.RelativeLoadOrder.BEFORE
         }
     }
 }
