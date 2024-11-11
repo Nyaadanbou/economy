@@ -1,36 +1,35 @@
+import net.minecrell.pluginyml.bukkit.BukkitPluginDescription
 import net.minecrell.pluginyml.paper.PaperPluginDescription
 
 plugins {
-    id("economy-conventions.commons")
     id("nyaadanbou-conventions.repositories")
     id("nyaadanbou-conventions.copy-jar")
+    id("economy-conventions.commons")
     alias(libs.plugins.pluginyml.paper)
 }
 
-group = "me.xanium.gemseconomy"
-version = "2.0.1"
-description = "A modern multi-currency economy plugin on Bukkit"
-
-project.ext.set("name", "GemsEconomy")
+group = "cc.mewcraft.economy"
+version = "2.1.0"
+description = "The Bukkit plugin of Economy"
 
 dependencies {
     // server
-    compileOnly(libs.server.paper)
+    compileOnly(local.paper)
 
     // internal
     implementation(project(":api"))
     implementation(project(":papi"))
     implementation(project(":mini"))
+    implementation(local.lang.bukkit)
     implementation(libs.cloud2.core)
     implementation(libs.cloud2.paper)
     implementation(libs.cloud2.minecraft.extras)
-    implementation(local.lang.bukkit)
     implementation(libs.hikari)
 
     // standalone plugins
     compileOnly(local.helper)
-    compileOnly(libs.helper.sql)
-    compileOnly(libs.helper.redis)
+    compileOnly(local.helper.sql)
+    compileOnly(local.helper.redis)
     compileOnly(libs.connector.core)
     compileOnly(libs.connector.bukkit)
     compileOnly(libs.vault) {
@@ -46,8 +45,8 @@ tasks {
 }
 
 paper {
-    main = "me.xanium.gemseconomy.GemsEconomyPlugin"
-    name = project.ext.get("name") as String
+    main = "cc.mewcraft.economy.EconomyPlugin"
+    name = "Economy"
     version = "${project.version}"
     description = project.description
     apiVersion = "1.19"
@@ -55,28 +54,30 @@ paper {
     serverDependencies {
         register("helper") {
             required = true
-            joinClasspath = true
             load = PaperPluginDescription.RelativeLoadOrder.BEFORE
         }
         register("Vault") {
             required = false
-            joinClasspath = true
             load = PaperPluginDescription.RelativeLoadOrder.OMIT
         }
         register("ConnectorPlugin") {
             required = false
-            joinClasspath = true
             load = PaperPluginDescription.RelativeLoadOrder.OMIT
         }
         register("PlaceholderAPI") {
             required = false
-            joinClasspath = true
             load = PaperPluginDescription.RelativeLoadOrder.OMIT
         }
         register("MiniPlaceholders") {
             required = false
-            joinClasspath = true
             load = PaperPluginDescription.RelativeLoadOrder.OMIT
+        }
+
+        // 用于覆盖 Essentials 的经济指令
+        register("Essentials") {
+            required = false
+            joinClasspath = false
+            load = PaperPluginDescription.RelativeLoadOrder.BEFORE
         }
     }
 }

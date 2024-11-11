@@ -1,20 +1,16 @@
 plugins {
-    id("economy-conventions.commons")
     id("nyaadanbou-conventions.repositories")
     id("nyaadanbou-conventions.copy-jar")
-    `maven-publish`
+    id("economy-conventions.commons")
 }
 
-group = "me.xanium.gemseconomy"
+group = "cc.mewcraft.economy"
 version = "1.0.0"
-description = "A modern multi-currency economy plugin on Velocity"
+description = "The Velocity plugin of Economy"
 
 dependencies {
-    // server
-    compileOnly(libs.proxy.velocity)
-    annotationProcessor(libs.proxy.velocity)
-
-    // internal
+    compileOnly(local.velocity)
+    annotationProcessor(local.velocity)
     implementation(libs.hikari)
 }
 

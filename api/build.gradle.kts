@@ -1,14 +1,31 @@
 plugins {
-    id("economy-conventions.commons")
     id("nyaadanbou-conventions.repositories")
+    id("economy-conventions.commons")
     `maven-publish`
 }
 
-group = "me.xanium.gemseconomy"
-version = "2.0.1"
-description = "A modern multi-currency economy API"
+group = "cc.mewcraft.economy"
+version = "2.1.0"
+description = "The API of Economy"
 
 dependencies {
-    // server
-    compileOnly(libs.server.paper)
+    compileOnly(local.paper)
+}
+
+publishing {
+    repositories {
+        maven("https://repo.mewcraft.cc/private") {
+            credentials {
+                username = providers.gradleProperty("nyaadanbou.mavenUsername").orNull
+                password = providers.gradleProperty("nyaadanbou.mavenPassword").orNull
+            }
+        }
+    }
+
+    publications {
+        create<MavenPublication>("maven") {
+            artifactId = "economy-api"
+            from(components["java"])
+        }
+    }
 }

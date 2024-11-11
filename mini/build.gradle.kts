@@ -1,20 +1,13 @@
 plugins {
-    id("economy-conventions.commons")
     id("nyaadanbou-conventions.repositories")
+    id("economy-conventions.commons")
 }
 
 version = "1.0.0"
 
 dependencies {
-    // internal
     compileOnly(project(":api"))
-
-    // server
-    compileOnly(libs.server.paper)
-
-    // helper
+    compileOnly(local.paper)
     compileOnly(local.helper)
-
-    // standalone plugins
-    compileOnly(libs.miniplaceholders)
+    compileOnly(local.miniplaceholders)
 }
