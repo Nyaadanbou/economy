@@ -24,7 +24,6 @@ publishing {
 
     publications {
         create<MavenPublication>("maven") {
-            artifactId = "economy-api"
             from(components["java"])
         }
     }
