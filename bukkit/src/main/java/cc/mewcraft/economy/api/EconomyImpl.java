@@ -9,14 +9,12 @@
 package cc.mewcraft.economy.api;
 
 import cc.mewcraft.economy.EconomyPlugin;
-
 import com.google.common.base.Preconditions;
+import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.util.List;
 import java.util.UUID;
-
-import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.checker.nullness.qual.Nullable;
 
 @SuppressWarnings("unused")
 public class EconomyImpl implements Economy {
@@ -38,26 +36,26 @@ public class EconomyImpl implements Economy {
         return plugin.getAccountManager().hasAccount(uuid);
     }
 
-    @Override public void deposit(@NonNull UUID uuid, double amount) {
+    @Override public boolean deposit(@NonNull UUID uuid, double amount) {
         Preconditions.checkNotNull(uuid, "uuid");
-        pullAccount(uuid).deposit(plugin.getCurrencyManager().getDefaultCurrency(), amount);
+        return pullAccount(uuid).deposit(plugin.getCurrencyManager().getDefaultCurrency(), amount);
     }
 
-    @Override public void deposit(@NonNull UUID uuid, double amount, @NonNull Currency currency) {
+    @Override public boolean deposit(@NonNull UUID uuid, double amount, @NonNull Currency currency) {
         Preconditions.checkNotNull(uuid, "uuid");
         Preconditions.checkNotNull(currency, "currency");
-        pullAccount(uuid).deposit(currency, amount);
+        return pullAccount(uuid).deposit(currency, amount);
     }
 
-    @Override public void withdraw(@NonNull UUID uuid, double amount) {
+    @Override public boolean withdraw(@NonNull UUID uuid, double amount) {
         Preconditions.checkNotNull(uuid, "uuid");
-        pullAccount(uuid).withdraw(plugin.getCurrencyManager().getDefaultCurrency(), amount);
+        return pullAccount(uuid).withdraw(plugin.getCurrencyManager().getDefaultCurrency(), amount);
     }
 
-    @Override public void withdraw(@NonNull UUID uuid, double amount, @NonNull Currency currency) {
+    @Override public boolean withdraw(@NonNull UUID uuid, double amount, @NonNull Currency currency) {
         Preconditions.checkNotNull(uuid, "uuid");
         Preconditions.checkNotNull(currency, "currency");
-        pullAccount(uuid).withdraw(currency, amount);
+        return pullAccount(uuid).withdraw(currency, amount);
     }
 
     @Override public double getBalance(@NonNull UUID uuid) {

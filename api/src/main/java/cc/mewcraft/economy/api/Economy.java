@@ -8,6 +8,7 @@ import org.jetbrains.annotations.ApiStatus;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
+@SuppressWarnings("unused")
 public interface Economy {
     /**
      * Get an account, or create one if not existing.
@@ -40,8 +41,9 @@ public interface Economy {
      *
      * @param uuid   the account's unique ID
      * @param amount the amount of default currency
+     * @return true if deposit is successful
      */
-    void deposit(@NonNull UUID uuid, double amount);
+    boolean deposit(@NonNull UUID uuid, double amount);
 
     /**
      * Deposit specified amount into specific account.
@@ -49,16 +51,18 @@ public interface Economy {
      * @param uuid     the account's unique ID
      * @param amount   the amount of specific currency
      * @param currency the specific currency
+     * @return true if deposit is successful
      */
-    void deposit(@NonNull UUID uuid, double amount, @NonNull Currency currency);
+    boolean deposit(@NonNull UUID uuid, double amount, @NonNull Currency currency);
 
     /**
      * Withdraw specific amount from specific account.
      *
      * @param uuid   the account's unique ID
      * @param amount the amount of default currency
+     * @return true if withdraw is successful
      */
-    void withdraw(@NonNull UUID uuid, double amount);
+    boolean withdraw(@NonNull UUID uuid, double amount);
 
     /**
      * Withdraw specific amount from specific account.
@@ -66,8 +70,9 @@ public interface Economy {
      * @param uuid     the account's unique ID
      * @param amount   the amount of specific currency
      * @param currency the currency you withdraw from
+     * @return true if withdraw is successful
      */
-    void withdraw(@NonNull UUID uuid, double amount, @NonNull Currency currency);
+    boolean withdraw(@NonNull UUID uuid, double amount, @NonNull Currency currency);
 
     /**
      * Lookup the balance of specific account.
