@@ -1,4 +1,3 @@
-import net.minecrell.pluginyml.bukkit.BukkitPluginDescription
 import net.minecrell.pluginyml.paper.PaperPluginDescription
 
 plugins {
@@ -9,7 +8,7 @@ plugins {
 }
 
 group = "cc.mewcraft.economy"
-version = "2.2.0"
+version = "2.2.1"
 description = "The Bukkit plugin of Economy"
 
 dependencies {
