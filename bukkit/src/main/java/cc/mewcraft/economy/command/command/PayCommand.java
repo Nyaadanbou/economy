@@ -33,7 +33,7 @@ public class PayCommand extends AbstractCommand {
                 .permission("economy.command.pay")
                 .required("player", MultiplePlayerSelectorParser.multiplePlayerSelectorParser())
                 .required("amount", AmountParser.amountParser())
-                .required("currency", CurrencyParser.currencyParser())
+                .optional("currency", CurrencyParser.currencyParser())
                 .handler(context -> {
                     Player sender = (Player) context.sender().getSender();
                     MultiplePlayerSelector selector = context.get("player");
