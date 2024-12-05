@@ -8,7 +8,7 @@ plugins {
 }
 
 group = "cc.mewcraft.economy"
-version = "2.2.1"
+version = "2.2.2"
 description = "The Bukkit plugin of Economy"
 
 dependencies {
