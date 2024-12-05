@@ -9,16 +9,18 @@
 package cc.mewcraft.economy.data;
 
 import cc.mewcraft.economy.EconomyPlugin;
-import com.zaxxer.hikari.HikariConfig;
-import com.zaxxer.hikari.HikariDataSource;
-import me.lucko.helper.promise.Promise;
 import cc.mewcraft.economy.account.PlayerAccount;
 import cc.mewcraft.economy.api.Account;
 import cc.mewcraft.economy.api.Currency;
 import cc.mewcraft.economy.currency.ServerCurrency;
 import cc.mewcraft.economy.utils.UtilServer;
+import com.zaxxer.hikari.HikariConfig;
+import com.zaxxer.hikari.HikariDataSource;
+import me.lucko.helper.promise.Promise;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextColor;
+import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
@@ -34,9 +36,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
-
-import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.checker.nullness.qual.Nullable;
 
 import static java.util.Objects.requireNonNull;
 
@@ -83,8 +82,8 @@ public final class MySQLStorage extends DataStorage {
 
     private void setupTables(Connection conn) throws SQLException {
         try (
-                PreparedStatement stmt1 = conn.prepareStatement("CREATE TABLE IF NOT EXISTS " + this.currencyTable + " (uuid VARCHAR(255) NOT NULL PRIMARY KEY, name VARCHAR(255), default_balance DECIMAL, max_balance DECIMAL, symbol VARCHAR(255), decimals_supported TINYINT, is_default TINYINT, payable TINYINT, color VARCHAR(255), exchange_rate DECIMAL);");
-                PreparedStatement stmt2 = conn.prepareStatement("CREATE TABLE IF NOT EXISTS " + this.accountsTable + " (nickname VARCHAR(255), uuid VARCHAR(255) NOT NULL PRIMARY KEY, payable TINYINT, balance_data LONGTEXT NULL);")
+                PreparedStatement stmt1 = conn.prepareStatement("CREATE TABLE IF NOT EXISTS " + this.currencyTable + " (uuid VARCHAR(36) NOT NULL PRIMARY KEY, name VARCHAR(36), default_balance DECIMAL, max_balance DECIMAL, symbol VARCHAR(255), decimals_supported TINYINT(1), is_default TINYINT(1), payable TINYINT(1), color VARCHAR(255), exchange_rate DECIMAL);");
+                PreparedStatement stmt2 = conn.prepareStatement("CREATE TABLE IF NOT EXISTS " + this.accountsTable + " (nickname VARCHAR(36), uuid VARCHAR(36) NOT NULL PRIMARY KEY, payable TINYINT(1), balance_data JSON NULL, balance_acc JSON NULL);")
         ) {
             stmt1.execute();
             stmt2.execute();
@@ -126,95 +125,6 @@ public final class MySQLStorage extends DataStorage {
                     }
                 }
             }
-
-            // region Update old SQL tables
-            List<String> currencyTableColumns = structure.get(currencyTable);
-            if (currencyTableColumns != null && !currencyTableColumns.isEmpty()) {
-                if (!currencyTableColumns.contains("exchange_rate")) {
-                    try (PreparedStatement stmt = conn.prepareStatement(
-                            "ALTER TABLE " + currencyTable + " ADD exchange_rate DECIMAL NULL DEFAULT NULL AFTER `color`;"
-                    )) {
-                        stmt.execute();
-                        UtilServer.consoleLog("Altered table " + currencyTable + " to support the new exchange_rate variable.");
-                    }
-                }
-                if (!currencyTableColumns.contains("max_balance")) {
-                    try (PreparedStatement stmt = conn.prepareStatement(
-                            "ALTER TABLE " + currencyTable + " ADD max_balance DECIMAL NULL DEFAULT NULL AFTER `default_balance`;"
-                    )) {
-                        stmt.execute();
-                        UtilServer.consoleLog("Altered table " + currencyTable + " to support the new max_balance variable.");
-                    }
-                }
-                if (currencyTableColumns.contains("name_singular")) {
-                    try (PreparedStatement stmt = conn.prepareStatement(
-                            "ALTER TABLE " + currencyTable + " RENAME COLUMN `name_singular` TO `name`"
-                    )) {
-                        stmt.execute();
-                        UtilServer.consoleLog("Altered table " + currencyTable + " to rename 'name_singular' to just 'name'.");
-                    }
-                }
-                if (currencyTableColumns.contains("name_plural")) {
-                    try (PreparedStatement stmt = conn.prepareStatement(
-                            "ALTER TABLE " + currencyTable + " DROP COLUMN `name_plural`"
-                    )) {
-                        stmt.execute();
-                        UtilServer.consoleLog("Altered table " + currencyTable + " to remove plural name of currencies.");
-                    }
-                }
-            }
-
-            List<String> accountTableColumns = structure.get(accountsTable);
-            if (accountTableColumns != null && !accountTableColumns.isEmpty()) {
-                if (!accountTableColumns.contains("balance_data")) {
-                    try (PreparedStatement stmt = conn.prepareStatement(
-                            "ALTER TABLE " + accountsTable + " ADD balance_data LONGTEXT NULL DEFAULT '{}' AFTER `payable`;"
-                    )) {
-                        stmt.execute();
-                    }
-
-                    try (PreparedStatement stmt = conn.prepareStatement(
-                            "ALTER TABLE " + accountsTable + " DROP COLUMN `id`"
-                    )) {
-                        stmt.execute();
-                    }
-
-                    try (PreparedStatement stmt = conn.prepareStatement(
-                            "TRUNCATE TABLE " + accountsTable
-                    )) {
-                        stmt.execute();
-                    }
-
-                    try (PreparedStatement stmt = conn.prepareStatement(
-                            "ALTER TABLE " + accountsTable + " ADD PRIMARY KEY (uuid)"
-                    )) {
-                        stmt.execute();
-                    }
-
-                    try (PreparedStatement stmt = conn.prepareStatement(
-                            "ALTER TABLE " + currencyTable + " DROP COLUMN `id`"
-                    )) {
-                        stmt.execute();
-                    }
-
-                    try (PreparedStatement stmt = conn.prepareStatement(
-                            "ALTER TABLE " + currencyTable + " ADD PRIMARY KEY (uuid)"
-                    )) {
-                        stmt.execute();
-                    }
-
-                    UtilServer.consoleLog("Altered tables " + accountsTable + " to support the new balance data saving");
-                }
-                if (!accountTableColumns.contains("balance_acc")) {
-                    try (PreparedStatement stmt = conn.prepareStatement(
-                            "ALTER TABLE " + accountsTable + " ADD balance_acc LONGTEXT NULL DEFAULT '{}' AFTER `balance_data`;"
-                    )) {
-                        stmt.execute();
-                        UtilServer.consoleLog("Altered table " + accountsTable + " to support the records of accumulated balance");
-                    }
-                }
-            }
-            // endregion
         } catch (SQLException e) {
             e.printStackTrace();
         }
