@@ -345,10 +345,17 @@ public final class MySQLStorage extends DataStorage {
                 while (rs.next()) {
                     String json = rs.getString("balance_data");
                     JSONObject data = (JSONObject) new JSONParser().parse(json);
-                    Number bal = (Number) data.get(currency.getUuid().toString());
-                    if (bal == null)
+                    Object currencyBalanceData = data.get(currency.getUuid().toString());
+                    if (currencyBalanceData != null) {
+                        balances.add(
+                                new TransientBalance(
+                                        rs.getString("nickname"),
+                                        Double.parseDouble(currencyBalanceData.toString())
+                                )
+                        );
+                    } else {
                         continue; // Should rarely happen, but anyway
-                    balances.add(new TransientBalance(rs.getString("nickname"), bal.doubleValue()));
+                    }
                 }
             } catch (SQLException | ParseException ex) {
                 ex.printStackTrace();
@@ -384,17 +391,17 @@ public final class MySQLStorage extends DataStorage {
 
         for (Currency currency : plugin.getCurrencyManager().getLoadedCurrencies()) {
             // Read balance data
-            Number balance = (Number) balanceDataJson.get(currency.getUuid().toString());
-            if (balance != null) {
-                account.getBalances().put(currency, balance.doubleValue());
+            Object currencyBalanceData = balanceDataJson.get(currency.getUuid().toString());
+            if (currencyBalanceData != null) {
+                account.getBalances().put(currency, Double.parseDouble(currencyBalanceData.toString()));
             } else {
                 account.getBalances().put(currency, currency.getDefaultBalance());
             }
 
             // Read accumulated balance data
-            Number accBalance = (Number) balanceAccJson.get(currency.getUuid().toString());
-            if (accBalance != null) {
-                account.getHeapBalances().put(currency, accBalance.doubleValue());
+            Object currencyAccumulatedBalanceData = balanceAccJson.get(currency.getUuid().toString());
+            if (currencyAccumulatedBalanceData != null) {
+                account.getHeapBalances().put(currency, Double.parseDouble(currencyAccumulatedBalanceData.toString()));
             }
         }
 
