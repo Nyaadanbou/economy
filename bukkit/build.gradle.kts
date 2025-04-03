@@ -19,6 +19,7 @@ dependencies {
     implementation(project(":api"))
     implementation(project(":papi"))
     implementation(project(":mini"))
+    implementation(local.redisson)
     implementation(local.lang.bukkit)
     implementation(libs.cloud2.core)
     implementation(libs.cloud2.paper)
