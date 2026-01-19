@@ -14,10 +14,10 @@ dependencies {
 
 publishing {
     repositories {
-        maven("https://repo.mewcraft.cc/private") {
+        maven("https://repo.mewcraft.cc/releases") {
             credentials {
-                username = providers.gradleProperty("nyaadanbou.mavenUsername").orNull
-                password = providers.gradleProperty("nyaadanbou.mavenPassword").orNull
+                username = providers.gradleProperty("nyaadanbouReleasesUsername").orNull
+                password = providers.gradleProperty("nyaadanbouReleasesPassword").orNull
             }
         }
     }
